@@ -1,0 +1,14 @@
+faiss-cpu>=1.8
+flask>=3.0
+instructor>=1.0
+nltk>=3.8
+numpy>=1.26
+openai>=1.0.0
+pdf2image>=1.17
+pdfplumber>=0.11
+pillow>=10.0
+pydantic>=2.0.0
+pymupdf>=1.24
+rank-bm25>=0.2
+rich>=13.0
+tiktoken>=0.7
