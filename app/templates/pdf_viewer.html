@@ -18,9 +18,24 @@
   button.primary:hover { background: #0077ed; }
   #status { font-size: 13px; color: #6e6e73; }
 
+  /* Upload menu */
+  #upload-wrap { position: relative; }
+  #upload-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 10;
+                 background: #fff; border: 1px solid #ccc; border-radius: 8px;
+                 box-shadow: 0 4px 16px rgba(0,0,0,.15); display: flex;
+                 flex-direction: column; min-width: 230px; overflow: hidden; }
+  #upload-menu button { border: none; border-radius: 0; text-align: left;
+                        padding: 10px 14px; }
+  #upload-menu button + button { border-top: 1px solid #eee; }
+  #upload-menu[hidden] { display: none; }
+  #upload-menu small { display: block; color: #6e6e73; }
+
   /* Document list view */
   #list-view { flex: 1; overflow-y: auto; padding: 20px; }
-  #list-view h2 { font-size: 14px; color: #6e6e73; margin-bottom: 10px; }
+  #doc-columns { display: flex; gap: 24px; align-items: flex-start; }
+  .doc-col { flex: 1; min-width: 0; }
+  .doc-col h2 { font-size: 14px; color: #6e6e73; margin-bottom: 10px; }
+  .doc-col .empty { color: #9a9a9e; font-size: 13px; font-style: italic; }
   .doc-item { display: flex; justify-content: space-between; padding: 10px 14px;
               background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
               margin-bottom: 6px; cursor: pointer; font-size: 14px; }
@@ -39,25 +54,82 @@
   .thumb .label { font-size: 12px; color: #6e6e73; margin-top: 4px; }
   #divider { width: 5px; cursor: col-resize; background: #ddd; flex-shrink: 0; }
   #divider:hover, #divider.dragging { background: #0071e3; }
-  #preview { flex: 1; overflow: auto; display: flex; align-items: flex-start;
-             justify-content: center; padding: 16px; }
-  #preview img { max-width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
-  #preview .placeholder { color: #6e6e73; align-self: center; }
+  #preview { flex: 1; overflow-y: auto; padding: 16px; }
+  #preview .placeholder { color: #6e6e73; display: block; text-align: center; margin-top: 40px; }
+  .page-row { display: flex; gap: 16px; align-items: flex-start; padding: 12px;
+              border-radius: 8px; border: 2px solid transparent;
+              border-bottom: 1px solid #ddd; margin-bottom: 16px; }
+  .page-row.selected { border-color: #0071e3; background: #eaf3fe; }
+  .page-row .img-col { width: 46%; flex-shrink: 0; }
+  .page-row .action-col { flex-shrink: 0; display: flex; align-items: flex-start; }
+  .page-row .action-col button { font-size: 11px; padding: 4px 8px; white-space: nowrap; }
+  .page-row .img-col img { width: 100%; display: block;
+                           box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+  .page-row .ocr-col { width: 50%; font-size: 13px; line-height: 1.6;
+                       white-space: pre-wrap; overflow-wrap: break-word; }
+  .page-row .ocr-col h3 { font-size: 12px; color: #6e6e73; font-weight: 600;
+                          margin-bottom: 8px; }
+  .page-row .ocr-col .no-ocr { color: #9a9a9e; font-style: italic; }
+  .plumber-table { border-collapse: collapse; margin-top: 10px; font-size: 12px;
+                   white-space: normal; }
+  .plumber-table td { border: 1px solid #ccc; padding: 3px 8px; }
+  .ocr-col h4 { font-size: 11px; color: #6e6e73; font-weight: 600;
+                text-transform: uppercase; letter-spacing: .04em;
+                margin: 14px 0 4px; padding-top: 8px; border-top: 1px solid #eee; }
+  .ocr-col h4:first-of-type { margin-top: 6px; border-top: none; padding-top: 0; }
+  .ocr-col .none { color: #9a9a9e; font-style: italic; }
+  .plumber-image { margin: 8px 0; white-space: normal; }
+  .plumber-image img { max-width: 60%; display: block; border: 1px solid #e0e0e0;
+                       box-shadow: 0 1px 6px rgba(0,0,0,.12); }
+  .plumber-image figcaption { font-size: 11px; color: #6e6e73; margin-top: 3px; }
+  .ocr-col details summary { cursor: pointer; font-size: 12px; color: #6e6e73; }
+  .ocr-col details[open] summary { margin-bottom: 6px; }
+
+  /* Bottom log pane */
+  #log-divider { height: 5px; cursor: row-resize; background: #ddd; flex-shrink: 0; }
+  #log-divider:hover, #log-divider.dragging { background: #0071e3; }
+  #log-pane { height: 140px; flex-shrink: 0; display: flex; flex-direction: column;
+              background: #1d1d1f; color: #d4d4d4; }
+  #log-header { display: flex; align-items: center; padding: 4px 10px;
+                font-size: 12px; color: #9a9a9e; }
+  #log-header span { flex: 1; }
+  #log-header button { padding: 2px 8px; font-size: 11px; background: transparent;
+                       color: #9a9a9e; border-color: #48484a; }
+  #log-header button:hover { background: #2c2c2e; }
+  #log { flex: 1; overflow-y: auto; padding: 0 10px 8px;
+         font-family: "SF Mono", Menlo, monospace; font-size: 12px;
+         line-height: 1.5; white-space: pre-wrap; }
 </style>
 </head>
 <body>
 <header>
   <h1 id="title">Scanned documents</h1>
   <span id="status"></span>
+  <button id="extract-all" style="display:none">Extract all via EasyOCR</button>
   <button id="back" style="display:none">&larr; All documents</button>
-  <button id="upload-btn" class="primary">Load PDF&hellip;</button>
+  <div id="upload-wrap">
+    <button id="upload-btn" class="primary">Load PDF&hellip;</button>
+    <div id="upload-menu" hidden>
+      <button data-method="pdf2image">Convert to images<small>pdf2image &mdash; page PNGs, OCR-ready</small></button>
+      <button data-method="pdfplumber">Extract text<small>pdfplumber &mdash; text and tables</small></button>
+    </div>
+  </div>
   <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
 </header>
 
 <div id="list-view">
-  <h2>Already scanned</h2>
-  <div id="doc-list"></div>
-  <div id="empty" style="display:none">No scanned documents yet &mdash; load a PDF to get started.</div>
+  <div id="doc-columns">
+    <div class="doc-col">
+      <h2>pdf2image &mdash; page images</h2>
+      <div class="doc-list" data-type="pdf2image"></div>
+      <div class="empty" hidden>No documents yet.</div>
+    </div>
+    <div class="doc-col">
+      <h2>pdfplumber &mdash; extracted text</h2>
+      <div class="doc-list" data-type="pdfplumber"></div>
+      <div class="empty" hidden>No documents yet.</div>
+    </div>
+  </div>
 </div>
 
 <div id="viewer">
@@ -66,54 +138,236 @@
   <div id="preview"><span class="placeholder">Select a page on the left</span></div>
 </div>
 
+<div id="log-divider"></div>
+<div id="log-pane">
+  <div id="log-header">
+    <span>Logs</span>
+    <button id="log-clear">Clear</button>
+  </div>
+  <div id="log"></div>
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 let current = null;
+let ocrState = {};  // page number -> extracted text, or null when not yet OCR'd
+
+function refreshExtractAll() {
+  const missing = Object.values(ocrState).filter(t => t === null).length;
+  const btn = $('extract-all');
+  if (current && current.type === 'pdf2image' && missing > 0) {
+    btn.textContent = `Extract all via EasyOCR (${missing} page${missing > 1 ? 's' : ''} missing)`;
+    btn.style.display = '';
+  } else {
+    btn.style.display = 'none';
+  }
+}
 
 async function loadDocuments() {
   const docs = await (await fetch('/api/documents')).json();
-  const list = $('doc-list');
-  list.innerHTML = '';
-  $('empty').style.display = docs.length ? 'none' : 'block';
-  for (const doc of docs) {
-    const item = document.createElement('div');
-    item.className = 'doc-item';
-    item.innerHTML = `<span>${doc.run}/${doc.name}</span><span class="pages">${doc.pages} page(s)</span>`;
-    item.onclick = () => openDocument(doc);
-    list.appendChild(item);
+  document.querySelectorAll('.doc-list').forEach(list => {
+    const type = list.dataset.type;
+    const mine = docs.filter(d => d.type === type);
+    list.innerHTML = '';
+    list.parentElement.querySelector('.empty').hidden = mine.length > 0;
+    for (const doc of mine) {
+      const item = document.createElement('div');
+      item.className = 'doc-item';
+      item.innerHTML = `<span>${doc.run}/${doc.name}</span><span class="pages">${doc.pages} page(s)</span>`;
+      item.onclick = () => openDocument(doc);
+      list.appendChild(item);
+    }
+  });
+}
+
+function showViewer(doc) {
+  current = doc;
+  ocrState = {};
+  refreshExtractAll();
+  $('list-view').style.display = 'none';
+  $('viewer').style.display = 'flex';
+  $('back').style.display = '';
+  $('title').textContent = `${doc.type}: ${doc.run}/${doc.name}`;
+  $('thumbs').innerHTML = '';
+  $('preview').innerHTML = '';
+}
+
+function selectFirstPage() {
+  const first = $('thumbs').querySelector('.thumb');
+  if (first) {
+    first.classList.add('selected');
+    const firstRow = $('preview').querySelector('.page-row');
+    if (firstRow) firstRow.classList.add('selected');
+    $('preview').scrollTop = 0;
   }
 }
 
 async function openDocument(doc) {
-  current = doc;
-  $('list-view').style.display = 'none';
-  $('viewer').style.display = 'flex';
-  $('back').style.display = '';
-  $('title').textContent = `${doc.run}/${doc.name}`;
+  if (doc.type === 'pdfplumber') return openPlumberDocument(doc);
+  showViewer(doc);
 
-  const pages = await (await fetch(`/api/documents/${doc.run}/${doc.name}/pages`)).json();
+  const base = `/api/documents/${doc.run}/${doc.name}`;
+  const [pages, ocr] = await Promise.all([
+    fetch(`${base}/pages`).then(r => r.json()),
+    fetch(`${base}/ocr`).then(r => r.json()),
+  ]);
+  ocrState = ocr;
+  refreshExtractAll();
+
   const thumbs = $('thumbs');
-  thumbs.innerHTML = '';
-  pages.forEach((file, i) => {
-    const url = `/images/${doc.run}/${doc.name}/${file}`;
+  const preview = $('preview');
+
+  pages.forEach(file => {
+    const pageNo = file.match(/page_(\d+)\.png/)[1];
+    const url = `/images/pdf2image/${doc.run}/${doc.name}/${file}`;
+
+    // Preview row: image left, OCR text right, aligned per page.
+    const row = document.createElement('div');
+    row.className = 'page-row';
+    row.id = `page-row-${pageNo}`;
+    const text = ocr[pageNo];
+    row.innerHTML = `
+      <div class="img-col"><img src="${url}" loading="lazy"></div>
+      <div class="action-col"><button>Extract text (easyocr)</button></div>
+      <div class="ocr-col"><h3>Page ${pageNo} — EasyOCR</h3><div class="ocr-text"></div></div>`;
+    setOcrText(row, text);
+    row.querySelector('.action-col button').onclick = ev => extractPage(ev.target, doc, pageNo, row);
+    preview.appendChild(row);
+
     const t = document.createElement('div');
     t.className = 'thumb';
-    t.innerHTML = `<img src="${url}" loading="lazy"><div class="label">Page ${i + 1}</div>`;
-    t.onclick = () => selectPage(t, url);
+    t.innerHTML = `<img src="${url}" loading="lazy"><div class="label">Page ${pageNo}</div>`;
+    t.onclick = () => selectPage(t, row);
     thumbs.appendChild(t);
   });
-  const first = thumbs.querySelector('.thumb');
-  if (first) selectPage(first, first.querySelector('img').src);
+
+  selectFirstPage();
 }
 
-function selectPage(thumb, url) {
-  document.querySelectorAll('.thumb.selected').forEach(t => t.classList.remove('selected'));
+async function openPlumberDocument(doc) {
+  showViewer(doc);
+  const pages = await (
+    await fetch(`/api/documents/pdfplumber/${doc.run}/${doc.name}/content`)
+  ).json();
+  const thumbs = $('thumbs');
+  const preview = $('preview');
+
+  pages.forEach(p => {
+    const url = `/images/pdfplumber/${doc.run}/${doc.name}/page_${p.page}.png`;
+    const row = document.createElement('div');
+    row.className = 'page-row';
+    row.innerHTML = `
+      <div class="img-col"><img src="${url}" loading="lazy" onerror="this.style.display='none'"></div>
+      <div class="ocr-col"><h3>Page ${p.page} — pdfplumber</h3></div>`;
+    const col = row.querySelector('.ocr-col');
+    const addHeading = label => {
+      const h = document.createElement('h4');
+      h.textContent = label;
+      col.appendChild(h);
+    };
+    const addNone = label => {
+      const span = document.createElement('span');
+      span.className = 'none';
+      span.textContent = label;
+      col.appendChild(span);
+    };
+
+    addHeading('Prose');
+    if (p.text) {
+      const div = document.createElement('div');
+      div.append(p.text);
+      col.appendChild(div);
+    } else addNone('(no prose on this page)');
+
+    addHeading(`Tables (${p.tables.length})`);
+    if (!p.tables.length) addNone('(none)');
+    for (const tableRows of p.tables) {
+      const table = document.createElement('table');
+      table.className = 'plumber-table';
+      for (const cells of tableRows) {
+        const tr = table.insertRow();
+        for (const cell of cells) tr.insertCell().append(cell ?? '');
+      }
+      col.appendChild(table);
+    }
+
+    const images = p.images || [];
+    addHeading(`Images (${images.length})`);
+    if (!images.length) addNone('(none)');
+    for (const img of images) {
+      const fig = document.createElement('figure');
+      fig.className = 'plumber-image';
+      const el = document.createElement('img');
+      el.src = `/images/pdfplumber/${doc.run}/${doc.name}/${img.file}`;
+      el.loading = 'lazy';
+      const cap = document.createElement('figcaption');
+      const b = img.bbox;
+      cap.textContent = `#${img.image_number} ${img.file} — bbox (${b.x0.toFixed(1)}, ${b.top.toFixed(1)}) → (${b.x1.toFixed(1)}, ${b.bottom.toFixed(1)}), source ${img.source_size[0]}×${img.source_size[1]}px`;
+      fig.append(el, cap);
+      col.appendChild(fig);
+    }
+
+    addHeading('All text');
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = 'Show full unfiltered extraction';
+    const fullDiv = document.createElement('div');
+    fullDiv.append(p.full_text || '(no text on this page)');
+    details.append(summary, fullDiv);
+    col.appendChild(details);
+    preview.appendChild(row);
+
+    const t = document.createElement('div');
+    t.className = 'thumb';
+    t.innerHTML = `<img src="${url}" loading="lazy" onerror="this.style.display='none'"><div class="label">Page ${p.page}</div>`;
+    t.onclick = () => selectPage(t, row);
+    thumbs.appendChild(t);
+  });
+
+  selectFirstPage();
+}
+
+function setOcrText(row, text) {
+  const target = row.querySelector('.ocr-text');
+  target.innerHTML = '';
+  if (text === null) {
+    target.innerHTML = '<span class="no-ocr">No OCR data — click "Extract text (easyocr)".</span>';
+  } else {
+    target.append(text);
+  }
+}
+
+async function extractPage(button, doc, pageNo, row) {
+  button.disabled = true;
+  button.textContent = 'Extracting…';
+  try {
+    const resp = await fetch(`/api/documents/${doc.run}/${doc.name}/ocr/${pageNo}`, { method: 'POST' });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    setOcrText(row, data.extracted_text);
+    ocrState[pageNo] = data.extracted_text;
+    refreshExtractAll();
+  } catch (err) {
+    setOcrText(row, null);
+    row.querySelector('.ocr-text').insertAdjacentText('afterbegin', 'Extraction failed — see logs. ');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Extract text (easyocr)';
+  }
+}
+
+function selectPage(thumb, row) {
+  document.querySelectorAll('.thumb.selected, .page-row.selected')
+    .forEach(el => el.classList.remove('selected'));
   thumb.classList.add('selected');
-  $('preview').innerHTML = `<img src="${url}">`;
+  row.classList.add('selected');
+  row.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function showList() {
   current = null;
+  ocrState = {};
+  refreshExtractAll();
   $('viewer').style.display = 'none';
   $('back').style.display = 'none';
   $('list-view').style.display = 'block';
@@ -122,16 +376,56 @@ function showList() {
 }
 
 $('back').onclick = showList;
-$('upload-btn').onclick = () => $('file-input').click();
+
+/* Extract all: one OCR run over every page still missing easyocr data */
+$('extract-all').onclick = async () => {
+  const doc = current;
+  if (!doc) return;
+  const btn = $('extract-all');
+  btn.disabled = true;
+  btn.textContent = 'Extracting all… (see logs)';
+  try {
+    const resp = await fetch(`/api/documents/${doc.run}/${doc.name}/ocr`, { method: 'POST' });
+    if (!resp.ok) throw new Error(await resp.text());
+    const ocr = await resp.json();
+    if (current !== doc) return;  // user navigated away meanwhile
+    ocrState = ocr;
+    for (const [pageNo, text] of Object.entries(ocr)) {
+      const row = $(`page-row-${pageNo}`);
+      if (row && text !== null) setOcrText(row, text);
+    }
+  } catch (err) {
+    $('status').textContent = 'Extract all failed: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    refreshExtractAll();
+  }
+};
+
+/* Upload: button opens a method menu; picking one opens the file dialog */
+let uploadMethod = 'pdf2image';
+$('upload-btn').onclick = ev => {
+  ev.stopPropagation();
+  $('upload-menu').hidden = !$('upload-menu').hidden;
+};
+document.addEventListener('click', () => { $('upload-menu').hidden = true; });
+document.querySelectorAll('#upload-menu button').forEach(btn => {
+  btn.onclick = () => {
+    uploadMethod = btn.dataset.method;
+    $('upload-menu').hidden = true;
+    $('file-input').click();
+  };
+});
 
 $('file-input').onchange = async () => {
   const file = $('file-input').files[0];
   if (!file) return;
-  $('status').textContent = `Converting ${file.name}…`;
+  $('status').textContent = `Converting ${file.name} (${uploadMethod})…`;
   $('upload-btn').disabled = true;
   try {
     const form = new FormData();
     form.append('pdf', file);
+    form.append('method', uploadMethod);
     const resp = await fetch('/upload', { method: 'POST', body: form });
     if (!resp.ok) throw new Error(await resp.text());
     const doc = await resp.json();
@@ -156,6 +450,34 @@ divider.addEventListener('mousedown', e => {
   };
   const onUp = () => {
     divider.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+});
+
+/* Bottom log pane: SSE stream with auto-scroll and drag-to-resize height */
+const logEl = $('log');
+new EventSource('/logs/stream').onmessage = e => {
+  const atBottom = logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 10;
+  const line = document.createElement('div');
+  line.textContent = e.data;
+  logEl.appendChild(line);
+  if (atBottom) logEl.scrollTop = logEl.scrollHeight;
+};
+$('log-clear').onclick = () => { logEl.innerHTML = ''; };
+
+const logDivider = $('log-divider');
+logDivider.addEventListener('mousedown', e => {
+  e.preventDefault();
+  logDivider.classList.add('dragging');
+  const onMove = ev => {
+    const h = window.innerHeight - ev.clientY - logDivider.offsetHeight;
+    $('log-pane').style.height = Math.min(window.innerHeight * 0.6, Math.max(60, h)) + 'px';
+  };
+  const onUp = () => {
+    logDivider.classList.remove('dragging');
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onUp);
   };
