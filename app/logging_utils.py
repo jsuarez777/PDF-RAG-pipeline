@@ -37,7 +37,9 @@ def setup_logging(
         handlers.append(handler)
 
     level = logging.DEBUG if debug_file else logging.INFO
-    logging.basicConfig(level=level, format="%(message)s", handlers=handlers)
+    # force=True so a second call (e.g. main() invoked repeatedly in tests)
+    # rebinds handlers instead of silently keeping the first configuration
+    logging.basicConfig(level=level, format="%(message)s", handlers=handlers, force=True)
     if debug_file:
         for name in NOISY_LOGGERS:
             logging.getLogger(name).setLevel(logging.INFO)

@@ -18,6 +18,7 @@ chunks (with text) so retrieval does not need the original chunk run.
 
 import argparse
 import json
+import logging
 import pickle
 import re
 import sys
@@ -26,6 +27,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from logging_utils import setup_logging  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 EXTRACTORS = ("pdf2image", "pdfplumber")
 
@@ -73,10 +79,10 @@ def resolve_tokenizers(arg):
 
 def choose_from_menu(prompt, options):
     """Numbered menu; accepts a number, a name, or comma-separated mix."""
-    print(f"\n{prompt}")
+    log.info(f"\n{prompt}")
     for i, opt in enumerate(options, 1):
-        print(f"  [{i}] {opt}")
-    print(f"  [{len(options) + 1}] all of the above")
+        log.info(f"  [{i}] {opt}")
+    log.info(f"  [{len(options) + 1}] all of the above")
     choice = input("Choice (number/name, comma-separated for several): ").strip()
     if choice == str(len(options) + 1) or choice.lower() == "all":
         return list(options)
@@ -129,22 +135,22 @@ def choose_chunk_run(titles, preselect=None):
         sys.exit("ERROR: no datasets found under data/pdf2image or data/pdfplumber")
 
     runs = []
-    print("\nAvailable datasets:")
+    log.info("\nAvailable datasets:")
     for t in titles:
-        print(f"{t['rel']}")
+        log.info(f"{t['rel']}")
         if not t["runs"]:
-            print("      No chunks available")
+            log.info("      No chunks available")
             continue
         for run in t["runs"]:
             runs.append(run)
-            print(f"  [{len(runs)}] {run['path'].name}")
+            log.info(f"  [{len(runs)}] {run['path'].name}")
 
     if not runs:
         sys.exit("ERROR: no chunk runs found; run chunk_text.py first")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nChunk run (from --dataset): {choice}")
+        log.info(f"\nChunk run (from --dataset): {choice}")
     else:
         choice = input("\nChoose a chunk run (number or path): ").strip()
 
@@ -170,7 +176,7 @@ def load_chunks(run):
     for c in chunks:
         if not isinstance(c.get("text"), str):
             sys.exit(f"ERROR: chunk {c.get('chunk_index')} in {jpath.relative_to(ROOT)} has no text")
-    print(f"Loaded {len(chunks)} chunks from {run['rel']}")
+    log.info(f"Loaded {len(chunks)} chunks from {run['rel']}")
     return data.get("metadata", {}), chunks
 
 
@@ -215,7 +221,7 @@ def build_index(out_dir, stamp, tokenizer_name, run, chunk_meta, chunks, now):
     sidecar = out_file.with_suffix(".json")
     sidecar.write_text(json.dumps({"metadata": meta}, indent=2, ensure_ascii=False),
                        encoding="utf-8")
-    print(f"  bm25 ({tokenizer_name}): {out_file.relative_to(ROOT)} (+ sidecar {sidecar.name})")
+    log.info(f"  bm25 ({tokenizer_name}): {out_file.relative_to(ROOT)} (+ sidecar {sidecar.name})")
 
 
 # --------------------------------------------------------------------- main
@@ -234,6 +240,8 @@ def main():
         help="Build an index with every tokenizer",
     )
     args = parser.parse_args()
+
+    setup_logging("index_bm25")
 
     if args.all_options:
         tokenizers = list(TOKENIZERS)
@@ -254,11 +262,11 @@ def main():
     now = datetime.now()
     stamp = now.strftime("%Y%m%d_%H%M%S")
 
-    print()
+    log.info("")
     for name in tokenizers:
         build_index(out_dir, stamp, name, run, chunk_meta, chunks, now)
 
-    print(f"\nDone: {len(tokenizers)} BM25 index(es) in {out_dir.relative_to(ROOT)}")
+    log.info(f"\nDone: {len(tokenizers)} BM25 index(es) in {out_dir.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

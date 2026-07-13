@@ -14,9 +14,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from pdf2image import convert_from_path
-
 from logging_utils import setup_logging
+from pdf2image import convert_from_path
 
 log = logging.getLogger(__name__)
 

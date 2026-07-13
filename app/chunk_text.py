@@ -12,6 +12,7 @@ character count, or a percent of size if it ends with "%".
 
 import argparse
 import json
+import logging
 import re
 import sys
 from datetime import datetime
@@ -19,6 +20,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from logging_utils import setup_logging  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 EXTRACTORS = {
     "pdf2image": {"json_suffix": "_easyocr.json", "text_field": "extracted_text"},
@@ -77,7 +83,7 @@ def parse_overlap(overlap_str, size):
     if overlap >= size:
         sys.exit(f"ERROR: overlap ({overlap}) must be less than chunk size ({size})")
     if overlap > size / 2:
-        print(f"WARNING: overlap ({overlap}) is more than 50% of chunk size ({size})")
+        log.warning(f"WARNING: overlap ({overlap}) is more than 50% of chunk size ({size})")
     return overlap
 
 
@@ -123,18 +129,18 @@ def choose_dataset(datasets, preselect=None):
     eligible = [i for i, ds in enumerate(datasets) if not ds["missing_json"] and ds["pages"]]
     default = max(eligible, key=lambda i: datasets[i]["path"].parent.name) + 1 if eligible else None
 
-    print("\nAvailable datasets:")
+    log.info("\nAvailable datasets:")
     for i, ds in enumerate(datasets, 1):
         if ds["missing_json"]:
             status = f"ERROR: {len(ds['missing_json'])} pages missing json"
         else:
             status = f"{len(ds['pages'])} pages"
         mark = "  (latest)" if i == default else ""
-        print(f"  [{i}] {ds['rel']}  ({status}){mark}")
+        log.info(f"  [{i}] {ds['rel']}  ({status}){mark}")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nDataset (from --dataset): {choice}")
+        log.info(f"\nDataset (from --dataset): {choice}")
     else:
         hint = f", Enter for [{default}]" if default else ""
         choice = input(f"\nChoose a dataset (number or path{hint}): ").strip()
@@ -184,7 +190,7 @@ def load_and_validate_pages(ds):
                 f"'{field}' for extractor '{ds['extractor']}'"
             )
         pages.append((n, data[field]))
-    print(f"Validated {len(pages)} pages: all have string '{field}'")
+    log.info(f"Validated {len(pages)} pages: all have string '{field}'")
     return pages
 
 
@@ -245,11 +251,13 @@ def main():
     parser.add_argument("--dataset", help="Dataset path (data/<extractor>/<date>/<title>) or list number")
     args = parser.parse_args()
 
+    setup_logging("chunk_text")
+
     type_str = args.type
     if not type_str:
-        print("\nChunk type:")
+        log.info("\nChunk type:")
         for i, name in enumerate(CHUNK_TYPES, 1):
-            print(f"  [{i}] {name}")
+            log.info(f"  [{i}] {name}")
         choice = input("Choice (number or name): ").strip()
         if choice.isdigit() and 1 <= int(choice) <= len(CHUNK_TYPES):
             type_str = CHUNK_TYPES[int(choice) - 1]
@@ -293,8 +301,8 @@ def main():
 
     out_file = out_dir / "chunked_text.json"
     out_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"Wrote {len(chunks)} chunks ({total_chars} chars from {len(pages)} pages)")
-    print(f"Output: {out_file.relative_to(ROOT)}")
+    log.info(f"Wrote {len(chunks)} chunks ({total_chars} chars from {len(pages)} pages)")
+    log.info(f"Output: {out_file.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

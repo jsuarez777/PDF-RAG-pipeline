@@ -17,6 +17,7 @@ Outputs go to <title>/embedding_databases/<db>_<datetime>_<model>.<ext>
 
 import argparse
 import json
+import logging
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -25,7 +26,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 sys.path.insert(0, str(ROOT))
 
+from logging_utils import setup_logging  # noqa: E402
+
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 EXTRACTORS = ("pdf2image", "pdfplumber")
 
@@ -75,10 +80,10 @@ def resolve_dbs(arg):
 
 def choose_from_menu(prompt, options):
     """Numbered menu; accepts a number, a name, or comma-separated mix."""
-    print(f"\n{prompt}")
+    log.info(f"\n{prompt}")
     for i, opt in enumerate(options, 1):
-        print(f"  [{i}] {opt}")
-    print(f"  [{len(options) + 1}] all of the above")
+        log.info(f"  [{i}] {opt}")
+    log.info(f"  [{len(options) + 1}] all of the above")
     choice = input("Choice (number/name, comma-separated for several): ").strip()
     if choice == str(len(options) + 1) or choice.lower() == "all":
         return list(options)
@@ -128,11 +133,11 @@ def scan_chunk_runs():
 
 
 def choose_chunk_run(runs, empty, preselect=None):
-    print("\nAvailable datasets:")
+    log.info("\nAvailable datasets:")
     if not runs and not empty:
         sys.exit("ERROR: no datasets found under data/pdf2image or data/pdfplumber")
     for rel in empty:
-        print(f"  [-] {rel}  (No chunks)")
+        log.info(f"  [-] {rel}  (No chunks)")
 
     if not runs:
         sys.exit("ERROR: no chunk runs found; run chunk_text.py first")
@@ -141,11 +146,11 @@ def choose_chunk_run(runs, empty, preselect=None):
     default = max(range(len(runs)), key=lambda i: runs[i]["path"].name) + 1
     for i, run in enumerate(runs, 1):
         mark = "  (latest)" if i == default else ""
-        print(f"  [{i}] {run['rel']}{mark}")
+        log.info(f"  [{i}] {run['rel']}{mark}")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nChunk run (from --dataset): {choice}")
+        log.info(f"\nChunk run (from --dataset): {choice}")
     else:
         choice = input(f"\nChoose a chunk run (number or path, Enter for [{default}]): ").strip()
         if not choice:
@@ -173,7 +178,7 @@ def load_chunks(run):
     for c in chunks:
         if not isinstance(c.get("text"), str):
             sys.exit(f"ERROR: chunk {c.get('chunk_index')} in {jpath.relative_to(ROOT)} has no text")
-    print(f"Loaded {len(chunks)} chunks from {run['rel']}")
+    log.info(f"Loaded {len(chunks)} chunks from {run['rel']}")
     return data.get("metadata", {}), chunks
 
 
@@ -241,7 +246,7 @@ def store_milvus(out_dir, stamp, model, vectors, chunks, meta):
     sidecar = out_file.with_suffix(".json")
     sidecar.write_text(json.dumps({"metadata": meta}, indent=2, ensure_ascii=False),
                        encoding="utf-8")
-    print(f"  milvus:   {out_file.relative_to(ROOT)} (+ sidecar {sidecar.name})")
+    log.info(f"  milvus:   {out_file.relative_to(ROOT)} (+ sidecar {sidecar.name})")
 
 
 def store_chromadb(out_dir, stamp, model, vectors, chunks, meta):
@@ -271,7 +276,7 @@ def store_chromadb(out_dir, stamp, model, vectors, chunks, meta):
             for c in chunks
         ],
     )
-    print(f"  chromadb: {out_path.relative_to(ROOT)}")
+    log.info(f"  chromadb: {out_path.relative_to(ROOT)}")
 
 
 STORERS = {"milvus": store_milvus, "chromadb": store_chromadb}
@@ -299,6 +304,8 @@ def main():
         help="Generate every embedding model and store each in every vector db",
     )
     args = parser.parse_args()
+
+    setup_logging("embed_chunks")
 
     if args.all_options:
         models = list(EMBEDDING_MODELS)
@@ -331,13 +338,13 @@ def main():
     stamp = now.strftime("%Y%m%d_%H%M%S")
 
     for model in models:
-        print(f"\nEmbedding {len(texts)} chunks with {model} ...")
+        log.info(f"\nEmbedding {len(texts)} chunks with {model} ...")
         vectors = embed_texts(client, model, texts)
         meta = build_metadata(run, chunk_meta, model, vectors, now)
         for db in dbs:
             STORERS[db](out_dir, stamp, model, vectors, chunks, meta)
 
-    print(f"\nDone: {len(models)} embedding model(s) x {len(dbs)} db(s) "
+    log.info(f"\nDone: {len(models)} embedding model(s) x {len(dbs)} db(s) "
           f"-> {len(models) * len(dbs)} output(s) in {out_dir.relative_to(ROOT)}")
 
 

@@ -20,9 +20,12 @@ FIXTURES = Path(__file__).parent / "datasets" / "chunk_text"
 @pytest.fixture
 def data_root(tmp_path, monkeypatch):
     """Copy fixture datasets to tmp_path and point the script at them."""
+    import logging_utils
     shutil.copytree(FIXTURES, tmp_path / "data")
     monkeypatch.setattr(chunk_text, "ROOT", tmp_path)
     monkeypatch.setattr(chunk_text, "DATA_DIR", tmp_path / "data")
+    # keep setup_logging() calls in main() from writing into the repo's logs/
+    monkeypatch.setattr(logging_utils, "LOGS_DIR", tmp_path / "logs")
     return tmp_path
 
 
@@ -40,9 +43,9 @@ def test_parse_zero_overlap_ok():
     assert chunk_text.parse_type("fixed_size:100:0") == ("fixed_size", 100, 0)
 
 
-def test_parse_overlap_just_below_size_ok(capsys):
+def test_parse_overlap_just_below_size_ok(caplog):
     assert chunk_text.parse_type("fixed_size:100:99") == ("fixed_size", 100, 99)
-    assert "WARNING" in capsys.readouterr().out
+    assert "WARNING" in caplog.text
 
 
 @pytest.mark.parametrize(
@@ -71,14 +74,14 @@ def test_parse_type_rejects_bad_specs(spec):
         chunk_text.parse_type(spec)
 
 
-def test_parse_warns_over_half_overlap(capsys):
+def test_parse_warns_over_half_overlap(caplog):
     chunk_text.parse_type("fixed_size:100:60")
-    assert "WARNING" in capsys.readouterr().out
+    assert "WARNING" in caplog.text
 
 
-def test_parse_no_warning_at_exactly_half(capsys):
+def test_parse_no_warning_at_exactly_half(caplog):
     chunk_text.parse_type("fixed_size:100:50")
-    assert "WARNING" not in capsys.readouterr().out
+    assert "WARNING" not in caplog.text
 
 
 def test_parse_other_types_take_no_params():

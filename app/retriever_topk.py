@@ -21,6 +21,7 @@ and the full chunk with its metadata).
 
 import argparse
 import json
+import logging
 import pickle
 import sys
 from datetime import datetime
@@ -30,7 +31,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 sys.path.insert(0, str(ROOT))
 
+from logging_utils import setup_logging  # noqa: E402
+
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 EXTRACTORS = ("pdf2image", "pdfplumber")
 
@@ -86,13 +91,13 @@ def choose_db(dbs, preselect=None):
         sys.exit("ERROR: no indexes found under data/*/*/*/{embedding_databases,bm25}; "
                  "run embed_chunks.py or index_bm25.py first")
 
-    print("\nAvailable indexes:")
+    log.info("\nAvailable indexes:")
     for i, db in enumerate(dbs, 1):
-        print(f"  [{i}] {db['rel']}")
+        log.info(f"  [{i}] {db['rel']}")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nIndex (from --db): {choice}")
+        log.info(f"\nIndex (from --db): {choice}")
     else:
         choice = input("\nChoose an index (number or path): ").strip()
 
@@ -143,9 +148,9 @@ def get_query(args):
     if args.query_json:
         return load_query_json(args.query_json)
 
-    print("\nQuery input:")
-    print("  [1] text (type the query)")
-    print("  [2] json file (path to {\"type\": \"text\", \"query\": ...})")
+    log.info("\nQuery input:")
+    log.info("  [1] text (type the query)")
+    log.info("  [2] json file (path to {\"type\": \"text\", \"query\": ...})")
     choice = input("Choice: ").strip()
     if choice in ("1", "text"):
         query = input("Query text: ").strip()
@@ -298,6 +303,8 @@ def main():
     parser.add_argument("--query-json", help='Query json file: {"type": "text", "query": "..."}')
     args = parser.parse_args()
 
+    setup_logging("retriever_topk")
+
     dbs = scan_dbs()
     db = choose_db(dbs, preselect=args.db)
     query, query_source = get_query(args)
@@ -305,7 +312,7 @@ def main():
 
     if db["type"] == "bm25":
         tokenizer, run_search = SEARCHERS["bm25"](db, k)
-        print(f"\nTokenizing query with '{tokenizer}' tokenizer ...")
+        log.info(f"\nTokenizing query with '{tokenizer}' tokenizer ...")
         results = run_search(query)
         method_meta = {
             "tokenizer": tokenizer,
@@ -315,7 +322,7 @@ def main():
         model, run_search = SEARCHERS[db["type"]](db, k)
         if not model:
             sys.exit(f"ERROR: could not determine embedding model for {db['rel']}")
-        print(f"\nEmbedding query with {model} ...")
+        log.info(f"\nEmbedding query with {model} ...")
         vector = embed_query(model, [query])[0]
         results = run_search(vector)
         method_meta = {
@@ -324,7 +331,7 @@ def main():
                           "score is the raw db value (milvus: IP, chromadb: 1 - IP)",
         }
     if len(results) < k:
-        print(f"WARNING: index only returned {len(results)} results (asked for {k})")
+        log.warning(f"WARNING: index only returned {len(results)} results (asked for {k})")
 
     now = datetime.now()
     out = {
@@ -347,12 +354,12 @@ def main():
     out_file = out_dir / f"{now.strftime('%Y%m%d_%H%M%S')}_top{k}_{db['path'].stem}.json"
     out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    print(f"\nTop {len(results)} results for: {query!r}")
+    log.info(f"\nTop {len(results)} results for: {query!r}")
     for r in results:
         preview = r["chunk"]["text"][:80].replace("\n", " ")
-        print(f"  #{r['rank']}  sim={r['similarity']:.4f}  chunk {r['chunk']['chunk_index']}  "
+        log.info(f"  #{r['rank']}  sim={r['similarity']:.4f}  chunk {r['chunk']['chunk_index']}  "
               f"pages {r['chunk'].get('start_page')}-{r['chunk'].get('end_page')}  {preview}")
-    print(f"\nOutput: {out_file.relative_to(ROOT)}")
+    log.info(f"\nOutput: {out_file.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

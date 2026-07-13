@@ -28,6 +28,7 @@ plus an eval_summary_<dt>.json comparison when several indexes are evaluated.
 
 import argparse
 import json
+import logging
 import math
 import sys
 from datetime import datetime
@@ -37,7 +38,10 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 sys.path.insert(0, str(ROOT))
 
+from logging_utils import setup_logging  # noqa: E402
 from retriever_topk import EXTRACTORS, SEARCHERS, embed_query, scan_dbs  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 DEFAULT_TOPK = 10
 DEFAULT_KS = "1,3,5,10"
@@ -79,15 +83,15 @@ def choose_qa(qa_files, preselect=None):
     # newest by the qa_<YYYYMMDD_HHMMSS>_ filename stamp is the default choice
     default = max(range(len(qa_files)), key=lambda i: qa_files[i]["path"].name) + 1
 
-    print("\nAvailable QA files:")
+    log.info("\nAvailable QA files:")
     for i, qa in enumerate(qa_files, 1):
         pairs = "?" if qa["num_pairs"] is None else qa["num_pairs"]
         mark = "  (latest)" if i == default else ""
-        print(f"  [{i}] {qa['rel']}  ({pairs} QA pairs){mark}")
+        log.info(f"  [{i}] {qa['rel']}  ({pairs} QA pairs){mark}")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nQA file (from --qa): {choice}")
+        log.info(f"\nQA file (from --qa): {choice}")
     else:
         choice = input(f"\nChoose a QA file (number or path, Enter for [{default}]): ").strip()
         if not choice:
@@ -127,7 +131,7 @@ def load_qa(qa):
             })
     if not questions:
         sys.exit(f"ERROR: {qa['rel']} has no questions")
-    print(f"Loaded {len(questions)} questions over {len(items)} chunks from {qa['rel']}")
+    log.info(f"Loaded {len(questions)} questions over {len(items)} chunks from {qa['rel']}")
     return data.get("metadata", {}), questions
 
 
@@ -161,16 +165,16 @@ def choose_eval_dbs(dbs, qa_chunk_run, preselect=None, force=False):
     for db in dbs:
         db["chunk_run"] = index_chunk_run(db)
 
-    print("\nAvailable indexes ([x] = built from this QA file's chunk run):")
+    log.info("\nAvailable indexes ([x] = built from this QA file's chunk run):")
     type_labels = {"bm25": "BM-25", "milvus": "Milvus", "chromadb": "ChromaDB"}
     for i, db in enumerate(dbs, 1):
         mark = "x" if db["chunk_run"] == qa_chunk_run else " "
         label = type_labels.get(db["type"], db["type"])
-        print(f"  [{i}] [{mark}] {label:<8} {db['rel']}")
+        log.info(f"  [{i}] [{mark}] {label:<8} {db['rel']}")
 
     if preselect is not None:
         choice = preselect
-        print(f"\nIndex(es) (from --db): {choice}")
+        log.info(f"\nIndex(es) (from --db): {choice}")
     else:
         choice = input("\nChoose index(es) (numbers/paths, comma-separated, or 'all' "
                        "for every matching index): ").strip()
@@ -179,7 +183,7 @@ def choose_eval_dbs(dbs, qa_chunk_run, preselect=None, force=False):
         picked = [db for db in dbs if db["chunk_run"] == qa_chunk_run]
         skipped = len(dbs) - len(picked)
         if skipped:
-            print(f"Skipping {skipped} index(es) built from a different chunk run")
+            log.info(f"Skipping {skipped} index(es) built from a different chunk run")
         if not picked:
             sys.exit(f"ERROR: no index was built from chunk run '{qa_chunk_run}'")
         return picked
@@ -206,7 +210,7 @@ def choose_eval_dbs(dbs, qa_chunk_run, preselect=None, force=False):
                    f"'{db['chunk_run']}' but the QA file is from '{qa_chunk_run}'; "
                    "chunk_index values are not comparable")
             if force:
-                print(f"WARNING: {msg} (--force)")
+                log.warning(f"WARNING: {msg} (--force)")
             else:
                 sys.exit(f"ERROR: {msg} (pass --force to evaluate anyway)")
     return picked
@@ -223,7 +227,7 @@ def parse_ks(arg, topk):
         if k <= 0:
             sys.exit("ERROR: every --ks cutoff must be > 0")
         if k > topk:
-            print(f"WARNING: dropping cutoff {k} > --topk {topk}")
+            log.warning(f"WARNING: dropping cutoff {k} > --topk {topk}")
         elif k not in ks:
             ks.append(k)
     if topk not in ks:
@@ -293,7 +297,7 @@ def evaluate_db(run_search, questions, vectors, ks):
 def print_aggregates(aggregates, ks):
     def line(label, m):
         cuts = "  ".join(f"R@{k}={m[f'recall@{k}']:.3f}" for k in ks)
-        print(f"    {label:<12} MRR={m['mrr']:.3f}  {cuts}  NDCG@{ks[-1]}={m[f'ndcg@{ks[-1]}']:.3f}")
+        log.info(f"    {label:<12} MRR={m['mrr']:.3f}  {cuts}  NDCG@{ks[-1]}={m[f'ndcg@{ks[-1]}']:.3f}")
 
     line("overall", aggregates["overall"])
     for qtype, m in aggregates["by_question_type"].items():
@@ -317,6 +321,8 @@ def main():
     parser.add_argument("--force", action="store_true",
                         help="Evaluate even if an index was built from a different chunk run")
     args = parser.parse_args()
+
+    setup_logging("eval_retrieval")
 
     if args.topk <= 0:
         sys.exit("ERROR: --topk must be > 0")
@@ -342,7 +348,7 @@ def main():
     texts = [q["question"] for q in questions]
     vectors_by_model = {}
     for model in sorted({m for db, m, _ in searchers if db["type"] != "bm25"}):
-        print(f"\nEmbedding {len(texts)} questions with {model} ...")
+        log.info(f"\nEmbedding {len(texts)} questions with {model} ...")
         vectors_by_model[model] = embed_query(model, texts)
 
     now = datetime.now()
@@ -352,7 +358,7 @@ def main():
 
     summary_rows = []
     for db, method, run_search in searchers:
-        print(f"\nEvaluating {db['rel']} ...")
+        log.info(f"\nEvaluating {db['rel']} ...")
         if db["type"] == "bm25":
             vectors = None
             method_meta = {"tokenizer": method}
@@ -381,7 +387,7 @@ def main():
         out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
         print_aggregates(aggregates, ks)
-        print(f"    -> {out_file.relative_to(ROOT)}")
+        log.info(f"    -> {out_file.relative_to(ROOT)}")
         summary_rows.append({
             "db": db["rel"],
             "db_type": db["type"],
@@ -407,9 +413,9 @@ def main():
         summary_file = out_dir / f"eval_summary_{stamp}.json"
         summary_file.write_text(json.dumps(summary, indent=2, ensure_ascii=False),
                                 encoding="utf-8")
-        print(f"\nSummary: {summary_file.relative_to(ROOT)}")
+        log.info(f"\nSummary: {summary_file.relative_to(ROOT)}")
 
-    print(f"\nDone: {len(summary_rows)} index(es) evaluated on {len(questions)} questions")
+    log.info(f"\nDone: {len(summary_rows)} index(es) evaluated on {len(questions)} questions")
 
 
 if __name__ == "__main__":
