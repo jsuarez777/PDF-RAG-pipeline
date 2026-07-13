@@ -112,10 +112,25 @@ def main():
     parser.add_argument("--seed", type=int, help="Random seed for reproducible chunk sampling")
     parser.add_argument("--temperature", type=float, default=0.7,
                         help="Sampling temperature (default 0.7)")
+    parser.add_argument("--chunks", help="Comma-separated chunk indices to use instead of "
+                                         "random sampling (e.g. 3,17,42)")
+    parser.add_argument("--types", help="Comma-separated subset of question types to keep "
+                                        f"(default: all of {','.join(QUESTION_TYPES)})")
+    parser.add_argument("--add", help="Existing qa_*.json to add the generated items to, "
+                                      "instead of writing a new file. Items are kept sorted "
+                                      "by chunk index, and an existing item for the same "
+                                      "chunk is replaced rather than duplicated")
     args = parser.parse_args()
 
-    if args.num_chunks <= 0:
+    if not args.chunks and args.num_chunks <= 0:
         sys.exit("ERROR: --num-chunks must be > 0")
+
+    keep_types = list(QUESTION_TYPES)
+    if args.types:
+        keep_types = [t.strip() for t in args.types.split(",") if t.strip()]
+        unknown = [t for t in keep_types if t not in QUESTION_TYPES]
+        if unknown:
+            sys.exit(f"ERROR: unknown question type(s): {', '.join(unknown)}")
 
     try:
         import instructor
@@ -126,13 +141,28 @@ def main():
     run = choose_chunk_run(runs, empty, preselect=args.dataset)
     chunk_meta, chunks = load_chunks(run)
 
-    num = min(args.num_chunks, len(chunks))
-    if num < args.num_chunks:
-        print(f"WARNING: only {len(chunks)} chunks available; sampling all of them")
-    rng = random.Random(args.seed)
-    sampled = sorted(rng.sample(chunks, num), key=lambda c: c["chunk_index"])
-    print(f"Sampled {num} of {len(chunks)} chunks"
-          + (f" (seed {args.seed})" if args.seed is not None else ""))
+    if args.chunks:
+        try:
+            wanted = sorted({int(x) for x in args.chunks.split(",") if x.strip()})
+        except ValueError:
+            sys.exit("ERROR: --chunks must be comma-separated integers")
+        if not wanted:
+            sys.exit("ERROR: --chunks is empty")
+        by_index = {c["chunk_index"]: c for c in chunks}
+        missing = [i for i in wanted if i not in by_index]
+        if missing:
+            sys.exit(f"ERROR: chunk index(es) not in this run: {missing}")
+        sampled = [by_index[i] for i in wanted]
+        num = len(sampled)
+        print(f"Using {num} chunk(s) from --chunks: {', '.join(map(str, wanted))}")
+    else:
+        num = min(args.num_chunks, len(chunks))
+        if num < args.num_chunks:
+            print(f"WARNING: only {len(chunks)} chunks available; sampling all of them")
+        rng = random.Random(args.seed)
+        sampled = sorted(rng.sample(chunks, num), key=lambda c: c["chunk_index"])
+        print(f"Sampled {num} of {len(chunks)} chunks"
+              + (f" (seed {args.seed})" if args.seed is not None else ""))
 
     api = MyOpenAIClient(model=args.model, temperature=args.temperature)
     api.validate_api_key()
@@ -154,13 +184,50 @@ def main():
             "chunk_text": chunk["text"],
             **{k: chunk[k] for k in ("start_char", "end_char", "start_page", "end_page")
                if k in chunk},
-            "qa_pairs": qa_pairs,
+            # the model always produces all three types; keep only the requested ones
+            "qa_pairs": [p for p in qa_pairs if p["question_type"] in keep_types],
         })
 
     if not items:
         sys.exit("ERROR: all chunks failed; no QA file written")
 
     now = datetime.now()
+
+    if args.add:
+        out_file = Path(args.add)
+        try:
+            existing = json.loads(out_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            sys.exit(f"ERROR: could not read --add file {out_file}: {e}")
+        if existing.get("metadata", {}).get("chunk_run") != run["rel"]:
+            sys.exit(f"ERROR: --add file belongs to chunk run "
+                     f"'{existing.get('metadata', {}).get('chunk_run')}', not '{run['rel']}'")
+        old_items = existing.setdefault("items", [])
+        new_indices = {it["chunk_index"] for it in items}
+        replaced = sorted({it["chunk_index"] for it in old_items
+                           if it["chunk_index"] in new_indices})
+        old_items[:] = [it for it in old_items if it["chunk_index"] not in new_indices]
+        old_items.extend(items)
+        old_items.sort(key=lambda it: it["chunk_index"])
+        meta = existing.setdefault("metadata", {})
+        meta["num_chunks_answered"] = len(old_items)
+        meta.setdefault("adds", []).append({
+            "datetime": now.isoformat(timespec="seconds"),
+            "model": args.model,
+            "temperature": args.temperature,
+            "chunks": [it["chunk_index"] for it in items],
+            "replaced": replaced,
+            "question_types": keep_types,
+            "failures": failures,
+        })
+        out_file.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
+        total_q = sum(len(it["qa_pairs"]) for it in items)
+        print(f"\nAdded {total_q} question(s) from {len(items)} chunk(s)"
+              + (f", replacing existing items for chunk(s) {replaced}" if replaced else "")
+              + (f" ({len(failures)} chunk(s) failed)" if failures else ""))
+        print(f"Output: {out_file.relative_to(ROOT) if out_file.is_relative_to(ROOT) else out_file}")
+        return
+
     result = {
         "metadata": {
             "datetime": now.isoformat(timespec="seconds"),
@@ -172,8 +239,8 @@ def main():
             "num_chunks_requested": args.num_chunks,
             "num_chunks_sampled": num,
             "num_chunks_answered": len(items),
-            "questions_per_chunk": len(QUESTION_TYPES),
-            "question_types": QUESTION_TYPES,
+            "questions_per_chunk": len(keep_types),
+            "question_types": {t: QUESTION_TYPES[t] for t in keep_types},
             "system_prompt": SYSTEM_PROMPT,
             "user_prompt_template": USER_PROMPT_TEMPLATE,
             "failures": failures,

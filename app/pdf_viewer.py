@@ -39,6 +39,7 @@ SAFE_SEGMENT = re.compile(r"^[\w.-]+$")
 PAGE_FILE = re.compile(r"^page_(\d+)\.png$")
 SERVABLE_PNG = re.compile(r"^page_\d+(?:_image_\d+)?\.png$")
 PLUMBER_PAGE = re.compile(r"^page_(\d+)\.json$")
+QA_FILE = re.compile(r"^qa_.*\.json$")
 
 
 class LogBroadcaster:
@@ -197,6 +198,151 @@ def plumber_content(run: str, name: str):
             }
         )
     return jsonify(out)
+
+
+def qa_doc_dir(dtype: str, run: str, name: str) -> Path:
+    if dtype not in DOC_TYPES:
+        abort(404)
+    doc_dir = DOC_TYPES[dtype][0] / check_segment(run) / check_segment(name)
+    if not doc_dir.is_dir():
+        abort(404)
+    return doc_dir
+
+
+def latest_qa_file(doc_dir: Path) -> Path | None:
+    """Newest qa_<datetime>_<model>.json across the document's chunk runs."""
+    qa_files = [
+        f
+        for chunk_dir in doc_dir.iterdir()
+        if chunk_dir.is_dir() and "_chunk_" in chunk_dir.name
+        for f in chunk_dir.iterdir()
+        if f.is_file() and QA_FILE.fullmatch(f.name)
+    ]
+    return max(qa_files, key=lambda f: f.name) if qa_files else None
+
+
+def qa_payload(doc_dir: Path, qa_path: Path) -> dict:
+    try:
+        data = json.loads(qa_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        abort(500, f"could not read {qa_path.name}")
+    chunks = []
+    chunk_meta = {}
+    chunk_file = qa_path.parent / "chunked_text.json"
+    try:
+        cdata = json.loads(chunk_file.read_text(encoding="utf-8"))
+        chunk_meta = cdata.get("metadata", {})
+        chunks = [
+            {k: c.get(k) for k in ("chunk_index", "start_char", "end_char",
+                                   "start_page", "end_page")}
+            for c in cdata.get("chunks", [])
+        ]
+    except (OSError, json.JSONDecodeError):
+        pass  # boxes for un-QA'd chunks just won't render
+    return {
+        "qa_file": qa_path.relative_to(doc_dir).as_posix(),
+        "chunk_run": qa_path.parent.name,
+        "items": data.get("items", []),
+        "chunks": chunks,
+        "chunk_metadata": chunk_meta,
+    }
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/qa")
+def qa_data(dtype: str, run: str, name: str):
+    """Latest QA dataset generated from any chunk run of this document, or null.
+
+    generate_qa.py writes qa_<datetime>_<model>.json into chunk dirs
+    (<title dir>/<stamp>_chunk_*/), so the newest file across all chunk
+    runs is picked by its timestamped name.
+    """
+    doc_dir = qa_doc_dir(dtype, run, name)
+    qa_path = latest_qa_file(doc_dir)
+    if qa_path is None:
+        return jsonify(None)
+    return jsonify(qa_payload(doc_dir, qa_path))
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/qa/delete-pair")
+def qa_delete_pair(dtype: str, run: str, name: str):
+    """Delete one QA pair (and its item, if emptied) from a qa_*.json file.
+
+    A null pair_index deletes the whole item, i.e. all of the chunk's pairs.
+    """
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    parts = str(payload.get("qa_file", "")).split("/")
+    if len(parts) != 2 or not QA_FILE.fullmatch(parts[1]):
+        abort(400, "invalid qa_file")
+    qa_path = doc_dir / check_segment(parts[0]) / parts[1]
+    if not qa_path.is_file():
+        abort(404)
+
+    try:
+        data = json.loads(qa_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        abort(500, f"could not read {qa_path.name}")
+    items = data.get("items", [])
+    item_index = payload.get("item_index")
+    pair_index = payload.get("pair_index")
+    if not (isinstance(item_index, int) and 0 <= item_index < len(items)):
+        abort(400, "invalid item_index")
+    item = items[item_index]
+    # guard against deleting the wrong entry when the client's view is stale
+    if item.get("chunk_index") != payload.get("chunk_index"):
+        abort(409, "QA file changed since it was loaded; reopen the document")
+
+    if pair_index is None:
+        log.info(f"Deleting all QA pairs of chunk {item['chunk_index']} from {qa_path.name}")
+        del items[item_index]
+    else:
+        pairs = item.get("qa_pairs", [])
+        if not (isinstance(pair_index, int) and 0 <= pair_index < len(pairs)):
+            abort(400, "invalid pair_index")
+        if pairs[pair_index].get("question_type") != payload.get("question_type"):
+            abort(409, "QA file changed since it was loaded; reopen the document")
+        log.info(f"Deleting QA pair: chunk {item['chunk_index']} "
+                 f"{pairs[pair_index]['question_type']} from {qa_path.name}")
+        del pairs[pair_index]
+        if not pairs:
+            del items[item_index]
+    qa_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    return jsonify(qa_payload(doc_dir, qa_path))
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/qa/generate")
+def qa_generate(dtype: str, run: str, name: str):
+    """Generate QA pairs for specific chunks via generate_qa.py and add them
+    to the document's latest qa_*.json, sorted and replacing duplicates."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    chunks = payload.get("chunks")
+    if not (isinstance(chunks, list) and chunks
+            and all(isinstance(c, int) and c >= 0 for c in chunks)):
+        abort(400, "chunks must be a non-empty list of chunk indices")
+    types = payload.get("types") or ["direct", "inference", "paraphrased"]
+    if not (isinstance(types, list)
+            and all(t in ("direct", "inference", "paraphrased") for t in types)):
+        abort(400, "invalid question types")
+
+    qa_path = latest_qa_file(doc_dir)
+    if qa_path is None:
+        abort(404, "no QA dataset to append to")
+
+    project_root = Path(__file__).resolve().parent.parent
+    script = Path(__file__).resolve().parent / "generate_qa.py"
+    code = run_and_stream([
+        sys.executable, str(script),
+        "--dataset", qa_path.parent.relative_to(project_root).as_posix(),
+        "--chunks", ",".join(map(str, sorted(set(chunks)))),
+        "--types", ",".join(types),
+        "--add", str(qa_path),
+    ])
+    if code != 0:
+        abort(500, f"generate_qa.py failed with exit code {code}")
+    return jsonify(qa_payload(doc_dir, qa_path))
 
 
 @app.post("/api/documents/<run>/<name>/ocr/<int:page>")

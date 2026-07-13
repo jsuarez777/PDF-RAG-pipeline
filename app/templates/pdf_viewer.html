@@ -10,10 +10,13 @@
          height: 100vh; display: flex; flex-direction: column; background: #f5f5f7; color: #1d1d1f; }
   header { display: flex; align-items: center; gap: 12px; padding: 10px 16px;
            background: #fff; border-bottom: 1px solid #ddd; }
-  header h1 { font-size: 16px; flex: 1; }
+  header h1 { font-size: 16px; }
+  #head-spacer { flex: 1; }
   button { padding: 6px 14px; border: 1px solid #ccc; border-radius: 6px;
            background: #fff; cursor: pointer; font-size: 13px; }
   button:hover { background: #f0f0f0; }
+  button:disabled, button:disabled:hover { background: #f5f5f7; color: #b0b0b5;
+                                           border-color: #e0e0e0; cursor: default; }
   button.primary { background: #0071e3; border-color: #0071e3; color: #fff; }
   button.primary:hover { background: #0077ed; }
   #status { font-size: 13px; color: #6e6e73; }
@@ -85,6 +88,51 @@
   .ocr-col details summary { cursor: pointer; font-size: 12px; color: #6e6e73; }
   .ocr-col details[open] summary { margin-bottom: 6px; }
 
+  /* Chunk rectangles drawn around chunk text in the text column:
+     orange = has QA pairs, green = no QA pairs yet, white = clicked/active */
+  .chunk-box { display: block; border: 2px solid; border-radius: 6px;
+               padding: 4px 6px; margin: 6px 0; cursor: pointer; }
+  .chunk-box.has-qa { border-color: #e3652b; }
+  .chunk-box.has-qa .chunk-box-label { color: #e3652b; }
+  .chunk-box.no-qa { border-color: #34a853; }
+  .chunk-box.no-qa .chunk-box-label { color: #34a853; }
+  .chunk-box.active { border-color: #fff; background: #fff;
+                      box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 2px 12px rgba(0,0,0,.28); }
+  .chunk-box.active .chunk-box-label { color: #1d1d1f; }
+  .chunk-box-head { display: flex; justify-content: space-between;
+                    align-items: center; gap: 8px; }
+  .chunk-box-label { display: block; font-size: 10px; font-weight: 700;
+                     letter-spacing: .03em; margin-bottom: 2px; }
+  .chunk-check { margin: 0; cursor: pointer; }
+  .chunk-gen { display: block; font-size: 11px; padding: 3px 8px; margin: 2px 0 6px; }
+  /* overlap seams: text shared between consecutive chunks */
+  .ov-shared { background: rgba(0,0,0,.10); border-radius: 3px; }
+  .ov-dup { background: rgba(0,0,0,.06); color: #6e6e73; border-radius: 3px; }
+  /* interleaved-border mode: pull a box up over the previous box's shared tail */
+  .chunk-box.overlaps-prev { margin-top: -30px; padding-top: 28px;
+                             border-top-style: dashed; }
+
+  /* QA pane (third pane in the viewer) */
+  #qa-pane { width: 28%; min-width: 240px; overflow-y: auto; padding: 12px;
+             background: #fff; border-left: 1px solid #ddd; }
+  #qa-pane h2 { font-size: 13px; color: #6e6e73; margin-bottom: 10px;
+                overflow-wrap: break-word; }
+  .qa-item { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px;
+             margin-bottom: 10px; cursor: pointer; }
+  .qa-item:hover { border-color: #0071e3; }
+  .qa-item-head { display: flex; justify-content: space-between; gap: 8px;
+                  font-size: 13px; font-weight: 600; }
+  .qa-item-head .qa-chunk { color: #e3652b; }
+  .qa-item-head .qa-page { color: #6e6e73; font-weight: 400; font-size: 12px; }
+  .qa-pair { margin-top: 8px; font-size: 12.5px; line-height: 1.45; }
+  .qa-pair-head { display: flex; justify-content: space-between; align-items: center; }
+  .qa-type { display: inline-block; font-size: 10px; text-transform: uppercase;
+             letter-spacing: .04em; color: #6e6e73; background: #f0f0f2;
+             border-radius: 4px; padding: 1px 6px; margin-bottom: 2px; }
+  .qa-del { font-size: 10px; padding: 2px 8px; }
+  .qa-q { font-weight: 500; }
+  .qa-a { color: #3a3a3c; margin-top: 2px; }
+
   /* Bottom log pane */
   #log-divider { height: 5px; cursor: row-resize; background: #ddd; flex-shrink: 0; }
   #log-divider:hover, #log-divider.dragging { background: #0071e3; }
@@ -104,6 +152,10 @@
 <body>
 <header>
   <h1 id="title">Scanned documents</h1>
+  <button id="qa-btn" style="display:none" disabled>View QA Pairs</button>
+  <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
+  <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
+  <span id="head-spacer"></span>
   <span id="status"></span>
   <button id="extract-all" style="display:none">Extract all via EasyOCR</button>
   <button id="back" style="display:none">&larr; All documents</button>
@@ -136,6 +188,7 @@
   <div id="thumbs"></div>
   <div id="divider"></div>
   <div id="preview"><span class="placeholder">Select a page on the left</span></div>
+  <div id="qa-pane" hidden></div>
 </div>
 
 <div id="log-divider"></div>
@@ -151,6 +204,13 @@
 const $ = id => document.getElementById(id);
 let current = null;
 let ocrState = {};  // page number -> extracted text, or null when not yet OCR'd
+let qaData = null;      // latest QA dataset for the open document, or null
+let qaVisible = false;
+let pageTexts = {};    // page number -> chunk-source text (null when unavailable)
+let pageTextEls = {};  // page number -> element the text is rendered into
+let checkedChunks = new Set();  // chunk indices ticked for bulk generation
+let activeChunk = null;         // chunk whose box was clicked (white, gen button)
+let generating = false;
 
 function refreshExtractAll() {
   const missing = Object.values(ocrState).filter(t => t === null).length;
@@ -183,6 +243,14 @@ async function loadDocuments() {
 function showViewer(doc) {
   current = doc;
   ocrState = {};
+  qaData = null;
+  qaVisible = false;
+  pageTexts = {};
+  pageTextEls = {};
+  checkedChunks = new Set();
+  activeChunk = null;
+  $('qa-pane').hidden = true;
+  refreshGenButton();
   refreshExtractAll();
   $('list-view').style.display = 'none';
   $('viewer').style.display = 'flex';
@@ -190,6 +258,24 @@ function showViewer(doc) {
   $('title').textContent = `${doc.type}: ${doc.run}/${doc.name}`;
   $('thumbs').innerHTML = '';
   $('preview').innerHTML = '';
+  loadQa(doc);
+}
+
+async function loadQa(doc) {
+  const btn = $('qa-btn');
+  btn.style.display = '';
+  btn.disabled = true;
+  btn.textContent = 'View QA Pairs';
+  try {
+    const resp = await fetch(`/api/documents/${doc.type}/${doc.run}/${doc.name}/qa`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (current !== doc) return;  // user navigated away meanwhile
+    if (data && data.items && data.items.length) {
+      qaData = data;
+      btn.disabled = false;
+    }
+  } catch (err) { /* leave the button grayed out */ }
 }
 
 function selectFirstPage() {
@@ -231,6 +317,8 @@ async function openDocument(doc) {
       <div class="action-col"><button>Extract text (easyocr)</button></div>
       <div class="ocr-col"><h3>Page ${pageNo} — EasyOCR</h3><div class="ocr-text"></div></div>`;
     setOcrText(row, text);
+    pageTexts[pageNo] = text;
+    pageTextEls[pageNo] = row.querySelector('.ocr-text');
     row.querySelector('.action-col button').onclick = ev => extractPage(ev.target, doc, pageNo, row);
     preview.appendChild(row);
 
@@ -256,6 +344,7 @@ async function openPlumberDocument(doc) {
     const url = `/images/pdfplumber/${doc.run}/${doc.name}/page_${p.page}.png`;
     const row = document.createElement('div');
     row.className = 'page-row';
+    row.id = `page-row-${p.page}`;
     row.innerHTML = `
       <div class="img-col"><img src="${url}" loading="lazy" onerror="this.style.display='none'"></div>
       <div class="ocr-col"><h3>Page ${p.page} — pdfplumber</h3></div>`;
@@ -313,6 +402,8 @@ async function openPlumberDocument(doc) {
     summary.textContent = 'Show full unfiltered extraction';
     const fullDiv = document.createElement('div');
     fullDiv.append(p.full_text || '(no text on this page)');
+    pageTexts[p.page] = p.full_text || '';
+    pageTextEls[p.page] = fullDiv;
     details.append(summary, fullDiv);
     col.appendChild(details);
     preview.appendChild(row);
@@ -346,7 +437,9 @@ async function extractPage(button, doc, pageNo, row) {
     const data = await resp.json();
     setOcrText(row, data.extracted_text);
     ocrState[pageNo] = data.extracted_text;
+    pageTexts[pageNo] = data.extracted_text;
     refreshExtractAll();
+    renderChunkHighlights();
   } catch (err) {
     setOcrText(row, null);
     row.querySelector('.ocr-text').insertAdjacentText('afterbegin', 'Extraction failed — see logs. ');
@@ -364,9 +457,297 @@ function selectPage(thumb, row) {
   row.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+/* Chunk boxes: chunks were cut from the page texts joined with "\n" (see
+   chunk_text.py), so each page's slice of a chunk's [start_char, end_char)
+   span can be recovered from cumulative page-text offsets. Every chunk gets
+   a box; overlap between consecutive chunks is drawn inside the earlier one. */
+function renderChunkHighlights() {
+  const order = Object.keys(pageTexts).map(Number).sort((a, b) => a - b);
+  const perPage = {};  // page -> [{s, e, chunk}] in page-local coordinates
+  const qaChunks = new Set((qaData ? qaData.items : []).map(it => it.chunk_index));
+  if (qaVisible && qaData) {
+    let pos = 0;
+    const spans = order.map((n, i) => {
+      if (i > 0) pos += 1;  // "\n" joining consecutive pages
+      const len = (pageTexts[n] || '').length;
+      const span = { page: n, start: pos, end: pos + len };
+      pos += len;
+      return span;
+    });
+    for (const c of qaData.chunks || []) {
+      if (c.start_char == null || c.end_char == null) continue;
+      for (const sp of spans) {
+        const s = Math.max(c.start_char, sp.start);
+        const e = Math.min(c.end_char, sp.end);
+        if (s < e) (perPage[sp.page] ??= []).push(
+          { s: s - sp.start, e: e - sp.start, chunk: c.chunk_index });
+      }
+    }
+  }
+
+  // small chunks: repeat the seam text inside each box; large chunks: render
+  // the seam once, shaded, with the next box's border pulled up over it
+  const meta = (qaData && qaData.chunk_metadata) || {};
+  const size = meta.chunk_size ||
+    Math.max(0, ...(qaData && qaData.chunks || []).map(c => (c.end_char ?? 0) - (c.start_char ?? 0)));
+  const dupMode = size > 0 && size < 100;
+
+  for (const n of order) {
+    const el = pageTextEls[n];
+    const text = pageTexts[n];
+    if (!el || text == null) continue;
+    const ranges = (perPage[n] || []).sort((a, b) => a.s - b.s || a.chunk - b.chunk);
+    if (!ranges.length && !el.dataset.highlighted) continue;
+    el.innerHTML = '';
+    let cur = 0;  // end of the furthest range rendered so far
+    ranges.forEach((r, k) => {
+      const rs = Math.min(Math.max(r.s, 0), text.length);
+      const re = Math.min(Math.max(r.e, rs), text.length);
+      if (rs > cur) el.append(text.slice(cur, rs));
+      if (dupMode) {
+        const box = makeChunkBox(r.chunk, qaChunks);
+        if (rs < cur) {  // repeat the seam text the previous box already showed
+          const dup = document.createElement('span');
+          dup.className = 'ov-dup';
+          dup.textContent = text.slice(rs, Math.min(cur, re));
+          box.appendChild(dup);
+        }
+        box.append(text.slice(Math.min(Math.max(cur, rs), re), re));
+        el.appendChild(box);
+      } else {
+        const s = Math.min(Math.max(rs, cur), text.length);
+        if (re > s) {
+          const box = makeChunkBox(r.chunk, qaChunks);
+          if (rs < cur) box.classList.add('overlaps-prev');
+          const next = ranges[k + 1];
+          const sharedFrom = next ? Math.min(Math.max(next.s, s), re) : re;
+          box.append(text.slice(s, sharedFrom));
+          if (sharedFrom < re) {
+            const sh = document.createElement('span');
+            sh.className = 'ov-shared';
+            sh.textContent = text.slice(sharedFrom, re);
+            box.appendChild(sh);
+          }
+          el.appendChild(box);
+        }
+      }
+      cur = Math.max(cur, re);
+    });
+    el.append(text.slice(cur));
+    if (ranges.length) {
+      el.dataset.highlighted = '1';
+      const details = el.closest('details');
+      if (details) details.open = true;  // plumber full text hides in <details>
+    } else {
+      delete el.dataset.highlighted;
+    }
+  }
+}
+
+function makeChunkBox(idx, qaChunks) {  // caller appends the text content
+  const box = document.createElement('span');
+  box.className = 'chunk-box ' +
+    (activeChunk === idx ? 'active' : qaChunks.has(idx) ? 'has-qa' : 'no-qa');
+  box.dataset.chunk = idx;
+
+  const head = document.createElement('span');
+  head.className = 'chunk-box-head';
+  const label = document.createElement('span');
+  label.className = 'chunk-box-label';
+  label.textContent = `Chunk_${idx}`;
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.className = 'chunk-check';
+  check.checked = checkedChunks.has(idx);
+  check.onclick = ev => ev.stopPropagation();  // ticking must not highlight the box
+  check.onchange = () => {
+    if (check.checked) checkedChunks.add(idx); else checkedChunks.delete(idx);
+    // a chunk spanning several pages has one box per page: keep them in sync
+    document.querySelectorAll(`.chunk-box[data-chunk="${idx}"] .chunk-check`)
+      .forEach(c => { c.checked = check.checked; });
+    refreshGenButton();
+  };
+  head.append(label, check);
+  box.appendChild(head);
+
+  if (activeChunk === idx) {
+    const gen = document.createElement('button');
+    gen.className = 'chunk-gen';
+    gen.textContent = 'Generate QA Pair';
+    gen.disabled = generating;
+    gen.onclick = ev => {
+      ev.stopPropagation();
+      generateQa([idx], ['direct', 'inference', 'paraphrased']);
+    };
+    box.appendChild(gen);
+  }
+
+  box.onclick = () => {
+    activeChunk = activeChunk === idx ? null : idx;
+    renderChunkHighlights();
+  };
+  return box;
+}
+
+function refreshGenButton() {
+  const show = qaVisible && qaData ? '' : 'none';
+  const gen = $('gen-btn');
+  gen.style.display = show;
+  gen.disabled = generating || checkedChunks.size === 0;
+  const desel = $('deselect-btn');
+  desel.style.display = show;
+  desel.disabled = checkedChunks.size === 0;
+}
+
+$('deselect-btn').onclick = () => {
+  checkedChunks.clear();
+  document.querySelectorAll('.chunk-check').forEach(c => { c.checked = false; });
+  refreshGenButton();
+};
+
+async function generateQa(chunks, types) {
+  if (!qaData || generating || !current) return;
+  generating = true;
+  refreshGenButton();
+  renderChunkHighlights();
+  $('status').textContent = `Generating QA pairs for chunk(s) ${chunks.join(', ')}… (see logs)`;
+  try {
+    const resp = await fetch(
+      `/api/documents/${current.type}/${current.run}/${current.name}/qa/generate`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chunks, types }) });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    generating = false;
+    if (!qaVisible || !qaData) return;  // user closed the pane or document
+    qaData = data;
+    for (const c of chunks) checkedChunks.delete(c);
+    activeChunk = null;
+    $('status').textContent = '';
+    buildQaPane();
+  } catch (err) {
+    generating = false;
+    $('status').textContent = 'QA generation failed: ' + err.message;
+  } finally {
+    refreshGenButton();
+    renderChunkHighlights();
+  }
+}
+
+$('gen-btn').onclick = () => {
+  if (checkedChunks.size) {
+    generateQa([...checkedChunks], ['direct', 'inference', 'paraphrased']);
+  }
+};
+
+function buildQaPane() {
+  const pane = $('qa-pane');
+  pane.innerHTML = '';
+  const head = document.createElement('h2');
+  head.textContent = `QA pairs — ${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`;
+  pane.appendChild(head);
+  // generate --add keeps the file sorted, but old files may predate that:
+  // sort for display; itemIndex keeps each item's position in the file,
+  // which is what the delete endpoint addresses
+  const ordered = qaData.items.map((item, i) => [item, i])
+    .sort((a, b) => a[0].chunk_index - b[0].chunk_index);
+  for (const [item, itemIndex] of ordered) {
+    const div = document.createElement('div');
+    div.className = 'qa-item';
+    const pageLabel = item.start_page === item.end_page
+      ? `Page ${item.start_page}` : `Pages ${item.start_page}–${item.end_page}`;
+    const h = document.createElement('div');
+    h.className = 'qa-item-head';
+    h.innerHTML = `<span class="qa-chunk">Chunk_${item.chunk_index}</span><span class="qa-page">${pageLabel}</span>`;
+    const delAll = document.createElement('button');
+    delAll.className = 'qa-del';
+    delAll.textContent = 'Delete Pairs';
+    delAll.onclick = ev => {
+      ev.stopPropagation();
+      deleteQaPair(delAll, item, itemIndex, null, null);
+    };
+    h.appendChild(delAll);
+    div.appendChild(h);
+    (item.qa_pairs || []).forEach((pair, pairIndex) => {
+      const p = document.createElement('div');
+      p.className = 'qa-pair';
+      const head = document.createElement('div');
+      head.className = 'qa-pair-head';
+      const type = document.createElement('span');
+      type.className = 'qa-type';
+      type.textContent = pair.question_type;
+      const del = document.createElement('button');
+      del.className = 'qa-del';
+      del.textContent = 'Delete QA Pair';
+      del.onclick = ev => {
+        ev.stopPropagation();
+        deleteQaPair(del, item, itemIndex, pair, pairIndex);
+      };
+      head.append(type, del);
+      const q = document.createElement('div');
+      q.className = 'qa-q';
+      q.textContent = pair.question;
+      const a = document.createElement('div');
+      a.className = 'qa-a';
+      a.textContent = pair.answer;
+      p.append(head, q, a);
+      div.appendChild(p);
+    });
+    div.onclick = () => {
+      const row = $(`page-row-${item.start_page}`);
+      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    pane.appendChild(div);
+  }
+}
+
+async function deleteQaPair(button, item, itemIndex, pair, pairIndex) {
+  if (!qaData || !current) return;
+  button.disabled = true;
+  try {
+    const resp = await fetch(
+      `/api/documents/${current.type}/${current.run}/${current.name}/qa/delete-pair`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          qa_file: qaData.qa_file,
+          item_index: itemIndex,
+          pair_index: pairIndex,  // null deletes all of the chunk's pairs
+          chunk_index: item.chunk_index,
+          question_type: pair ? pair.question_type : null,
+        }) });
+    if (!resp.ok) throw new Error(await resp.text());
+    qaData = await resp.json();
+    buildQaPane();
+    renderChunkHighlights();
+  } catch (err) {
+    button.disabled = false;
+    $('status').textContent = 'Delete failed: ' + err.message;
+  }
+}
+
+$('qa-btn').onclick = () => {
+  if (!qaData) return;
+  qaVisible = !qaVisible;
+  $('qa-pane').hidden = !qaVisible;
+  $('qa-btn').textContent = qaVisible ? 'Hide QA Pairs' : 'View QA Pairs';
+  if (!qaVisible) { activeChunk = null; checkedChunks.clear(); }
+  else buildQaPane();
+  refreshGenButton();
+  renderChunkHighlights();
+};
+
 function showList() {
   current = null;
   ocrState = {};
+  qaData = null;
+  qaVisible = false;
+  pageTexts = {};
+  pageTextEls = {};
+  checkedChunks = new Set();
+  activeChunk = null;
+  $('qa-btn').style.display = 'none';
+  $('qa-pane').hidden = true;
+  refreshGenButton();
   refreshExtractAll();
   $('viewer').style.display = 'none';
   $('back').style.display = 'none';
@@ -392,8 +773,12 @@ $('extract-all').onclick = async () => {
     ocrState = ocr;
     for (const [pageNo, text] of Object.entries(ocr)) {
       const row = $(`page-row-${pageNo}`);
-      if (row && text !== null) setOcrText(row, text);
+      if (row && text !== null) {
+        setOcrText(row, text);
+        pageTexts[pageNo] = text;
+      }
     }
+    renderChunkHighlights();
   } catch (err) {
     $('status').textContent = 'Extract all failed: ' + err.message;
   } finally {
