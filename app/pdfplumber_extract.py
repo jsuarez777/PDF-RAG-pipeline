@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Extract text, tables, and images from a PDF using pdfplumber.
 
 Usage:
