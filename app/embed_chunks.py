@@ -133,17 +133,23 @@ def choose_chunk_run(runs, empty, preselect=None):
         sys.exit("ERROR: no datasets found under data/pdf2image or data/pdfplumber")
     for rel in empty:
         print(f"  [-] {rel}  (No chunks)")
-    for i, run in enumerate(runs, 1):
-        print(f"  [{i}] {run['rel']}")
 
     if not runs:
         sys.exit("ERROR: no chunk runs found; run chunk_text.py first")
+
+    # newest by the <YYYYMMDD_HHMMSS>_chunk_ dir name stamp is the default choice
+    default = max(range(len(runs)), key=lambda i: runs[i]["path"].name) + 1
+    for i, run in enumerate(runs, 1):
+        mark = "  (latest)" if i == default else ""
+        print(f"  [{i}] {run['rel']}{mark}")
 
     if preselect is not None:
         choice = preselect
         print(f"\nChunk run (from --dataset): {choice}")
     else:
-        choice = input("\nChoose a chunk run (number or path): ").strip()
+        choice = input(f"\nChoose a chunk run (number or path, Enter for [{default}]): ").strip()
+        if not choice:
+            choice = str(default)
 
     if choice.isdigit() and 1 <= int(choice) <= len(runs):
         return runs[int(choice) - 1]

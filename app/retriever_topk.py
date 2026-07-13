@@ -271,11 +271,19 @@ def search_bm25(db, k):
 SEARCHERS = {"milvus": search_milvus, "chromadb": search_chromadb, "bm25": search_bm25}
 
 
-def embed_query(model, text):
+EMBED_BATCH_SIZE = 1000
+
+
+def embed_query(model, texts):
+    """Embed a list of query texts; return one vector per text."""
     api = MyOpenAIClient(model=model)
     api.validate_api_key()
-    resp = api.get_client().embeddings.create(model=model, input=[text])
-    return resp.data[0].embedding
+    client = api.get_client()
+    vectors = []
+    for start in range(0, len(texts), EMBED_BATCH_SIZE):
+        resp = client.embeddings.create(model=model, input=texts[start:start + EMBED_BATCH_SIZE])
+        vectors.extend(d.embedding for d in resp.data)
+    return vectors
 
 
 # --------------------------------------------------------------------- main
@@ -308,7 +316,7 @@ def main():
         if not model:
             sys.exit(f"ERROR: could not determine embedding model for {db['rel']}")
         print(f"\nEmbedding query with {model} ...")
-        vector = embed_query(model, query)
+        vector = embed_query(model, [query])[0]
         results = run_search(vector)
         method_meta = {
             "embedding_model": model,

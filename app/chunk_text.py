@@ -119,19 +119,27 @@ def choose_dataset(datasets, preselect=None):
     if not datasets:
         sys.exit("ERROR: no datasets found under data/pdf2image or data/pdfplumber")
 
+    # newest valid dataset (by data/<extractor>/<date>/ dir name) is the default choice
+    eligible = [i for i, ds in enumerate(datasets) if not ds["missing_json"] and ds["pages"]]
+    default = max(eligible, key=lambda i: datasets[i]["path"].parent.name) + 1 if eligible else None
+
     print("\nAvailable datasets:")
     for i, ds in enumerate(datasets, 1):
         if ds["missing_json"]:
             status = f"ERROR: {len(ds['missing_json'])} pages missing json"
         else:
             status = f"{len(ds['pages'])} pages"
-        print(f"  [{i}] {ds['rel']}  ({status})")
+        mark = "  (latest)" if i == default else ""
+        print(f"  [{i}] {ds['rel']}  ({status}){mark}")
 
     if preselect is not None:
         choice = preselect
         print(f"\nDataset (from --dataset): {choice}")
     else:
-        choice = input("\nChoose a dataset (number or path): ").strip()
+        hint = f", Enter for [{default}]" if default else ""
+        choice = input(f"\nChoose a dataset (number or path{hint}): ").strip()
+        if not choice and default:
+            choice = str(default)
 
     selected = None
     if choice.isdigit() and 1 <= int(choice) <= len(datasets):
@@ -239,7 +247,16 @@ def main():
 
     type_str = args.type
     if not type_str:
-        type_str = input(f"Chunk type ({', '.join(CHUNK_TYPES)}): ").strip()
+        print("\nChunk type:")
+        for i, name in enumerate(CHUNK_TYPES, 1):
+            print(f"  [{i}] {name}")
+        choice = input("Choice (number or name): ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(CHUNK_TYPES):
+            type_str = CHUNK_TYPES[int(choice) - 1]
+        elif choice in CHUNK_TYPES:
+            type_str = choice
+        else:
+            sys.exit(f"ERROR: '{choice}' is not a valid chunk type choice")
         if type_str == "fixed_size":
             size_in = input("Chunk size (characters): ").strip()
             overlap_in = input("Overlap (characters, or percent like 10%): ").strip()
