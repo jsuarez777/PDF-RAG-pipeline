@@ -1,0 +1,251 @@
+{
+  "pattern": "\\bchunks?\\b",
+  "model": "gpt-5.4-mini",
+  "counts": {
+    "CLEAN": 7,
+    "STILL BAD": 0,
+    "REJECTED": 1,
+    "FAILED": 0
+  },
+  "results": [
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 53,
+      "chunk_text": "of immigration law is issued a charging document: The most common charging documents are the Notice to Appear (NTA) and the Notice of Referral to immigration judge. When the charging document is filed",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What are the most common charging documents mentioned in the chunk?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which two usual initiation papers are named in the chunk?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What are the most common charging documents mentioned here?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        },
+        {
+          "question_type": "inference",
+          "question": "If someone is placed into immigration proceedings, what kind of paper is issued to start that process?",
+          "answer": "A charging document."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which two papers are identified as the usual initiation notices?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 175,
+      "chunk_text": "3\n\n30\n\n56\n\n59\n\nContinued Detention Review\n\n6\n\n6\n\n5\n\nNACARA\n\n28\n\n42\n\n14\n\n22\n\n8\n\nWithholding Only Total\n\n132\n\n195\n\n290\n\n359\n\n765\n\n308,652\n\n279,430\n\n292,013\n\n327,928\n\n325,326\n\nExecutive Office for Immigr",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which category in the chunk has the largest total among the labeled items?",
+          "answer": "Withholding Only"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What is the total listed for \"Withholding Only Total\"?",
+          "answer": "765"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which category appears to have the smallest count among the labeled rows shown?",
+          "answer": "Continued Detention Review"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What sum is given for the row labeled \"Withholding Only Total\"?",
+          "answer": "765"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 262,
+      "chunk_text": "ffice of Planning, Analysis, and Technology January 2011\nAs shown in Figure 14 below, asylum receipts declined by 42 percent and asylum completions declined by 30 percent from FY 2006 to FY 2010.\n\nFig",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "According to the chunk, by what percent did asylum receipts decline from FY 2006 to FY 2010?",
+          "answer": "42 percent"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the text, by what percent did asylum receipts decline from FY 2006 to FY 2010?",
+          "answer": "42 percent"
+        },
+        {
+          "question_type": "inference",
+          "question": "If asylum completions fell by 30 percent over the period, did they decrease by more or less than asylum receipts?",
+          "answer": "Less than asylum receipts."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "How much did the number of asylum intake cases drop between FY 2006 and FY 2010?",
+          "answer": "42 percent"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 410,
+      "chunk_text": "Court Proceedings Completed: Detained and Total\n\nFY 06\n\nFY 07\n\nFY 08\n\nFY 09 FY 10\n\n50,000 100,000 150,000 200,000 250,000 300,000 350,000\n\nProceedings for Detained Aliens Total Proceedings Completed\n\n",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What fiscal years are shown in the chunk?",
+          "answer": "FY 06, FY 07, FY 08, FY 09, and FY 10."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What fiscal years are shown in the chart?",
+          "answer": "FY 06 through FY 10."
+        },
+        {
+          "question_type": "inference",
+          "question": "What does the chart suggest is being compared across the fiscal years?",
+          "answer": "Completed proceedings for detained aliens versus total proceedings completed."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which yearly periods appear on the graph?",
+          "answer": "FY 06, FY 07, FY 08, FY 09, and FY 10."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 418,
+      "chunk_text": "LANTA , GEORGIA 1,257 BALTIMORE; MARYLAND 599 BA TAVIA SPC, NEW YORK 848 BLOOMINGTON ST. PAUL ) , MINNESOTA 2,045 BOSTON; MA SSACHUSETTS 1,605 BUFFALO, NEW YORK 112 CHARLOTTE NORTH CA ROLINA 407 CHICA",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which listed place has the largest count in the chunk?",
+          "answer": "St. Paul, Minnesota"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How many people are listed for Baltimore, Maryland?",
+          "answer": "599"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which place in the list has the largest number shown?",
+          "answer": "Bloomington–St. Paul, Minnesota"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What population figure is given for Boston, Massachusetts?",
+          "answer": "1,605"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 427,
+      "chunk_text": "Review Office of Planning; Analysis, and Technology FY 2010 Statistical Year Book January 2011\n\n03\nImmigration Courts:\n\nInstitutional Hearing Program Case Processing\n\nThe Institutional Hearing Program",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the title of the section shown in the chunk after \"Immigration Courts:\"?",
+          "answer": "Institutional Hearing Program Case Processing"
+        },
+        {
+          "question_type": "inference",
+          "question": "What kind of subject matter does this chunk indicate the year book section will cover?",
+          "answer": "Case processing in Immigration Courts"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What program is named under the heading \"Immigration Courts\"?",
+          "answer": "Institutional Hearing Program Case Processing"
+        },
+        {
+          "question_type": "inference",
+          "question": "What is the document section focused on: case processing in a hearing program for people in institutions?",
+          "answer": "Institutional Hearing Program Case Processing"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which hearing-related initiative is introduced below the immigration courts heading?",
+          "answer": "The Institutional Hearing Program"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 560,
+      "chunk_text": "0 days of the immigration judge's decision.  Only a relatively small percentage of immigration judge decisions are appealed to the BIA Figure 31 below compares immigration judge decisions with the num",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What does the chunk say about how many immigration judge decisions are appealed to the BIA?",
+          "answer": "Only a relatively small percentage are appealed."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the chunk, what share of immigration court rulings gets taken up to the appellate board?",
+          "answer": "A relatively small percentage."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How much time after the immigration judge's decision is mentioned at the start of the passage?",
+          "answer": "0 days"
+        },
+        {
+          "question_type": "inference",
+          "question": "What does the passage suggest about how often immigration judge decisions are challenged before the BIA?",
+          "answer": "Only a relatively small percentage are appealed."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What share of immigration judge rulings are taken up to the Board of Immigration Appeals, according to the passage?",
+          "answer": "A relatively small percentage."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 916,
+      "chunk_text": " Justice\n\nExecutive Office for Immigration Review Office of Planning, Analysis, and Technology\n\nImmigration Courts FY 2009 Asylum Statistics\n\nNATIONALITY\n\nRECEIVED\n\nGRANTED\n\nDENIED\n\nABANDONED WITHDRAW",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the title of the statistics section shown in the chunk?",
+          "answer": "Immigration Courts FY 2009 Asylum Statistics"
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "This is only a title/header fragment with column labels and no actual data or substantive facts to ask about."
+    }
+  ]
+}

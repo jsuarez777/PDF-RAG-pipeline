@@ -1,0 +1,802 @@
+{
+  "pattern": "\\bchunks?\\b",
+  "model": "gpt-5.4-mini",
+  "counts": {
+    "CLEAN": 20,
+    "STILL BAD": 0,
+    "REJECTED": 10,
+    "FAILED": 0
+  },
+  "results": [
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 53,
+      "chunk_text": "of immigration law is issued a charging document: The most common charging documents are the Notice to Appear (NTA) and the Notice of Referral to immigration judge. When the charging document is filed",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What are the most common charging documents mentioned in the chunk?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which two usual initiation papers are named in the chunk?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What are the most common charging documents mentioned for someone in immigration law proceedings?",
+          "answer": "The Notice to Appear (NTA) and the Notice of Referral to immigration judge."
+        },
+        {
+          "question_type": "inference",
+          "question": "If a person is placed into immigration proceedings, what kind of paper is issued to start that process?",
+          "answer": "A charging document."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which two papers are named as the usual accusatory forms in these immigration cases?",
+          "answer": "The Notice to Appear and the Notice of Referral to an immigration judge."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 175,
+      "chunk_text": "3\n\n30\n\n56\n\n59\n\nContinued Detention Review\n\n6\n\n6\n\n5\n\nNACARA\n\n28\n\n42\n\n14\n\n22\n\n8\n\nWithholding Only Total\n\n132\n\n195\n\n290\n\n359\n\n765\n\n308,652\n\n279,430\n\n292,013\n\n327,928\n\n325,326\n\nExecutive Office for Immigr",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which category in the chunk has the largest total among the labeled items?",
+          "answer": "Withholding Only"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What numbers appear under \"Continued Detention Review\"?",
+          "answer": "6, 6, 5"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which category has the smallest set of values listed before \"NACARA\"?",
+          "answer": "Continued Detention Review"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What figures are shown for the item labeled \"continued custody review\"?",
+          "answer": "6, 6, 5"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 262,
+      "chunk_text": "ffice of Planning, Analysis, and Technology January 2011\nAs shown in Figure 14 below, asylum receipts declined by 42 percent and asylum completions declined by 30 percent from FY 2006 to FY 2010.\n\nFig",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "According to the chunk, by what percent did asylum receipts decline from FY 2006 to FY 2010?",
+          "answer": "42 percent"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the text, by what percentage did asylum receipts decline from FY 2006 to FY 2010?",
+          "answer": "42 percent"
+        },
+        {
+          "question_type": "inference",
+          "question": "What happened to the number of asylum completions over the period from FY 2006 to FY 2010?",
+          "answer": "They went down by 30 percent."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "How much did the intake of asylum cases drop between FY 2006 and FY 2010?",
+          "answer": "42 percent"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 410,
+      "chunk_text": "Court Proceedings Completed: Detained and Total\n\nFY 06\n\nFY 07\n\nFY 08\n\nFY 09 FY 10\n\n50,000 100,000 150,000 200,000 250,000 300,000 350,000\n\nProceedings for Detained Aliens Total Proceedings Completed\n\n",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What fiscal years are shown in the chunk?",
+          "answer": "FY 06, FY 07, FY 08, FY 09, and FY 10."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "This is only a chart title and axis labels without any actual data values or substantive facts to ask about."
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 418,
+      "chunk_text": "LANTA , GEORGIA 1,257 BALTIMORE; MARYLAND 599 BA TAVIA SPC, NEW YORK 848 BLOOMINGTON ST. PAUL ) , MINNESOTA 2,045 BOSTON; MA SSACHUSETTS 1,605 BUFFALO, NEW YORK 112 CHARLOTTE NORTH CA ROLINA 407 CHICA",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which listed place has the largest count in the chunk?",
+          "answer": "St. Paul, Minnesota"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How many is listed for Baltimore, Maryland?",
+          "answer": "599"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which place in the list has the largest number shown, and what is that number?",
+          "answer": "Bloomington, St. Paul, Minnesota — 2,045"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What count is given for the city in Massachusetts?",
+          "answer": "1,605"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 427,
+      "chunk_text": "Review Office of Planning; Analysis, and Technology FY 2010 Statistical Year Book January 2011\n\n03\nImmigration Courts:\n\nInstitutional Hearing Program Case Processing\n\nThe Institutional Hearing Program",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the title of the section shown in the chunk after \"Immigration Courts:\"?",
+          "answer": "Institutional Hearing Program Case Processing"
+        },
+        {
+          "question_type": "inference",
+          "question": "What kind of subject matter does this chunk indicate the year book section will cover?",
+          "answer": "Case processing in Immigration Courts"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What program is named under the heading \"Immigration Courts\"?",
+          "answer": "Institutional Hearing Program Case Processing."
+        },
+        {
+          "question_type": "inference",
+          "question": "What part of the immigration court system is being discussed as a case-processing topic in this section?",
+          "answer": "The Institutional Hearing Program."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which hearing initiative is identified beneath the immigration court section title?",
+          "answer": "The Institutional Hearing Program."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 560,
+      "chunk_text": "0 days of the immigration judge's decision.  Only a relatively small percentage of immigration judge decisions are appealed to the BIA Figure 31 below compares immigration judge decisions with the num",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What does the chunk say about how many immigration judge decisions are appealed to the BIA?",
+          "answer": "Only a relatively small percentage are appealed."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the chunk, what share of immigration court rulings gets taken up to the appellate board?",
+          "answer": "A relatively small percentage."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of immigration judge decisions are appealed to the BIA?",
+          "answer": "Only a relatively small percentage."
+        },
+        {
+          "question_type": "inference",
+          "question": "What does the text imply about how often immigration judge rulings are challenged after they are issued?",
+          "answer": "They are appealed infrequently."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "How large a share of immigration judge rulings is sent up to the Board of Immigration Appeals?",
+          "answer": "Only a relatively small percentage."
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 916,
+      "chunk_text": " Justice\n\nExecutive Office for Immigration Review Office of Planning, Analysis, and Technology\n\nImmigration Courts FY 2009 Asylum Statistics\n\nNATIONALITY\n\nRECEIVED\n\nGRANTED\n\nDENIED\n\nABANDONED WITHDRAW",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the title of the statistics section shown in the chunk?",
+          "answer": "Immigration Courts FY 2009 Asylum Statistics"
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "This is only a title/header with column labels and no actual data or specific facts to ask and answer about."
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 947,
+      "chunk_text": "16\n\nBELGIUM\n\n26\n\n2\n\n2 0\n\n6\n\nBELIZE\n\n13\n\n4 0\n\nBENIN\n\n20\n\n2\n\n2 0\n\n3\n\nBERMUDA\n\n0\n\nBHUTAN\n\n10\n\n4\n\n0\n\n0\n\nBOLIVIA\n\n40\n\n6\n\n2 24 0\n\n4\n\n12\n\nBOSNIA-HERZEGOVINA\n\n56\n\n6\n\n5\n\n8\n\n4\n\nBOTSWANA\n\n0\n\n0\n\n0\n\nBRAZIL\n\n191\n\n3",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which country in the list has a value of zero, indicating no recorded count in the chunk?",
+          "answer": "Bermuda and Botswana"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What number is listed next to BELGIUM?",
+          "answer": "26"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which listed place has no numbers shown after its name?",
+          "answer": "Bermuda"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What figure appears beside the country of Belgium?",
+          "answer": "26"
+        }
+      ]
+    },
+    {
+      "source": "data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json",
+      "chunk_index": 989,
+      "chunk_text": "ITISH INDIAN OCEAN TERRITORY\n\nBULGARIA\n\n177\n\n67\n\n40\n\n12\n\n19\n\n54\n\nBURKINA FASO\n\n108\n\n20\n\n20\n\n6\n\n11\n\nBURMA (MYANMAR)\n\n184\n\n129\n\n40\n\n8\n\n25\n\nBURUNDI\n\n47\n\n13\n\n20\n\n2\n\n11\n\nPage 1 of 7\n\nJanuary 2011 (SYB)\nU.S",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What number is listed on the BULGARIA line in the chunk?",
+          "answer": "177"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which country in the chunk has the largest first numeric value among the listed countries?",
+          "answer": "Burma (Myanmar)"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What is the number listed for Bulgaria in the first column of figures after its name?",
+          "answer": "177"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which listed country has the largest value in the first numeric column, and what is that value?",
+          "answer": "Burma (Myanmar), 184"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What is the figure shown for Burkina Faso in the leading number column?",
+          "answer": "108"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 428,
+      "chunk_text": "ines Philippines Peru\n16 Ecuador Indonesia Peru Nicaragua Nicaragua\n17 Venezuela Peru Venezuela Vene",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which line shows the only repeated country name in the chunk, and what is that country?",
+          "answer": "Line 16; Nicaragua."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is only a fragmented list of place names and numbers with no clear context, labels, or complete facts to support specific question-answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 1105,
+      "chunk_text": " by a decrease in the number of\nIHP completions and the total detained completions staying fairly co",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What was decreased, according to the chunk?",
+          "answer": "the number of IHP completions"
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is only a fragment and does not contain a complete, substantive fact that can be turned into three grounded question/answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 1295,
+      "chunk_text": "section\n240A(b) of the Immigration and Nationality Act. Application for this form of discretionary\nr",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "According to the chunk, which section of the Immigration and Nationality Act is mentioned?",
+          "answer": "Section 240A(b)."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is only a fragment of a section reference and an incomplete sentence, without enough substantive information to form three grounded question/answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 1419,
+      "chunk_text": "nd Naturalization Service (INS), the District Director\n(DD) was the highest ranking immigration offi",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "According to the chunk, who was the highest ranking immigration official in the INS?",
+          "answer": "The District Director (DD)."
+        },
+        {
+          "question_type": "inference",
+          "question": "What does the chunk imply about the District Director's position within the immigration agency hierarchy?",
+          "answer": "They were at the top of the local chain of command."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is too fragmentary and cuts off mid-sentence, so it does not provide enough complete, substantive information to form three grounded question/answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 2093,
+      "chunk_text": "36 13 3 0 2 8\nPage 5 of 7 January 2011 (SYB)\nU.S. Department of Justice\nExecutive Office for Immigra",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What page number is shown in the chunk?",
+          "answer": "Page 5 of 7"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which U.S. government department is named in the chunk?",
+          "answer": "U.S. Department of Justice"
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "This text is only a page footer/header fragment with page and agency labels, but no substantive facts to ask about beyond metadata."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 142,
+      "chunk_text": "Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts dec",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What section title appears at the start of the chunk?",
+          "answer": "Completions"
+        },
+        {
+          "question_type": "inference",
+          "question": "What does the chunk indicate about the trend in the number of matters received by the immigration courts?",
+          "answer": "It was decreasing."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is too incomplete to support specific question-answer pairs; it only shows a heading and a truncated sentence without a complete factual statement."
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 140,
+      "chunk_text": ",080\n400,000\nFY 07 335,961 329,643\n380,000 FY 08 352,159 340,599\nFY 09 393,185 354,145\n360,000\nFY 10",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the FY 09 value shown in the chunk?",
+          "answer": "393,185"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which fiscal year in the chunk has the largest first numeric figure among the years listed?",
+          "answer": "FY 09"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What is the figure listed for the ninth fiscal year in the chunk?",
+          "answer": "393,185"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What are the FY 08 values shown in the table?",
+          "answer": "352,159 and 340,599"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which fiscal year listed has the highest pair of figures among the years shown?",
+          "answer": "FY 09"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In the row for the 2008 fiscal year, what two numbers are listed?",
+          "answer": "352,159 and 340,599"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+      "chunk_index": 114,
+      "chunk_text": "an immigration judge and either\ncontest or concede the charges against them. In some instances, the ",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "What two opposing responses to the accusations are mentioned in the chunk?",
+          "answer": "They can challenge them or admit them."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What can the people do after appearing before an immigration judge?",
+          "answer": "Contest or concede the charges against them."
+        },
+        {
+          "question_type": "inference",
+          "question": "What two choices are available to the individuals once they are before the judge?",
+          "answer": "They can either dispute the allegations or accept them."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "After meeting with the immigration court judge, what may they do regarding the accusations?",
+          "answer": "They may challenge or admit the charges."
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 58,
+      "chunk_text": "d motions to reopen or reconsider. Receipts are defined as the total number of\nproceedings, bond redeterminations, and motions to reopen or reconsider received by\nthe immigration courts during the reporting period. Completions include immigration\njudge dec",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What are receipts defined as in this chunk?",
+          "answer": "The total number of proceedings, bond redeterminations, and motions to reopen or reconsider received by the immigration courts during the reporting period."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What do receipts include, according to the text?",
+          "answer": "Proceedings, bond redeterminations, and motions to reopen or reconsider received during the reporting period."
+        },
+        {
+          "question_type": "inference",
+          "question": "If something is counted as a receipt in this report, what common feature must it have?",
+          "answer": "It must have been received by the immigration courts during the reporting period."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "How does the text define the total incoming case count?",
+          "answer": "As the number of proceedings, bond redeterminations, and motions to reopen or reconsider received during the reporting period."
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 162,
+      "chunk_text": "rendering a decision, the\nimmigration judge may order the alien removed from the United States, grant some form\nof relief, or terminate the proceedings if removability has not been established by DHS.\nIn addition to decisions, there are other possible proc",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "If the judge does not issue a removal order, what two other outcomes are mentioned in the chunk?",
+          "answer": "Grant some form of relief or terminate the proceedings."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What may the immigration judge do if removability has not been established by DHS?",
+          "answer": "Terminate the proceedings."
+        },
+        {
+          "question_type": "inference",
+          "question": "If the judge does not find the person removable, what happens to the case instead of removal or relief?",
+          "answer": "The proceedings are ended."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "When the government has not proved the person can be deported, what action can the judge take?",
+          "answer": "The judge may terminate the proceedings."
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 369,
+      "chunk_text": "TY, NEW YORK 119\nNEWARK, NEW JERSEY 2,030\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 7,672\nOMAHA, NEBRASKA 1,956\nORLANDO, FLORIDA 57\nPHILADELPHIA, PENNSYLVANIA 46\nPHOENIX, ARIZONA 494\nPORTLAND, OREGON 121\nSAIPAN, NORTHERN MARIANAS ISLANDS 8\nSALT LAKE CITY",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which location in the chunk has the largest count among the entries shown?",
+          "answer": "Oakdale Federal Detention Center, Louisiana"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How many people are listed for Newark, New Jersey?",
+          "answer": "2,030"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which listed location has the largest count, and what is that count?",
+          "answer": "Oakdale Federal Detention Center, Louisiana, with 7,672."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What number is shown for the detention facility in Louisiana?",
+          "answer": "7,672"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 413,
+      "chunk_text": " of Status; 212(c) Waivers; Suspension of Deportation; and Cancellation of Removal\nRelief Granted to Lawful\nRelief Granted to Non-Lawful Permanent Residents\nPermanent Residents\nSubject to Annual Cap of 4,000\nNot Subject to Annual Cap of 4,000 Grants\nRelief",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What types of relief are listed in the chunk for lawful permanent residents and non-lawful permanent residents?",
+          "answer": "212(c) waivers, suspension of deportation, and cancellation of removal."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What relief is listed as being granted to lawful permanent residents and subject to an annual cap of 4,000?",
+          "answer": "212(c) waivers and cancellation of removal"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which category of immigrants receives relief that is not limited by the 4,000-grant annual ceiling?",
+          "answer": "Non-lawful permanent residents"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What type of immigration benefit is shown as available to people who are not permanent residents and not counted against the yearly limit?",
+          "answer": "Suspension of deportation"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 541,
+      "chunk_text": " and Technology\nFY 2010 Statistical Year Book Appendix A - Glossary of Terms\nJanuary 2011\n3\nUnited States. In the absence of exceptional circumstances, final administrative\nadjudication of the asylum application, not including administrative appeal, must b",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "According to the chunk, in the absence of exceptional circumstances, what must final administrative adjudication of the asylum application not include?",
+          "answer": "Administrative appeal."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the glossary text, what must be completed in the absence of exceptional circumstances, not including administrative appeal?",
+          "answer": "Final administrative adjudication of the asylum application."
+        },
+        {
+          "question_type": "inference",
+          "question": "What stage of the asylum process is treated as the endpoint when no unusual circumstances apply?",
+          "answer": "The final administrative decision on the application."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In ordinary cases, what decision process has to be finished before the case is considered resolved, excluding appeals?",
+          "answer": "Final administrative adjudication of the asylum application."
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 841,
+      "chunk_text": "ogy\nImmigration Courts\nFY 2008 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nMONACO 0 2 1 1 2 0\nMONGOLIA 184 42 29 7 7 31\nMONTSERRAT 0 0 1 0 0 0\nMOROCCO 39 23 21 5 12 13\nMOZAMBIQUE 1 0 1 0 1 1\nNAMIBIA 1 0 1 0 1 0\nNEPAL 456",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which listed nationality had the highest number of granted cases among those shown in the chunk?",
+          "answer": "Monaco"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the FY 2008 asylum statistics, how many cases were received for Mongolia?",
+          "answer": "184"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which listed nationality had the highest number of granted cases among the fully shown rows?",
+          "answer": "Mongolia"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In the asylum table, what was the count of applications accepted for Morocco?",
+          "answer": "23"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json",
+      "chunk_index": 899,
+      "chunk_text": "9 31 29\nEGYPT 430 239 63 16 58 75\nEL SALVADOR 8,073 95 1,006 464 610 1,860\nEQUATORIAL GUINEA 9 1 0 0 0 0\nERITREA 227 96 29 2 6 78\nPage 2 of 7 January 2011 (SYB)\nU.S. Department of Justice\nExecutive Office for Immigration Review\nOffice of Planning, Analysis",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "Which country in the chunk has the largest first numeric value, and what is that value?",
+          "answer": "El Salvador, 8,073"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How many total cases are listed for Egypt?",
+          "answer": "430"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which country in the list has the largest total among the four shown?",
+          "answer": "El Salvador"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What is the overall count shown for Eritrea?",
+          "answer": "227"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json",
+      "chunk_index": 12,
+      "chunk_text": "action 30\nChapter 4 31\nSocial renters\n4.1. Who are social renters? 31\n4.2. Length of time as a social tenant 33\n4.3. Reasons for moving into social housing 35\n4.4. The benefits of living in social rented housing 35\n4.5. The disadvantages of living in socia",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the chapter title shown in the chunk?",
+          "answer": "Social renters"
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "This is only a table-of-contents fragment with section titles and page numbers, so it does not contain enough substantive facts to support three grounded question/answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json",
+      "chunk_index": 153,
+      "chunk_text": "or for the longest time. This is consistent with the growth in home ownership\nseen over the last fifty years, which by 1971 had become the predominant tenure\nin England.\nChapter 3 Housing experiences | 21\nFigure 3.3 Types of accommodation lived in for the ",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "What long-term shift does the chunk say the rise in home ownership reflects?",
+          "answer": "A growing move toward owning homes over the last fifty years."
+        }
+      ],
+      "verdict": "REJECTED",
+      "reason": "The text is only a partial sentence and figure caption fragment, with no complete substantive fact that can support three grounded question/answer pairs."
+    },
+    {
+      "source": "data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json",
+      "chunk_index": 336,
+      "chunk_text": "27\n21\n35\n25–44\n26\n54\n£9.5k – £17.4k\n37\n30\n45–64\n14\n21\n£17.5k – £29.9k\n11\n22\n65–74*\n2\n37\n9\n£30k+*\n75+*\n20\n4\nBase: 356 (respondents are private renters questioned in-home in England in the\nperiods July 24–31 and August 14–21 2008)\n* Figures included for comp",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What is the base sample size reported in the chunk?",
+          "answer": "356"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What is the base size stated at the bottom of the table?",
+          "answer": "356 respondents"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which age group appears to have the smallest value in the table?",
+          "answer": "75+*"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What rent bracket is shown as £17.5k to £29.9k?",
+          "answer": "45–64"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json",
+      "chunk_index": 444,
+      "chunk_text": " private renting according to social renters and their\ncharacteristics\nWhat do you consider to be the ADVANTAGES of renting from a private\nlandlord rather than the council or housing association?\n%\nBetter choice Choice of Get repairs done for\nof properties",
+      "old_bad": [
+        {
+          "question_type": "inference",
+          "question": "According to the chunk, what kind of benefit is associated with private renting instead of renting through a public or nonprofit provider?",
+          "answer": "Having more options."
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the text, what are social renters asked to consider as advantages of renting from a private landlord rather than the council or housing association?",
+          "answer": "Better choice of properties and choice of repairs done for"
+        },
+        {
+          "question_type": "inference",
+          "question": "What kind of comparison is being made in the question shown in the text?",
+          "answer": "A comparison between renting privately and renting from the council or a housing association."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What benefits are listed for tenanting from a non-public landlord instead of a local authority or housing association?",
+          "answer": "Better choice of properties and choice of repairs done for"
+        }
+      ]
+    },
+    {
+      "source": "data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json",
+      "chunk_index": 1029,
+      "chunk_text": " 30\nGet repairs done for you/less 13 14 11\nresponsibility for upkeep\nMore freedom to do what I want 6 5 6\nwith the property (e.g. decorations/\nalterations)\nBeing able to get involved in decisions 1 – 3\nabout my home\nReliable landlord 7 9 6\nHave right to bu",
+      "old_bad": [
+        {
+          "question_type": "direct",
+          "question": "What does the chunk say about \"Reliable landlord\" in the three columns?",
+          "answer": "7 9 6"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which option in the chunk is associated with the smallest numbers overall, suggesting the least emphasis?",
+          "answer": "Being able to get involved in decisions about my home"
+        }
+      ],
+      "verdict": "CLEAN",
+      "new_pairs": [
+        {
+          "question_type": "direct",
+          "question": "According to the table, what numbers are listed for \"Reliable landlord\"?",
+          "answer": "7, 9, 6"
+        },
+        {
+          "question_type": "inference",
+          "question": "Which listed reason appears to have the highest values overall, based on the numbers shown?",
+          "answer": "Get repairs done for you/less responsibility for upkeep"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What figures are shown next to the option about having a trustworthy property owner?",
+          "answer": "7, 9, 6"
+        }
+      ]
+    }
+  ]
+}

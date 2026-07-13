@@ -20,21 +20,30 @@ originating chunk id.
 
 import argparse
 import json
+import logging
 import random
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Literal, Union
 
 from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from embed_chunks import choose_chunk_run, load_chunks, scan_chunk_runs  # noqa: E402
+from logging_utils import setup_logging  # noqa: E402
 
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
-from embed_chunks import scan_chunk_runs, choose_chunk_run, load_chunks  # noqa: E402
+
+log = logging.getLogger(__name__)
 
 DEFAULT_MODEL = "gpt-5.4-mini"
 DEFAULT_NUM_CHUNKS = 20
+PROMPTS_DIR = ROOT / "prompts" / "generate_qa"
+PROMPT_VERSION = "v1"
 
 QUESTION_TYPES = {
     "direct": "Straightforward question answerable from the chunk, may use the chunk's wording.",
@@ -44,31 +53,15 @@ QUESTION_TYPES = {
                    "with paraphrases or synonyms.",
 }
 
-SYSTEM_PROMPT = """\
-You write question/answer pairs to evaluate a retrieval system over a chunked document.
-You are given one text chunk. Every question you write must be answerable using ONLY the
-information in that chunk - no outside knowledge, and nothing that depends on other parts
-of the document. Questions must be specific enough that this chunk is clearly the best
-source for the answer (avoid generic questions many chunks could answer).
+def _read_prompt(name):
+    path = PROMPTS_DIR / PROMPT_VERSION / name
+    if not path.is_file():
+        raise FileNotFoundError(f"Required prompt file not found: {path}")
+    return path.read_text(encoding="utf-8")
 
-Produce exactly three question/answer pairs:
-1. direct: a straightforward factual question; it may reuse the chunk's own wording.
-2. inference: a question whose answer must be inferred or synthesized from information in
-   the chunk. Do NOT reuse the chunk's distinctive words or phrases; test understanding of
-   meaning rather than keyword matching.
-3. paraphrased: ask about the same kind of fact as a direct question would, but replace the
-   chunk's keywords and distinctive terms with paraphrases or synonyms throughout.
 
-Answers must be short, correct, and grounded in the chunk text.
-"""
-
-USER_PROMPT_TEMPLATE = """\
-Generate the three question/answer pairs for this chunk:
-
-<chunk>
-{chunk_text}
-</chunk>
-"""
+SYSTEM_PROMPT = _read_prompt("qa_system.prompt")
+USER_PROMPT_TEMPLATE = _read_prompt("qa_user.template")
 
 
 class QAPair(BaseModel):
@@ -84,17 +77,30 @@ class ChunkQuestions(BaseModel):
     paraphrased: QAPair = Field(description=QUESTION_TYPES["paraphrased"])
 
 
+class InsufficientInformation(BaseModel):
+    """Use ONLY when the chunk lacks enough substantive content for grounded QA pairs,
+    e.g. it is just a page header/footer, a bare table-of-contents fragment, a reference
+    list, or boilerplate with no concrete facts."""
+
+    insufficient_information: Literal[True]
+    reason: str = Field(description="Why the chunk cannot support specific, answerable questions")
+
+
 def generate_for_chunk(client, model, temperature, chunk):
-    resp = client.chat.completions.create(
+    """Returns ChunkQuestions, or InsufficientInformation if the model rejects the chunk."""
+    return client.chat.completions.create(
         model=model,
         temperature=temperature,
         max_retries=2,
-        response_model=ChunkQuestions,
+        response_model=Union[ChunkQuestions, InsufficientInformation],
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": USER_PROMPT_TEMPLATE.format(chunk_text=chunk["text"])},
         ],
     )
+
+
+def qa_pairs_from(resp):
     return [
         {"question_type": qtype, "question": pair.question, "answer": pair.answer}
         for qtype, pair in (("direct", resp.direct),
@@ -122,6 +128,8 @@ def main():
                                       "chunk is replaced rather than duplicated")
     args = parser.parse_args()
 
+    setup_logging("generate_qa")
+
     if not args.chunks and args.num_chunks <= 0:
         sys.exit("ERROR: --num-chunks must be > 0")
 
@@ -141,6 +149,8 @@ def main():
     run = choose_chunk_run(runs, empty, preselect=args.dataset)
     chunk_meta, chunks = load_chunks(run)
 
+    rng = None  # set in random-sampling mode; enables resampling after rejections
+    pool = []
     if args.chunks:
         try:
             wanted = sorted({int(x) for x in args.chunks.split(",") if x.strip()})
@@ -154,14 +164,16 @@ def main():
             sys.exit(f"ERROR: chunk index(es) not in this run: {missing}")
         sampled = [by_index[i] for i in wanted]
         num = len(sampled)
-        print(f"Using {num} chunk(s) from --chunks: {', '.join(map(str, wanted))}")
+        log.info(f"Using {num} chunk(s) from --chunks: {', '.join(map(str, wanted))}")
     else:
         num = min(args.num_chunks, len(chunks))
         if num < args.num_chunks:
-            print(f"WARNING: only {len(chunks)} chunks available; sampling all of them")
+            log.warning(f"WARNING: only {len(chunks)} chunks available; sampling all of them")
         rng = random.Random(args.seed)
         sampled = sorted(rng.sample(chunks, num), key=lambda c: c["chunk_index"])
-        print(f"Sampled {num} of {len(chunks)} chunks"
+        sampled_indices = {c["chunk_index"] for c in sampled}
+        pool = [c for c in chunks if c["chunk_index"] not in sampled_indices]
+        log.info(f"Sampled {num} of {len(chunks)} chunks"
               + (f" (seed {args.seed})" if args.seed is not None else ""))
 
     api = MyOpenAIClient(model=args.model, temperature=args.temperature)
@@ -170,26 +182,39 @@ def main():
 
     items = []
     failures = []
-    for i, chunk in enumerate(sampled, 1):
-        print(f"  [{i}/{num}] chunk {chunk['chunk_index']} ...", end=" ", flush=True)
+    rejected = []
+    queue = list(sampled)
+    while queue:
+        chunk = queue.pop(0)
+        prefix = f"  [{len(items) + 1}/{num}] chunk {chunk['chunk_index']} ..."
         try:
-            qa_pairs = generate_for_chunk(client, args.model, args.temperature, chunk)
+            resp = generate_for_chunk(client, args.model, args.temperature, chunk)
         except Exception as e:  # noqa: BLE001 - record and continue with other chunks
-            print(f"FAILED: {e}")
+            log.info(f"{prefix} FAILED: {e}")
             failures.append({"chunk_index": chunk["chunk_index"], "error": str(e)})
             continue
-        print("ok")
+        if isinstance(resp, InsufficientInformation):
+            log.info(f"{prefix} rejected: {resp.reason}")
+            rejected.append({"chunk_index": chunk["chunk_index"], "reason": resp.reason})
+            # random-sampling mode: draw a replacement so the QA set stays at --num-chunks
+            if rng is not None and pool:
+                replacement = pool.pop(rng.randrange(len(pool)))
+                queue.append(replacement)
+                log.info(f"           resampled chunk {replacement['chunk_index']} as replacement")
+            continue
+        log.info(f"{prefix} ok")
         items.append({
             "chunk_index": chunk["chunk_index"],
             "chunk_text": chunk["text"],
             **{k: chunk[k] for k in ("start_char", "end_char", "start_page", "end_page")
                if k in chunk},
             # the model always produces all three types; keep only the requested ones
-            "qa_pairs": [p for p in qa_pairs if p["question_type"] in keep_types],
+            "qa_pairs": [p for p in qa_pairs_from(resp) if p["question_type"] in keep_types],
         })
+    items.sort(key=lambda it: it["chunk_index"])
 
     if not items:
-        sys.exit("ERROR: all chunks failed; no QA file written")
+        sys.exit("ERROR: all chunks failed or were rejected; no QA file written")
 
     now = datetime.now()
 
@@ -218,14 +243,16 @@ def main():
             "chunks": [it["chunk_index"] for it in items],
             "replaced": replaced,
             "question_types": keep_types,
+            "rejected": rejected,
             "failures": failures,
         })
         out_file.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
         total_q = sum(len(it["qa_pairs"]) for it in items)
-        print(f"\nAdded {total_q} question(s) from {len(items)} chunk(s)"
+        log.info(f"\nAdded {total_q} question(s) from {len(items)} chunk(s)"
               + (f", replacing existing items for chunk(s) {replaced}" if replaced else "")
+              + (f" ({len(rejected)} chunk(s) rejected)" if rejected else "")
               + (f" ({len(failures)} chunk(s) failed)" if failures else ""))
-        print(f"Output: {out_file.relative_to(ROOT) if out_file.is_relative_to(ROOT) else out_file}")
+        log.info(f"Output: {out_file.relative_to(ROOT) if out_file.is_relative_to(ROOT) else out_file}")
         return
 
     result = {
@@ -241,8 +268,10 @@ def main():
             "num_chunks_answered": len(items),
             "questions_per_chunk": len(keep_types),
             "question_types": {t: QUESTION_TYPES[t] for t in keep_types},
+            "prompt_version": PROMPT_VERSION,
             "system_prompt": SYSTEM_PROMPT,
             "user_prompt_template": USER_PROMPT_TEMPLATE,
+            "rejected": rejected,
             "failures": failures,
         },
         "items": items,
@@ -251,9 +280,10 @@ def main():
     out_file = run["path"] / f"qa_{now.strftime('%Y%m%d_%H%M%S')}_{args.model}.json"
     out_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     total_q = sum(len(it["qa_pairs"]) for it in items)
-    print(f"\nWrote {total_q} questions from {len(items)} chunks"
+    log.info(f"\nWrote {total_q} questions from {len(items)} chunks"
+          + (f" ({len(rejected)} chunk(s) rejected)" if rejected else "")
           + (f" ({len(failures)} chunk(s) failed)" if failures else ""))
-    print(f"Output: {out_file.relative_to(ROOT)}")
+    log.info(f"Output: {out_file.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
