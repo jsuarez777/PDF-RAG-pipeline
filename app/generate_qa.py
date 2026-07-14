@@ -22,6 +22,7 @@ import argparse
 import json
 import logging
 import random
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -43,7 +44,6 @@ log = logging.getLogger(__name__)
 DEFAULT_MODEL = "gpt-5.4-mini"
 DEFAULT_NUM_CHUNKS = 20
 PROMPTS_DIR = ROOT / "prompts" / "generate_qa"
-PROMPT_VERSION = "v1"
 
 QUESTION_TYPES = {
     "direct": "Straightforward question answerable from the chunk, may use the chunk's wording.",
@@ -53,15 +53,24 @@ QUESTION_TYPES = {
                    "with paraphrases or synonyms.",
 }
 
-def _read_prompt(name):
-    path = PROMPTS_DIR / PROMPT_VERSION / name
+
+def _latest_prompt_version(prompts_dir):
+    versions = [d for d in prompts_dir.iterdir() if d.is_dir() and re.fullmatch(r"v\d+", d.name)]
+    if not versions:
+        raise FileNotFoundError(f"No prompt version directories (v0, v1, ...) found in {prompts_dir}")
+    return max(versions, key=lambda d: int(d.name[1:])).name
+
+
+def _read_prompt(version_dir, name):
+    path = version_dir / name
     if not path.is_file():
         raise FileNotFoundError(f"Required prompt file not found: {path}")
     return path.read_text(encoding="utf-8")
 
 
-SYSTEM_PROMPT = _read_prompt("qa_system.prompt")
-USER_PROMPT_TEMPLATE = _read_prompt("qa_user.template")
+PROMPT_VERSION = _latest_prompt_version(PROMPTS_DIR)
+SYSTEM_PROMPT = _read_prompt(PROMPTS_DIR / PROMPT_VERSION, "qa_system.prompt")
+USER_PROMPT_TEMPLATE = _read_prompt(PROMPTS_DIR / PROMPT_VERSION, "qa_user.template")
 
 
 class QAPair(BaseModel):
