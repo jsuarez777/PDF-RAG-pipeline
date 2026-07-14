@@ -21,17 +21,48 @@
   button.primary:hover { background: #0077ed; }
   #status { font-size: 13px; color: #6e6e73; }
 
-  /* Upload menu */
-  #upload-wrap { position: relative; }
-  #upload-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 10;
-                 background: #fff; border: 1px solid #ccc; border-radius: 8px;
-                 box-shadow: 0 4px 16px rgba(0,0,0,.15); display: flex;
-                 flex-direction: column; min-width: 230px; overflow: hidden; }
+  /* Header dropdown menus (Load PDF, Chunk Text, Index/Embed, Eval) */
+  .menu-wrap { position: relative; }
+  .dropdown { position: absolute; left: 0; top: calc(100% + 4px); z-index: 10;
+              background: #fff; border: 1px solid #ccc; border-radius: 8px;
+              box-shadow: 0 4px 16px rgba(0,0,0,.15); min-width: 230px; }
+  .dropdown[hidden] { display: none; }
+  #upload-menu { display: flex; flex-direction: column; overflow: hidden; }
+  #upload-menu[hidden] { display: none; }
   #upload-menu button { border: none; border-radius: 0; text-align: left;
                         padding: 10px 14px; }
   #upload-menu button + button { border-top: 1px solid #eee; }
-  #upload-menu[hidden] { display: none; }
   #upload-menu small { display: block; color: #6e6e73; }
+  .menu-form { display: flex; flex-direction: column; gap: 8px; padding: 12px;
+               font-size: 13px; white-space: nowrap; }
+  .menu-form label { display: flex; align-items: center; gap: 6px; }
+  .menu-form input[type="number"], .menu-form input[type="text"] {
+    flex: 1; min-width: 60px; padding: 3px 6px; border: 1px solid #ccc;
+    border-radius: 5px; font-size: 13px; }
+  .menu-form select { padding: 3px 6px; border: 1px solid #ccc; border-radius: 5px;
+                      background: #fff; font-size: 13px; }
+  .menu-form small { color: #6e6e73; white-space: normal; }
+  .menu-form .opt-group { display: flex; flex-direction: column; gap: 5px;
+                          border-top: 1px solid #eee; padding-top: 8px; }
+  .menu-form .opt-group[hidden] { display: none; }
+
+  /* Modal dialog (eval results) */
+  #modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.4);
+                   display: flex; align-items: center; justify-content: center; }
+  #modal-overlay[hidden] { display: none; }
+  #modal { background: #fff; border-radius: 12px; width: 720px;
+           max-width: calc(100vw - 40px); max-height: 80vh; display: flex;
+           flex-direction: column; box-shadow: 0 12px 48px rgba(0,0,0,.35); }
+  #modal-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+                border-bottom: 1px solid #eee; }
+  #modal-head h3 { flex: 1; font-size: 14px; }
+  #modal-body { overflow-y: auto; padding: 14px 16px; font-size: 13px; }
+  .eval-db-head { font-size: 13px; font-weight: 600; margin-top: 8px;
+                  overflow-wrap: anywhere; }
+  .eval-table { border-collapse: collapse; width: 100%; margin: 6px 0 14px; }
+  .eval-table th, .eval-table td { border: 1px solid #e0e0e0; padding: 4px 8px;
+                                   font-size: 12px; text-align: right; }
+  .eval-table th:first-child, .eval-table td:first-child { text-align: left; }
 
   /* Document list view */
   #list-view { flex: 1; overflow-y: auto; padding: 20px; }
@@ -187,20 +218,72 @@
 <body>
 <header>
   <h1 id="title">Scanned documents</h1>
+  <div class="menu-wrap">
+    <button id="upload-btn" class="primary">Load PDF&hellip;</button>
+    <div id="upload-menu" class="dropdown" hidden>
+      <button data-method="pdf2image">Convert to images<small>pdf2image &mdash; page PNGs, OCR-ready</small></button>
+      <button data-method="pdfplumber">Extract text<small>pdfplumber &mdash; text and tables</small></button>
+    </div>
+  </div>
+  <div class="menu-wrap">
+    <button id="chunk-btn" style="display:none">Chunk Text&hellip;</button>
+    <div id="chunk-menu" class="dropdown menu-form" hidden>
+      <label>Method
+        <select id="chunk-method">
+          <option value="fixed_size" selected>fixed_size</option>
+          <option value="sentence">sentence</option>
+          <option value="semantic">semantic</option>
+        </select>
+      </label>
+      <div id="chunk-fixed" class="opt-group">
+        <label>Chunk size <input id="chunk-size" type="number" min="1" value="256"></label>
+        <label>Overlap <input id="chunk-overlap" type="text" value="50"></label>
+        <small>Overlap in characters, or a percent of size like 10%</small>
+      </div>
+      <button id="chunk-go" class="primary">Create Chunks</button>
+    </div>
+  </div>
+  <div class="menu-wrap">
+    <button id="index-btn" style="display:none">Index / Embed&hellip;</button>
+    <div id="index-menu" class="dropdown menu-form" hidden>
+      <label><input type="radio" name="index-kind" value="bm25" checked> BM-25 index</label>
+      <label><input type="radio" name="index-kind" value="embed"> Embeddings</label>
+      <div id="index-bm25" class="opt-group">
+        <small>Tokenizers</small>
+        <label><input type="checkbox" class="tok" value="simple" checked> simple</label>
+        <label><input type="checkbox" class="tok" value="word"> word</label>
+        <label><input type="checkbox" class="tok" value="porter"> porter</label>
+      </div>
+      <div id="index-embed" class="opt-group" hidden>
+        <small>Embedding models</small>
+        <label><input type="checkbox" class="emb" value="small" checked> small (text-embedding-3-small)</label>
+        <label><input type="checkbox" class="emb" value="large"> large (text-embedding-3-large)</label>
+        <small>Vector DBs</small>
+        <label><input type="checkbox" class="vdb" value="chromadb" checked> chromadb</label>
+        <label><input type="checkbox" class="vdb" value="milvus"> milvus</label>
+      </div>
+      <button id="index-go" class="primary">Build Index</button>
+    </div>
+  </div>
+  <button id="gen-all-btn" style="display:none" disabled>Generate QA Pairs</button>
   <button id="qa-btn" style="display:none" disabled>View QA Pairs</button>
+  <div class="menu-wrap">
+    <button id="eval-btn" style="display:none" disabled>Eval&hellip;</button>
+    <div id="eval-menu" class="dropdown menu-form" hidden>
+      <label><input type="checkbox" id="eval-all" checked> All indexes matching the QA chunk run</label>
+      <div id="eval-indexes" class="opt-group"></div>
+      <label>Top-K <input id="eval-topk" type="number" min="1" value="10"></label>
+      <label>Cutoffs <input id="eval-ks" type="text" value="1,3,5,10"></label>
+      <label><input type="checkbox" id="eval-force"> Force (ignore chunk-run mismatch)</label>
+      <button id="eval-go" class="primary">Evaluate</button>
+    </div>
+  </div>
   <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
   <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
   <span id="head-spacer"></span>
   <span id="status"></span>
   <button id="extract-all" style="display:none">Extract all via EasyOCR</button>
   <button id="back" style="display:none">&larr; All documents</button>
-  <div id="upload-wrap">
-    <button id="upload-btn" class="primary">Load PDF&hellip;</button>
-    <div id="upload-menu" hidden>
-      <button data-method="pdf2image">Convert to images<small>pdf2image &mdash; page PNGs, OCR-ready</small></button>
-      <button data-method="pdfplumber">Extract text<small>pdfplumber &mdash; text and tables</small></button>
-    </div>
-  </div>
   <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
 </header>
 
@@ -233,6 +316,16 @@
     <button id="log-clear">Clear</button>
   </div>
   <div id="log"></div>
+</div>
+
+<div id="modal-overlay" hidden>
+  <div id="modal">
+    <div id="modal-head">
+      <h3 id="modal-title"></h3>
+      <button id="modal-close">&times;</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
 </div>
 
 <script>
@@ -307,6 +400,9 @@ async function loadQa(doc) {
   btn.style.display = '';
   btn.disabled = true;
   btn.textContent = 'View QA Pairs';
+  const genAll = $('gen-all-btn');
+  genAll.style.display = '';
+  genAll.disabled = generating;
   try {
     const resp = await fetch(`/api/documents/${doc.type}/${doc.run}/${doc.name}/qa`);
     if (!resp.ok) return;
@@ -315,9 +411,20 @@ async function loadQa(doc) {
     if (data && data.items && data.items.length) {
       qaData = data;
       btn.disabled = false;
+      showQaPane();
       loadEvalList(doc);
     }
   } catch (err) { /* leave the button grayed out */ }
+}
+
+/* Open the QA pane (documents with QA pairs show them without a click) */
+function showQaPane() {
+  qaVisible = true;
+  $('qa-pane').hidden = false;
+  $('qa-btn').textContent = 'Hide QA Pairs';
+  buildQaPane();
+  refreshGenButton();
+  renderChunkHighlights();
 }
 
 function selectFirstPage() {
@@ -372,6 +479,7 @@ async function openDocument(doc) {
   });
 
   selectFirstPage();
+  renderChunkHighlights();  // QA may have loaded before the pages did
 }
 
 async function openPlumberDocument(doc) {
@@ -458,6 +566,7 @@ async function openPlumberDocument(doc) {
   });
 
   selectFirstPage();
+  renderChunkHighlights();  // QA may have loaded before the pages did
 }
 
 function setOcrText(row, text) {
@@ -639,6 +748,19 @@ function refreshGenButton() {
   const desel = $('deselect-btn');
   desel.style.display = show;
   desel.disabled = checkedChunks.size === 0;
+  const genAll = $('gen-all-btn');
+  if (genAll.style.display !== 'none') genAll.disabled = generating;
+  refreshPipelineButtons();
+}
+
+/* Chunk Text / Index / Eval buttons: shown while a document is open, and all
+   disabled while any script run is in flight. Eval also needs a QA dataset. */
+function refreshPipelineButtons() {
+  const show = current ? '' : 'none';
+  for (const id of ['chunk-btn', 'index-btn', 'eval-btn']) $(id).style.display = show;
+  $('chunk-btn').disabled = generating;
+  $('index-btn').disabled = generating;
+  $('eval-btn').disabled = generating || !qaData;
 }
 
 $('deselect-btn').onclick = () => {
@@ -959,6 +1081,36 @@ async function deleteQaPair(button, item, itemIndex, pair, pairIndex) {
   }
 }
 
+$('gen-all-btn').onclick = async () => {
+  if (generating || !current) return;
+  const doc = current;
+  generating = true;
+  $('gen-all-btn').disabled = true;
+  refreshGenButton();
+  $('status').textContent = 'Generating QA pairs for the document… (see logs)';
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/qa/generate-all`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ types: ['direct', 'inference', 'paraphrased'] }) });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    generating = false;
+    if (current !== doc) return;  // user navigated away meanwhile
+    qaData = data;
+    $('qa-btn').disabled = !(data && data.items && data.items.length);
+    $('status').textContent = '';
+    if (!$('qa-btn').disabled) showQaPane();
+    loadEvalList(doc);
+  } catch (err) {
+    generating = false;
+    if (current === doc) $('status').textContent = 'QA generation failed: ' + err.message;
+  } finally {
+    if (current === doc) $('gen-all-btn').disabled = false;
+    refreshGenButton();
+  }
+};
+
 $('qa-btn').onclick = () => {
   if (!qaData) return;
   qaVisible = !qaVisible;
@@ -983,6 +1135,7 @@ function showList() {
   evalData = null;
   evalSelected = '';
   $('qa-btn').style.display = 'none';
+  $('gen-all-btn').style.display = 'none';
   $('qa-pane').hidden = true;
   refreshGenButton();
   refreshExtractAll();
@@ -1024,20 +1177,218 @@ $('extract-all').onclick = async () => {
   }
 };
 
+/* Header dropdowns: a button toggles its menu; clicking elsewhere closes all.
+   Clicks inside a menu don't close it (they'd swallow the form controls). */
+function closeMenus() {
+  document.querySelectorAll('.dropdown').forEach(m => { m.hidden = true; });
+}
+function setupMenu(btnId, menuId, onOpen) {
+  $(btnId).addEventListener('click', ev => {
+    ev.stopPropagation();
+    const menu = $(menuId);
+    const open = menu.hidden;
+    closeMenus();
+    if (open) {
+      menu.hidden = false;
+      if (onOpen) onOpen();
+    }
+  });
+  $(menuId).addEventListener('click', ev => ev.stopPropagation());
+}
+document.addEventListener('click', closeMenus);
+
 /* Upload: button opens a method menu; picking one opens the file dialog */
 let uploadMethod = 'pdf2image';
-$('upload-btn').onclick = ev => {
-  ev.stopPropagation();
-  $('upload-menu').hidden = !$('upload-menu').hidden;
-};
-document.addEventListener('click', () => { $('upload-menu').hidden = true; });
+setupMenu('upload-btn', 'upload-menu');
 document.querySelectorAll('#upload-menu button').forEach(btn => {
   btn.onclick = () => {
     uploadMethod = btn.dataset.method;
-    $('upload-menu').hidden = true;
+    closeMenus();
     $('file-input').click();
   };
 });
+
+/* Shared runner for the pipeline endpoints (chunk / index / eval): one script
+   run at a time, streaming to the log pane; returns the JSON result or null. */
+async function runPipeline(path, body, statusMsg) {
+  if (generating || !current) return null;
+  const doc = current;
+  generating = true;
+  refreshGenButton();
+  $('status').textContent = `${statusMsg}… (see logs)`;
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/${path}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body) });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    if (current === doc) $('status').textContent = '';
+    return current === doc ? data : null;
+  } catch (err) {
+    if (current === doc) $('status').textContent = `${statusMsg} failed: ${err.message}`;
+    return null;
+  } finally {
+    generating = false;
+    refreshGenButton();
+  }
+}
+
+/* Chunk Text: options popup -> chunk_text.py on this document */
+setupMenu('chunk-btn', 'chunk-menu');
+$('chunk-method').onchange = () => {
+  $('chunk-fixed').hidden = $('chunk-method').value !== 'fixed_size';
+};
+$('chunk-go').onclick = async () => {
+  const body = { type: $('chunk-method').value };
+  if (body.type === 'fixed_size') {
+    body.size = parseInt($('chunk-size').value, 10);
+    body.overlap = $('chunk-overlap').value.trim();
+    if (!(body.size > 0)) {
+      $('status').textContent = 'Chunk size must be a positive integer';
+      return;
+    }
+  }
+  closeMenus();
+  const data = await runPipeline('chunk', body, 'Chunking text');
+  if (data) $('status').textContent = `Created chunk run ${data.chunk_run}`;
+};
+
+/* Index / Embed: BM-25 or embeddings over the latest chunk run */
+setupMenu('index-btn', 'index-menu');
+document.querySelectorAll('input[name="index-kind"]').forEach(radio => {
+  radio.onchange = () => {
+    $('index-bm25').hidden = radio.value !== 'bm25';
+    $('index-embed').hidden = radio.value !== 'embed';
+  };
+});
+$('index-go').onclick = async () => {
+  const kind = document.querySelector('input[name="index-kind"]:checked').value;
+  const body = { kind };
+  if (kind === 'bm25') {
+    body.tokenizers = [...document.querySelectorAll('#index-bm25 .tok:checked')]
+      .map(c => c.value);
+    if (!body.tokenizers.length) {
+      $('status').textContent = 'Pick at least one tokenizer';
+      return;
+    }
+  } else {
+    body.embeddings = [...document.querySelectorAll('#index-embed .emb:checked')]
+      .map(c => c.value);
+    body.dbs = [...document.querySelectorAll('#index-embed .vdb:checked')]
+      .map(c => c.value);
+    if (!body.embeddings.length || !body.dbs.length) {
+      $('status').textContent = 'Pick at least one embedding model and one vector DB';
+      return;
+    }
+  }
+  closeMenus();
+  const data = await runPipeline('index', body, 'Building index');
+  if (data) $('status').textContent = `Index built from ${data.chunk_run}`;
+};
+
+/* Eval: pick indexes + cutoffs, run eval_retrieval.py, show results modal */
+setupMenu('eval-btn', 'eval-menu', loadEvalIndexes);
+async function loadEvalIndexes() {
+  const doc = current;
+  const holder = $('eval-indexes');
+  holder.innerHTML = '<small>Loading indexes…</small>';
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/indexes`);
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    if (current !== doc) return;
+    holder.innerHTML = '';
+    if (!data.indexes.length) {
+      holder.innerHTML = '<small>No indexes yet — build one with Index / Embed.</small>';
+      return;
+    }
+    for (const idx of data.indexes) {
+      const label = document.createElement('label');
+      const check = document.createElement('input');
+      check.type = 'checkbox';
+      check.className = 'eval-idx';
+      check.value = idx.rel;
+      check.disabled = $('eval-all').checked;
+      const note = idx.matches === false ? ' (different chunk run)' : '';
+      label.append(check, ` ${idx.type}: ${idx.name}${note}`);
+      holder.appendChild(label);
+    }
+  } catch (err) {
+    holder.innerHTML = '<small>Failed to list indexes.</small>';
+  }
+}
+$('eval-all').onchange = () => {
+  document.querySelectorAll('.eval-idx').forEach(c => {
+    c.disabled = $('eval-all').checked;
+  });
+};
+$('eval-go').onclick = async () => {
+  const body = {
+    db: $('eval-all').checked ? 'all'
+      : [...document.querySelectorAll('.eval-idx:checked')].map(c => c.value),
+    topk: parseInt($('eval-topk').value, 10),
+    ks: $('eval-ks').value.trim(),
+    force: $('eval-force').checked,
+  };
+  if (body.db !== 'all' && !body.db.length) {
+    $('status').textContent = 'Pick at least one index';
+    return;
+  }
+  if (!(body.topk > 0)) {
+    $('status').textContent = 'Top-K must be a positive integer';
+    return;
+  }
+  closeMenus();
+  const doc = current;
+  const results = await runPipeline('eval', body, 'Evaluating retrieval');
+  if (results && current === doc) {
+    showEvalModal(results);
+    if (qaData) loadEvalList(doc);  // new evals belong in the QA pane dropdown
+  }
+};
+
+/* Eval results modal: one metrics table per evaluated index */
+function evalTable(r) {
+  const ks = r.metadata.ks || [];
+  const maxk = ks[ks.length - 1];
+  const table = document.createElement('table');
+  table.className = 'eval-table';
+  const head = table.insertRow();
+  ['', 'MRR', ...ks.map(k => `R@${k}`), `NDCG@${maxk}`].forEach(t => {
+    const th = document.createElement('th');
+    th.textContent = t;
+    head.appendChild(th);
+  });
+  const rows = [['overall', r.aggregates.overall || {}],
+                ...Object.entries(r.aggregates.by_question_type || {})];
+  for (const [label, m] of rows) {
+    const tr = table.insertRow();
+    tr.insertCell().textContent = label;
+    const vals = [m.mrr, ...ks.map(k => m[`recall@${k}`]), m[`ndcg@${maxk}`]];
+    for (const v of vals) tr.insertCell().textContent = v == null ? '' : v.toFixed(3);
+  }
+  return table;
+}
+function showEvalModal(results) {
+  $('modal-title').textContent = 'Retrieval evaluation results';
+  const body = $('modal-body');
+  body.innerHTML = '';
+  if (!results.length) body.textContent = 'The run produced no eval files.';
+  for (const r of results) {
+    const h = document.createElement('div');
+    h.className = 'eval-db-head';
+    h.textContent = `${r.metadata.db || r.file} — top_k ${r.metadata.top_k}, ` +
+      `${r.metadata.num_questions} questions`;
+    body.append(h, evalTable(r));
+  }
+  $('modal-overlay').hidden = false;
+}
+$('modal-close').onclick = () => { $('modal-overlay').hidden = true; };
+$('modal-overlay').onclick = ev => {
+  if (ev.target === $('modal-overlay')) $('modal-overlay').hidden = true;
+};
 
 $('file-input').onchange = async () => {
   const file = $('file-input').files[0];

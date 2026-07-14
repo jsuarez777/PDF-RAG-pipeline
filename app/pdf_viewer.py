@@ -35,6 +35,9 @@ log = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SCRIPT_DIR = Path(__file__).resolve().parent
+
 SAFE_SEGMENT = re.compile(r"^[\w.-]+$")
 PAGE_FILE = re.compile(r"^page_(\d+)\.png$")
 SERVABLE_PNG = re.compile(r"^page_\d+(?:_image_\d+)?\.png$")
@@ -208,6 +211,16 @@ def qa_doc_dir(dtype: str, run: str, name: str) -> Path:
     if not doc_dir.is_dir():
         abort(404)
     return doc_dir
+
+
+def latest_chunk_run(doc_dir: Path) -> Path | None:
+    """Newest <stamp>_chunk_* directory that has a chunked_text.json to draw on."""
+    runs = [
+        d
+        for d in doc_dir.iterdir()
+        if d.is_dir() and "_chunk_" in d.name and (d / "chunked_text.json").is_file()
+    ]
+    return max(runs, key=lambda d: d.name) if runs else None
 
 
 def latest_qa_file(doc_dir: Path) -> Path | None:
@@ -419,6 +432,234 @@ def qa_generate(dtype: str, run: str, name: str):
     if code != 0:
         abort(500, f"generate_qa.py failed with exit code {code}")
     return jsonify(qa_payload(doc_dir, qa_path))
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/qa/generate-all")
+def qa_generate_all(dtype: str, run: str, name: str):
+    """Generate a fresh QA dataset for the document's latest chunk run via
+    generate_qa.py (default sampling), then return its contents. Used to
+    bootstrap a document that has no qa_*.json yet."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    types = payload.get("types") or ["direct", "inference", "paraphrased"]
+    if not (isinstance(types, list)
+            and all(t in ("direct", "inference", "paraphrased") for t in types)):
+        abort(400, "invalid question types")
+
+    chunk_run = latest_chunk_run(doc_dir)
+    if chunk_run is None:
+        abort(404, "no chunk run to generate from; chunk the text first")
+
+    project_root = Path(__file__).resolve().parent.parent
+    script = Path(__file__).resolve().parent / "generate_qa.py"
+    code = run_and_stream([
+        sys.executable, str(script),
+        "--dataset", chunk_run.relative_to(project_root).as_posix(),
+        "--types", ",".join(types),
+    ])
+    if code != 0:
+        abort(500, f"generate_qa.py failed with exit code {code}")
+
+    qa_path = latest_qa_file(doc_dir)
+    if qa_path is None:
+        abort(500, "generation produced no QA file")
+    return jsonify(qa_payload(doc_dir, qa_path))
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/chunk")
+def chunk_document(dtype: str, run: str, name: str):
+    """Cut a new chunk run from the document's extracted text via chunk_text.py."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    method = payload.get("type")
+    if method not in ("fixed_size", "sentence", "semantic"):
+        abort(400, "invalid chunk type")
+    if method == "fixed_size":
+        size = payload.get("size")
+        overlap = str(payload.get("overlap", "")).strip()
+        if not (isinstance(size, int) and size > 0):
+            abort(400, "chunk size must be a positive integer")
+        if not re.fullmatch(r"\d+(?:\.\d+)?%|\d+", overlap):
+            abort(400, "overlap must be an integer or a percent like 10%")
+        type_str = f"fixed_size:{size}:{overlap}"
+    else:
+        type_str = method
+
+    code = run_and_stream([
+        sys.executable, str(SCRIPT_DIR / "chunk_text.py"),
+        "--type", type_str,
+        "--dataset", doc_dir.relative_to(PROJECT_ROOT).as_posix(),
+    ])
+    if code != 0:
+        abort(500, f"chunk_text.py failed with exit code {code}")
+    chunk_run = latest_chunk_run(doc_dir)
+    return jsonify({"chunk_run": chunk_run.name if chunk_run else None})
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/index")
+def build_index(dtype: str, run: str, name: str):
+    """Build a BM25 index or embedding store from the document's latest chunk
+    run via index_bm25.py / embed_chunks.py."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    chunk_run = latest_chunk_run(doc_dir)
+    if chunk_run is None:
+        abort(404, "no chunk run to index; chunk the text first")
+    dataset = chunk_run.relative_to(PROJECT_ROOT).as_posix()
+
+    kind = payload.get("kind")
+    if kind == "bm25":
+        tokenizers = payload.get("tokenizers")
+        if not (isinstance(tokenizers, list) and tokenizers
+                and all(t in ("simple", "word", "porter") for t in tokenizers)):
+            abort(400, "tokenizers must be a non-empty list of: simple, word, porter")
+        cmd = [sys.executable, str(SCRIPT_DIR / "index_bm25.py"),
+               "--tokenizer", ",".join(dict.fromkeys(tokenizers)),
+               "--dataset", dataset]
+    elif kind == "embed":
+        embeddings = payload.get("embeddings")
+        dbs = payload.get("dbs")
+        if not (isinstance(embeddings, list) and embeddings
+                and all(e in ("small", "large") for e in embeddings)):
+            abort(400, "embeddings must be a non-empty list of: small, large")
+        if not (isinstance(dbs, list) and dbs
+                and all(d in ("milvus", "chromadb") for d in dbs)):
+            abort(400, "dbs must be a non-empty list of: milvus, chromadb")
+        cmd = [sys.executable, str(SCRIPT_DIR / "embed_chunks.py"),
+               "--embedding", ",".join(dict.fromkeys(embeddings)),
+               "--db", ",".join(dict.fromkeys(dbs)),
+               "--dataset", dataset]
+    else:
+        abort(400, "kind must be 'bm25' or 'embed'")
+
+    code = run_and_stream(cmd)
+    if code != 0:
+        abort(500, f"indexing failed with exit code {code}")
+    return jsonify({"ok": True, "chunk_run": chunk_run.name})
+
+
+def qa_chunk_run_rel(doc_dir: Path) -> str | None:
+    """chunk_run recorded in the document's latest QA file (project-relative)."""
+    qa_path = latest_qa_file(doc_dir)
+    if qa_path is None:
+        return None
+    try:
+        return json.loads(qa_path.read_text(encoding="utf-8")).get(
+            "metadata", {}).get("chunk_run")
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/indexes")
+def list_indexes(dtype: str, run: str, name: str):
+    """Stored indexes (bm25/ and embedding_databases/) for this document,
+    flagged with whether each was built from the latest QA file's chunk run.
+    matches is null when the chunk run couldn't be read (e.g. chromadb)."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    qa_run = qa_chunk_run_rel(doc_dir)
+
+    def sidecar_chunk_run(path: Path) -> str | None:
+        sidecar = path.with_suffix(".json")
+        try:
+            return json.loads(sidecar.read_text(encoding="utf-8"))["metadata"]["chunk_run"]
+        except (OSError, json.JSONDecodeError, KeyError):
+            return None
+
+    out = []
+    bm_dir = doc_dir / "bm25"
+    if bm_dir.is_dir():
+        for p in sorted(bm_dir.glob("bm25_*.pkl")):
+            built_from = sidecar_chunk_run(p)
+            out.append({
+                "rel": p.relative_to(PROJECT_ROOT).as_posix(),
+                "name": p.name,
+                "type": "bm25",
+                "matches": None if built_from is None or qa_run is None
+                           else built_from == qa_run,
+            })
+    edb_dir = doc_dir / "embedding_databases"
+    if edb_dir.is_dir():
+        for p in sorted(edb_dir.iterdir()):
+            if p.name.startswith("milvus_") and p.suffix == ".db":
+                db_type = "milvus"
+                built_from = sidecar_chunk_run(p)
+            elif p.name.startswith("chromadb_") and p.suffix == ".chroma" and p.is_dir():
+                db_type = "chromadb"
+                built_from = None  # stored inside the collection; not read here
+            else:
+                continue
+            out.append({
+                "rel": p.relative_to(PROJECT_ROOT).as_posix(),
+                "name": p.name,
+                "type": db_type,
+                "matches": None if built_from is None or qa_run is None
+                           else built_from == qa_run,
+            })
+    return jsonify({"qa_chunk_run": qa_run, "indexes": out})
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/eval")
+def run_eval(dtype: str, run: str, name: str):
+    """Evaluate indexes against the document's latest QA file via
+    eval_retrieval.py, then return the aggregates of every eval file the run
+    produced (for the results dialog)."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    qa_path = latest_qa_file(doc_dir)
+    if qa_path is None:
+        abort(404, "no QA dataset to evaluate; generate QA pairs first")
+
+    db = payload.get("db", "all")
+    if db == "all":
+        db_arg = "all"
+    elif isinstance(db, list) and db and all(isinstance(d, str) for d in db):
+        for d in db:
+            resolved = (PROJECT_ROOT / d).resolve()
+            if not resolved.is_relative_to(doc_dir.resolve()) or not resolved.exists():
+                abort(400, f"invalid index path: {d}")
+        db_arg = ",".join(db)
+    else:
+        abort(400, "db must be 'all' or a non-empty list of index paths")
+
+    topk = payload.get("topk", 10)
+    if not (isinstance(topk, int) and topk > 0):
+        abort(400, "topk must be a positive integer")
+    ks = str(payload.get("ks", "1,3,5,10")).replace(" ", "")
+    if not re.fullmatch(r"\d+(,\d+)*", ks):
+        abort(400, "ks must be comma-separated integers")
+
+    cmd = [sys.executable, str(SCRIPT_DIR / "eval_retrieval.py"),
+           "--qa", qa_path.relative_to(PROJECT_ROOT).as_posix(),
+           "--db", db_arg, "--topk", str(topk), "--ks", ks]
+    if payload.get("force"):
+        cmd.append("--force")
+
+    started = time.time()
+    code = run_and_stream(cmd)
+    if code != 0:
+        abort(500, f"eval_retrieval.py failed with exit code {code}")
+
+    results = []
+    eval_dir = doc_dir / "evaluations"
+    if eval_dir.is_dir():
+        for f in sorted(eval_dir.iterdir()):
+            if not (f.is_file() and EVAL_FILE.fullmatch(f.name)
+                    and f.stat().st_mtime >= started - 1):
+                continue
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            results.append({
+                "file": f.name,
+                "metadata": data.get("metadata", {}),
+                "aggregates": data.get("aggregates", {}),
+            })
+    return jsonify(results)
 
 
 @app.post("/api/documents/<run>/<name>/ocr/<int:page>")
