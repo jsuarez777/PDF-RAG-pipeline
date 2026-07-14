@@ -48,3 +48,24 @@ Structured log of major experiments and pipeline changes, per the format in `scr
   - Conclusion: Iteration 2's apparently "mixed" random-sample eval was a sampling artifact (zero chunk overlap, table-heavy draw). Controlled for chunks, the prompt rework is a clear win.
 - **Decision**: Keep. Use `qa_20260713_130754` / the new prompt for future benchmarks; always pass `--seed` when sampling.
 - **Next step**: Retrieval quality itself is still far below targets (best R@5 0.667 vs target ≥ 0.90). Next levers: chunking strategy (table-aware chunking; many misses are near-identical survey-table chunks indistinguishable from question text alone), hybrid BM25+embedding retrieval, and/or reranking.
+
+### Tooling: QA overlay, editing, and targeted generation in the PDF viewer
+- **Date**: 2026-07-12
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`), `app/generate_qa.py`
+- **Purpose**: Close the loop on QA quality review — previously fixing a bad question meant re-running the whole generator or hand-editing the QA JSON; the viewer now surfaces and fixes QA pairs in place.
+- **Change**:
+  - Viewer serves the newest `qa_*.json` across a document's chunk runs (`GET .../qa`) and overlays its questions plus chunk boxes on the page images.
+  - Select one or more chunk boxes to generate new QA pairs for just those chunks (`POST .../qa/generate`), which shells out to `generate_qa.py` and merges the result into the existing QA file, replacing any prior items for the same chunks.
+  - Delete a single QA pair or an entire item's pairs (`POST .../qa/delete-pair`); a stale-view guard (409) blocks deletes if the chunk/question-type at that index no longer matches what the client loaded.
+  - `generate_qa.py` gained `--chunks` (exact chunk indices, no resampling), `--types` (restrict to a subset of direct/inference/paraphrased), and `--add` (merge into an existing QA file instead of writing a new one) to support the targeted, from-the-viewer generation flow.
+- **Next step**: This is the editing counterpart to the later eval overlay below — together they let a bad question be spotted (via eval miss or spot-check) and fixed without leaving the viewer.
+
+### Tooling: Retrieval eval overlay in the PDF viewer
+- **Date**: 2026-07-13
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`)
+- **Purpose**: Make determining why golden chunks failed easier. Failure analysis previously meant cross-referencing eval JSON, QA JSON, and chunked_text.json by hand; the viewer now overlays eval results directly on the QA pane.
+- **Change**:
+  - Eval dropdown in the QA pane header listing the eval files whose metadata points at the loaded QA file (default "None" = plain QA view).
+  - With an eval selected, each question shows the golden chunk's rank (red "not in top k" on a miss) and a "View Full Results" button.
+  - Full results opens a context-menu-style popover anchored to the button: all retrieved chunk IDs in rank order with scores, the gold chunk tagged. Each chunk ID opens an adjacent popover with the chunk's text and a scroll-to-chunk link that scrolls the document pane behind the popovers, so a miss's retrieved chunks can be compared against the golden chunk in place.
+  - Backend: `GET .../evals?qa_file=` (list matching eval files) and `GET .../evals/<file>` (per-question results plus referenced chunk texts).

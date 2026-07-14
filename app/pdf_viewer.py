@@ -40,6 +40,7 @@ PAGE_FILE = re.compile(r"^page_(\d+)\.png$")
 SERVABLE_PNG = re.compile(r"^page_\d+(?:_image_\d+)?\.png$")
 PLUMBER_PAGE = re.compile(r"^page_(\d+)\.json$")
 QA_FILE = re.compile(r"^qa_.*\.json$")
+EVAL_FILE = re.compile(r"^eval_(?!summary_).*\.json$")
 
 
 class LogBroadcaster:
@@ -261,6 +262,81 @@ def qa_data(dtype: str, run: str, name: str):
     if qa_path is None:
         return jsonify(None)
     return jsonify(qa_payload(doc_dir, qa_path))
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/evals")
+def eval_list(dtype: str, run: str, name: str):
+    """Eval files (from eval_retrieval.py) whose metadata points at the given
+    QA file, newest first. qa_file is doc-dir-relative, as served by qa_data."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    qa_file = request.args.get("qa_file", "")
+    eval_dir = doc_dir / "evaluations"
+    out = []
+    if eval_dir.is_dir():
+        for f in sorted(eval_dir.iterdir(), reverse=True):
+            if not (f.is_file() and EVAL_FILE.fullmatch(f.name)):
+                continue
+            try:
+                meta = json.loads(f.read_text(encoding="utf-8")).get("metadata", {})
+            except (OSError, json.JSONDecodeError):
+                continue
+            if qa_file and not str(meta.get("qa_file", "")).endswith(qa_file):
+                continue
+            out.append(
+                {
+                    "file": f.name,
+                    "db_type": meta.get("db_type"),
+                    "embedding_model": meta.get("embedding_model"),
+                    "top_k": meta.get("top_k"),
+                    "datetime": meta.get("datetime"),
+                }
+            )
+    return jsonify(out)
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/evals/<filename>")
+def eval_detail(dtype: str, run: str, name: str, filename: str):
+    """One eval file's per-question results, plus the text of every chunk the
+    eval references (gold or retrieved) so the UI can preview them."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    if not EVAL_FILE.fullmatch(check_segment(filename)):
+        abort(404)
+    eval_path = doc_dir / "evaluations" / filename
+    if not eval_path.is_file():
+        abort(404)
+    try:
+        data = json.loads(eval_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        abort(500, f"could not read {filename}")
+
+    questions = data.get("questions", [])
+    referenced = {q.get("chunk_index") for q in questions}
+    for q in questions:
+        referenced.update(r.get("chunk_index") for r in q.get("retrieved", []))
+
+    chunk_texts = {}
+    chunk_run = Path(str(data.get("metadata", {}).get("chunk_run", ""))).name
+    if SAFE_SEGMENT.fullmatch(chunk_run):
+        chunk_file = doc_dir / chunk_run / "chunked_text.json"
+        try:
+            cdata = json.loads(chunk_file.read_text(encoding="utf-8"))
+            for c in cdata.get("chunks", []):
+                if c.get("chunk_index") in referenced:
+                    chunk_texts[str(c["chunk_index"])] = {
+                        "text": c.get("text", ""),
+                        "start_page": c.get("start_page"),
+                        "end_page": c.get("end_page"),
+                    }
+        except (OSError, json.JSONDecodeError):
+            pass  # chunk previews just won't render
+    return jsonify(
+        {
+            "file": filename,
+            "metadata": data.get("metadata", {}),
+            "questions": questions,
+            "chunk_texts": chunk_texts,
+        }
+    )
 
 
 @app.post("/api/documents/<dtype>/<run>/<name>/qa/delete-pair")

@@ -133,6 +133,41 @@
   .qa-q { font-weight: 500; }
   .qa-a { color: #3a3a3c; margin-top: 2px; }
 
+  /* Eval selector at the top of the QA pane + per-pair rank line */
+  #eval-bar { display: flex; align-items: center; gap: 8px; padding: 8px;
+              margin-bottom: 10px; background: #f5f5f7; border: 1px solid #e0e0e0;
+              border-radius: 8px; font-size: 12px; color: #6e6e73; }
+  #eval-bar select { flex: 1; min-width: 0; font-size: 12px; padding: 4px 6px;
+                     border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+  .qa-eval { display: flex; align-items: center; gap: 8px; margin-top: 4px;
+             font-size: 11.5px; }
+  .qa-eval .qa-rank { font-weight: 600; color: #0071e3; }
+  .qa-eval .qa-rank.miss { color: #d93025; }
+  .qa-eval button { font-size: 10px; padding: 2px 8px; }
+
+  /* Anchored popovers (eval full results, chunk preview): open next to the
+     button that was clicked, like a context menu — no page dimming */
+  .popover { position: fixed; z-index: 100; background: #fff;
+             border: 1px solid #ccc; border-radius: 10px; width: 380px;
+             max-width: calc(100vw - 16px); max-height: 55vh;
+             display: flex; flex-direction: column;
+             box-shadow: 0 8px 32px rgba(0,0,0,.25); }
+  .popover-head { display: flex; align-items: center; gap: 8px;
+                  padding: 8px 12px; border-bottom: 1px solid #eee; }
+  .popover-head h3 { flex: 1; font-size: 13px; overflow-wrap: anywhere; }
+  .popover-head button { font-size: 11px; padding: 1px 7px; }
+  .popover-body { overflow-y: auto; padding: 10px 12px; font-size: 13px;
+                  line-height: 1.5; }
+  .rank-row { display: flex; align-items: center; gap: 10px; padding: 5px 0;
+              border-bottom: 1px solid #f0f0f2; }
+  .rank-row .rank-no { width: 34px; color: #6e6e73; font-size: 12px;
+                       text-align: right; flex-shrink: 0; }
+  .rank-row .rank-score { margin-left: auto; color: #6e6e73; font-size: 12px; }
+  .rank-row .gold { color: #e3652b; font-weight: 600; font-size: 11px; }
+  .chunk-preview { white-space: pre-wrap; overflow-wrap: break-word;
+                   background: #f5f5f7; border-radius: 6px; padding: 10px;
+                   margin-top: 10px; font-size: 12.5px; }
+
   /* Bottom log pane */
   #log-divider { height: 5px; cursor: row-resize; background: #ddd; flex-shrink: 0; }
   #log-divider:hover, #log-divider.dragging { background: #0071e3; }
@@ -211,6 +246,9 @@ let pageTextEls = {};  // page number -> element the text is rendered into
 let checkedChunks = new Set();  // chunk indices ticked for bulk generation
 let activeChunk = null;         // chunk whose box was clicked (white, gen button)
 let generating = false;
+let evalList = [];       // eval files available for the loaded QA file
+let evalData = null;     // loaded eval file (questions + chunk_texts), or null
+let evalSelected = '';   // filename of the selected eval, '' = None
 
 function refreshExtractAll() {
   const missing = Object.values(ocrState).filter(t => t === null).length;
@@ -249,6 +287,9 @@ function showViewer(doc) {
   pageTextEls = {};
   checkedChunks = new Set();
   activeChunk = null;
+  evalList = [];
+  evalData = null;
+  evalSelected = '';
   $('qa-pane').hidden = true;
   refreshGenButton();
   refreshExtractAll();
@@ -274,6 +315,7 @@ async function loadQa(doc) {
     if (data && data.items && data.items.length) {
       qaData = data;
       btn.disabled = false;
+      loadEvalList(doc);
     }
   } catch (err) { /* leave the button grayed out */ }
 }
@@ -640,9 +682,73 @@ $('gen-btn').onclick = () => {
   }
 };
 
+async function loadEvalList(doc) {
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/evals` +
+      `?qa_file=${encodeURIComponent(qaData.qa_file)}`);
+    if (!resp.ok || current !== doc) return;
+    evalList = await resp.json();
+    if (qaVisible && qaData) buildQaPane();  // pane opened before the list arrived
+  } catch (err) { /* dropdown just stays at None */ }
+}
+
+function evalLabel(e) {
+  const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+  return [ts, e.db_type, e.embedding_model].filter(Boolean).join(' · ');
+}
+
+async function selectEval(file) {
+  evalSelected = file;
+  evalData = null;
+  if (file && current) {
+    try {
+      const resp = await fetch(
+        `/api/documents/${current.type}/${current.run}/${current.name}/evals/${file}`);
+      if (!resp.ok) throw new Error(await resp.text());
+      evalData = await resp.json();
+    } catch (err) {
+      evalSelected = '';
+      $('status').textContent = 'Failed to load eval file: ' + err.message;
+    }
+  }
+  if (qaVisible && qaData) buildQaPane();
+}
+
+/* The eval's question record for one QA pair: exact question text first,
+   then (chunk, type) for pairs reworded since the eval ran. */
+function evalLookup(chunkIndex, pair) {
+  if (!evalData) return null;
+  const qs = evalData.questions || [];
+  return qs.find(q => q.chunk_index === chunkIndex && q.question === pair.question)
+      || qs.find(q => q.chunk_index === chunkIndex && q.question_type === pair.question_type)
+      || null;
+}
+
 function buildQaPane() {
   const pane = $('qa-pane');
   pane.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.id = 'eval-bar';
+  const label = document.createElement('span');
+  label.textContent = 'Eval:';
+  const sel = document.createElement('select');
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = 'None';
+  sel.appendChild(none);
+  for (const e of evalList) {
+    const opt = document.createElement('option');
+    opt.value = e.file;
+    opt.textContent = evalLabel(e);
+    sel.appendChild(opt);
+  }
+  sel.value = evalSelected;
+  sel.onchange = () => selectEval(sel.value);
+  bar.append(label, sel);
+  pane.appendChild(bar);
+
   const head = document.createElement('h2');
   head.textContent = `QA pairs — ${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`;
   pane.appendChild(head);
@@ -691,6 +797,27 @@ function buildQaPane() {
       a.className = 'qa-a';
       a.textContent = pair.answer;
       p.append(head, q, a);
+      if (evalData) {
+        const line = document.createElement('div');
+        line.className = 'qa-eval';
+        const ev = evalLookup(item.chunk_index, pair);
+        if (!ev) {
+          line.textContent = '(not in this eval)';
+        } else {
+          const rank = document.createElement('span');
+          rank.className = 'qa-rank' + (ev.gold_rank == null ? ' miss' : '');
+          rank.textContent = 'Rank: ' + (ev.gold_rank ??
+            `not in top ${evalData.metadata.top_k ?? (ev.retrieved || []).length}`);
+          const full = document.createElement('button');
+          full.textContent = 'View Full Results';
+          full.onclick = evClick => {
+            evClick.stopPropagation();
+            showEvalResults(ev, pair, full);
+          };
+          line.append(rank, full);
+        }
+        p.appendChild(line);
+      }
       div.appendChild(p);
     });
     div.onclick = () => {
@@ -699,6 +826,113 @@ function buildQaPane() {
     };
     pane.appendChild(div);
   }
+}
+
+/* Anchored popovers: each opens next to its trigger button. Level 0 is the
+   results list, level 1 the chunk preview opened from inside it; opening at a
+   level replaces that level and above, clicking elsewhere closes them all. */
+function closePopovers(level = 0) {
+  document.querySelectorAll('.popover').forEach(p => {
+    if (+p.dataset.level >= level) p.remove();
+  });
+}
+document.addEventListener('click', ev => {
+  if (!ev.target.closest('.popover')) closePopovers();
+});
+// popovers are viewport-fixed: close them when their anchors scroll away
+$('qa-pane').addEventListener('scroll', () => closePopovers());
+
+function openPopover(anchor, level, title, buildBody) {
+  closePopovers(level);
+  const pop = document.createElement('div');
+  pop.className = 'popover';
+  pop.dataset.level = level;
+  // clicking a popover closes the ones stacked above it (e.g. clicking the
+  // results list dismisses the chunk preview); openers must stopPropagation
+  pop.addEventListener('click', () => closePopovers(level + 1));
+  const head = document.createElement('div');
+  head.className = 'popover-head';
+  const h = document.createElement('h3');
+  h.textContent = title;
+  const close = document.createElement('button');
+  close.textContent = '×';
+  close.onclick = () => closePopovers(level);
+  head.append(h, close);
+  const body = document.createElement('div');
+  body.className = 'popover-body';
+  body.addEventListener('scroll', () => closePopovers(level + 1));
+  buildBody(body);
+  pop.append(head, body);
+  document.body.appendChild(pop);
+
+  // below the button if it fits, else above; clamped to the viewport
+  const r = anchor.getBoundingClientRect();
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let top = r.bottom + 4;
+  if (top + ph > window.innerHeight - 8 && r.top - ph - 4 >= 8) top = r.top - ph - 4;
+  pop.style.top = Math.max(8, Math.min(top, window.innerHeight - ph - 8)) + 'px';
+  pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8)) + 'px';
+}
+
+function showEvalResults(ev, pair, anchor) {
+  openPopover(anchor, 0, `Retrieved chunks — ${pair.question}`, body => {
+    for (const r of ev.retrieved || []) {
+      const row = document.createElement('div');
+      row.className = 'rank-row';
+      const no = document.createElement('span');
+      no.className = 'rank-no';
+      no.textContent = `#${r.rank}`;
+      const btn = document.createElement('button');
+      btn.textContent = `Chunk_${r.chunk_index}`;
+      btn.onclick = ev => {
+        ev.stopPropagation();  // or the results popover would close it again
+        showChunkPreview(r.chunk_index, btn);
+      };
+      row.append(no, btn);
+      if (r.chunk_index === ev.chunk_index) {
+        const gold = document.createElement('span');
+        gold.className = 'gold';
+        gold.textContent = 'gold';
+        row.appendChild(gold);
+      }
+      const score = document.createElement('span');
+      score.className = 'rank-score';
+      score.textContent = r.score != null ? r.score.toFixed(4) : '';
+      row.appendChild(score);
+      body.appendChild(row);
+    }
+    if (ev.gold_rank == null) {
+      const note = document.createElement('p');
+      note.style.cssText = 'margin-top:10px;color:#d93025;font-size:12px;';
+      note.textContent = `Gold chunk Chunk_${ev.chunk_index} was not retrieved.`;
+      body.appendChild(note);
+    }
+  });
+}
+
+function showChunkPreview(idx, anchor) {
+  const info = (evalData && evalData.chunk_texts[idx]) || null;
+  openPopover(anchor, 1, `Chunk_${idx}`, body => {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.textContent = 'Scroll to chunk in document';
+    link.onclick = ev => { ev.preventDefault(); scrollToChunk(idx); };
+    body.appendChild(link);
+    const text = document.createElement('div');
+    text.className = 'chunk-preview';
+    text.textContent = info ? info.text : '(chunk text unavailable)';
+    body.appendChild(text);
+  });
+}
+
+function scrollToChunk(idx) {  // popovers stay open; the document scrolls behind them
+  const box = document.querySelector(`.chunk-box[data-chunk="${idx}"]`);
+  if (box) return box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // no box rendered (e.g. page not extracted): fall back to the chunk's page
+  const c = ((qaData && qaData.chunks) || []).find(c => c.chunk_index === idx)
+    || (evalData && evalData.chunk_texts[idx]);
+  const row = c && $(`page-row-${c.start_page}`);
+  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function deleteQaPair(button, item, itemIndex, pair, pairIndex) {
@@ -745,6 +979,9 @@ function showList() {
   pageTextEls = {};
   checkedChunks = new Set();
   activeChunk = null;
+  evalList = [];
+  evalData = null;
+  evalSelected = '';
   $('qa-btn').style.display = 'none';
   $('qa-pane').hidden = true;
   refreshGenButton();
