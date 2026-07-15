@@ -279,8 +279,10 @@ def qa_data(dtype: str, run: str, name: str):
 
 @app.get("/api/documents/<dtype>/<run>/<name>/evals")
 def eval_list(dtype: str, run: str, name: str):
-    """Eval files (from eval_retrieval.py) whose metadata points at the given
-    QA file, newest first. qa_file is doc-dir-relative, as served by qa_data."""
+    """Eval files (from eval_retrieval.py), newest first, each with its full
+    metadata and aggregates so the results dialog can render any of them
+    without a follow-up fetch. When qa_file is given (doc-dir-relative, as
+    served by qa_data), only evals pointing at that QA file are returned."""
     doc_dir = qa_doc_dir(dtype, run, name)
     qa_file = request.args.get("qa_file", "")
     eval_dir = doc_dir / "evaluations"
@@ -290,18 +292,17 @@ def eval_list(dtype: str, run: str, name: str):
             if not (f.is_file() and EVAL_FILE.fullmatch(f.name)):
                 continue
             try:
-                meta = json.loads(f.read_text(encoding="utf-8")).get("metadata", {})
+                data = json.loads(f.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
+            meta = data.get("metadata", {})
             if qa_file and not str(meta.get("qa_file", "")).endswith(qa_file):
                 continue
             out.append(
                 {
                     "file": f.name,
-                    "db_type": meta.get("db_type"),
-                    "embedding_model": meta.get("embedding_model"),
-                    "top_k": meta.get("top_k"),
-                    "datetime": meta.get("datetime"),
+                    "metadata": meta,
+                    "aggregates": data.get("aggregates", {}),
                 }
             )
     return jsonify(out)

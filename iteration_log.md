@@ -69,3 +69,17 @@ Structured log of major experiments and pipeline changes, per the format in `scr
   - With an eval selected, each question shows the golden chunk's rank (red "not in top k" on a miss) and a "View Full Results" button.
   - Full results opens a context-menu-style popover anchored to the button: all retrieved chunk IDs in rank order with scores, the gold chunk tagged. Each chunk ID opens an adjacent popover with the chunk's text and a scroll-to-chunk link that scrolls the document pane behind the popovers, so a miss's retrieved chunks can be compared against the golden chunk in place.
   - Backend: `GET .../evals?qa_file=` (list matching eval files) and `GET .../evals/<file>` (per-question results plus referenced chunk texts).
+
+### Tooling: Full pipeline controls in the PDF viewer header (KEEP)
+- **Date**: 2026-07-13
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`)
+- **Purpose**: Run the whole benchmark loop from the viewer. Previously only per-chunk QA generation/editing worked in the UI; chunking, indexing, whole-document QA generation, and evaluation still required the CLI scripts, and a freshly extracted document couldn't be bootstrapped at all (no chunks → no QA → grayed-out buttons).
+- **Change**:
+  - Header reworked into pipeline order: Load PDF · Chunk Text · Index/Embed · Generate QA Pairs · View QA Pairs · Eval.
+  - Chunk Text popup: method (fixed_size/sentence/semantic) with size/overlap boxes for fixed_size → `POST .../chunk` → `chunk_text.py`.
+  - Index/Embed popup: BM-25 (tokenizers: simple/word/porter) or embeddings (small/large × chromadb/milvus) → `POST .../index` → `index_bm25.py` / `embed_chunks.py` on the document's latest chunk run.
+  - Generate QA Pairs: `POST .../qa/generate-all` → `generate_qa.py` default sampling on the latest chunk run, to bootstrap a document with no `qa_*.json` yet.
+  - Eval popup: index checkboxes from `GET .../indexes` (flagged when built from a different chunk run than the latest QA file), top-k / cutoffs / force → `POST .../eval` → `eval_retrieval.py`; aggregate metrics (MRR, R@k, NDCG, overall and per question type) shown in a modal, and new eval files appear in the QA-pane eval dropdown.
+  - QA pane now opens automatically when a document with QA pairs is opened (and after generation) instead of waiting for a click.
+  - All runs stream to the log pane and share one busy-lock so only one script runs at a time.
+- **Next step**: The viewer can now execute the Iteration 3 "next levers" (new chunking strategies, index variants, re-evals) without the CLI; candidates for later are exposing `--num-chunks`/`--seed`/question types on the generate button and a side-by-side eval comparison view.

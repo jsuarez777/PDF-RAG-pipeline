@@ -57,6 +57,11 @@
                 border-bottom: 1px solid #eee; }
   #modal-head h3 { flex: 1; font-size: 14px; }
   #modal-body { overflow-y: auto; padding: 14px 16px; font-size: 13px; }
+  .modal-eval-select { display: flex; align-items: center; gap: 8px;
+                       margin-bottom: 10px; }
+  .modal-eval-select span { font-weight: 600; }
+  .modal-eval-select select { flex: 1; min-width: 0; font-size: 12px;
+                              padding: 4px 6px; }
   .eval-db-head { font-size: 13px; font-weight: 600; margin-top: 8px;
                   overflow-wrap: anywhere; }
   .eval-table { border-collapse: collapse; width: 100%; margin: 6px 0 14px; }
@@ -268,7 +273,7 @@
   <button id="gen-all-btn" style="display:none" disabled>Generate QA Pairs</button>
   <button id="qa-btn" style="display:none" disabled>View QA Pairs</button>
   <div class="menu-wrap">
-    <button id="eval-btn" style="display:none" disabled>Eval&hellip;</button>
+    <button id="eval-btn" style="display:none" disabled>Evaluate Top-k&hellip;</button>
     <div id="eval-menu" class="dropdown menu-form" hidden>
       <label><input type="checkbox" id="eval-all" checked> All indexes matching the QA chunk run</label>
       <div id="eval-indexes" class="opt-group"></div>
@@ -278,6 +283,7 @@
       <button id="eval-go" class="primary">Evaluate</button>
     </div>
   </div>
+  <button id="eval-view-btn" style="display:none" disabled>View Evaluations&hellip;</button>
   <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
   <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
   <span id="head-spacer"></span>
@@ -757,10 +763,12 @@ function refreshGenButton() {
    disabled while any script run is in flight. Eval also needs a QA dataset. */
 function refreshPipelineButtons() {
   const show = current ? '' : 'none';
-  for (const id of ['chunk-btn', 'index-btn', 'eval-btn']) $(id).style.display = show;
+  for (const id of ['chunk-btn', 'index-btn', 'eval-btn', 'eval-view-btn'])
+    $(id).style.display = show;
   $('chunk-btn').disabled = generating;
   $('index-btn').disabled = generating;
   $('eval-btn').disabled = generating || !qaData;
+  $('eval-view-btn').disabled = generating;
 }
 
 $('deselect-btn').onclick = () => {
@@ -815,9 +823,16 @@ async function loadEvalList(doc) {
   } catch (err) { /* dropdown just stays at None */ }
 }
 
+/* Turn every YYYYMMDD_HHMMSS stamp in a string into YYYY/MM/DD HH:MM:SS. */
+function humanStamp(s) {
+  return String(s).replace(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/g,
+    '$1/$2/$3 $4:$5:$6');
+}
+
 function evalLabel(e) {
   const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
-  return [ts, e.db_type, e.embedding_model].filter(Boolean).join(' · ');
+  const m = e.metadata || {};
+  return [humanStamp(ts), m.db_type, m.embedding_model].filter(Boolean).join(' · ');
 }
 
 async function selectEval(file) {
@@ -872,7 +887,8 @@ function buildQaPane() {
   pane.appendChild(bar);
 
   const head = document.createElement('h2');
-  head.textContent = `QA pairs — ${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`;
+  head.textContent = 'QA pairs — ' +
+    humanStamp(`${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`);
   pane.appendChild(head);
   // generate --add keeps the file sorted, but old files may predate that:
   // sort for display; itemIndex keeps each item's position in the file,
@@ -1344,12 +1360,17 @@ $('eval-go').onclick = async () => {
   const doc = current;
   const results = await runPipeline('eval', body, 'Evaluating retrieval');
   if (results && current === doc) {
-    showEvalModal(results);
+    // Open the shared results dialog on the eval just produced (newest first).
+    openEvalModal(results[0] && results[0].file);
     if (qaData) loadEvalList(doc);  // new evals belong in the QA pane dropdown
   }
 };
 
-/* Eval results modal: one metrics table per evaluated index */
+/* View Evaluations: open the results dialog on the document's newest eval,
+   with the dropdown letting the user browse every past eval. */
+$('eval-view-btn').onclick = () => openEvalModal();
+
+/* Eval results modal: the metrics table for the selected eval file */
 function evalTable(r) {
   const ks = r.metadata.ks || [];
   const maxk = ks[ks.length - 1];
@@ -1371,19 +1392,106 @@ function evalTable(r) {
   }
   return table;
 }
-function showEvalModal(results) {
+let modalEvals = [];  // eval entries ({file, metadata, aggregates}) in the dialog
+
+/* Fetch every eval for the current document and open the results dialog,
+   focused on defaultFile's run if given (else the newest). A dropdown at the
+   top switches between individual evals and grouped per-run views; it is
+   always present, so the dialog looks the same however it was opened. */
+async function openEvalModal(defaultFile) {
+  const doc = current;
+  if (!doc) return;
   $('modal-title').textContent = 'Retrieval evaluation results';
   const body = $('modal-body');
+  body.innerHTML = '<small>Loading evaluations…</small>';
+  $('modal-overlay').hidden = false;
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/evals`);
+    if (!resp.ok) throw new Error(await resp.text());
+    if (current !== doc || $('modal-overlay').hidden) return;
+    modalEvals = await resp.json();
+  } catch (err) {
+    body.innerHTML = '';
+    body.textContent = 'Failed to load evaluations: ' + err.message;
+    return;
+  }
+  if (!modalEvals.length) {
+    body.innerHTML = '';
+    body.textContent = 'No evaluations yet for this document.';
+    return;
+  }
+  // Default to the target run; if that run produced several evals, show them
+  // grouped together (as the popup originally did), otherwise the single eval.
+  const target = modalEvals.some(e => e.file === defaultFile)
+    ? defaultFile : modalEvals[0].file;
+  const ts = evalStamp(modalEvals.find(e => e.file === target));
+  const grouped = modalEvals.filter(e => evalStamp(e) === ts).length > 1;
+  renderEvalModal(grouped ? 'group:' + ts : target);
+}
+
+/* Run timestamp an eval belongs to; evals from one run share this stamp. */
+function evalStamp(e) {
+  return (e.metadata && e.metadata.datetime)
+    || (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+}
+
+/* Render one eval file (value = its filename) or a whole run's evals stacked
+   together (value = "group:<timestamp>", reproducing the original popup). */
+function renderEvalModal(value) {
+  const body = $('modal-body');
   body.innerHTML = '';
-  if (!results.length) body.textContent = 'The run produced no eval files.';
-  for (const r of results) {
+
+  const groups = new Map();  // run timestamp -> its evals, insertion order
+  for (const e of modalEvals) {
+    const ts = evalStamp(e);
+    (groups.get(ts) || groups.set(ts, []).get(ts)).push(e);
+  }
+
+  const bar = document.createElement('div');
+  bar.className = 'modal-eval-select';
+  const label = document.createElement('span');
+  label.textContent = 'Result:';
+  const sel = document.createElement('select');
+  // Compact YYYYMMDD_HHMMSS stamp (sorts chronologically); shared by an eval
+  // and its grouped view so both order together in the list.
+  const fileStamp = e => (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+  const options = [];
+  for (const [ts, evs] of groups) {
+    if (evs.length < 2) continue;  // a single-eval run's group would just dupe it
+    const stamp = fileStamp(evs[0]) || ts;
+    options.push({ stamp, sub: 0, value: 'group:' + ts,
+                   text: `${humanStamp(stamp)} · All (${evs.length})` });
+  }
+  for (const e of modalEvals)
+    options.push({ stamp: fileStamp(e), sub: 1, value: e.file, text: evalLabel(e) });
+  // newest first; a grouped view sits just above its own evals
+  options.sort((a, b) => b.stamp.localeCompare(a.stamp) || a.sub - b.sub);
+  for (const o of options) {
+    const opt = document.createElement('option');
+    opt.value = o.value;
+    opt.textContent = o.text;
+    sel.appendChild(opt);
+  }
+  sel.value = value;
+  sel.onchange = () => renderEvalModal(sel.value);
+  bar.append(label, sel);
+  body.appendChild(bar);
+
+  const shown = value.startsWith('group:')
+    ? (groups.get(value.slice(6)) || [])
+    : modalEvals.filter(e => e.file === value);
+  if (!shown.length) {
+    body.append(document.createTextNode('Evaluation not found.'));
+    return;
+  }
+  for (const r of shown) {
     const h = document.createElement('div');
     h.className = 'eval-db-head';
     h.textContent = `${r.metadata.db || r.file} — top_k ${r.metadata.top_k}, ` +
       `${r.metadata.num_questions} questions`;
     body.append(h, evalTable(r));
   }
-  $('modal-overlay').hidden = false;
 }
 $('modal-close').onclick = () => { $('modal-overlay').hidden = true; };
 $('modal-overlay').onclick = ev => {
