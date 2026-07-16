@@ -5,9 +5,15 @@ Datasets live under data/{pdf2image,pdfplumber}/<date>/<title>/.
   - pdf2image:  page_N_easyocr.json, text field "extracted_text"
   - pdfplumber: page_N.json,         text field "full_text"
 
-Chunk types: fixed_size, sentence, semantic (only fixed_size implemented).
-fixed_size is given as  fixed_size:<size>:<overlap>  where overlap is a
-character count, or a percent of size if it ends with "%".
+Chunk types: fixed_size, sentence, sentence-dynamic-min, semantic
+(semantic not yet implemented).
+  fixed_size:<size>:<overlap>       overlap chars, or a percent of size ("10%").
+  sentence:<n>[:<overlap>]          exactly n sentences/chunk (optional sentence
+                                    overlap); oversized "sentences" (flattened
+                                    tables) hard-split at a char cap from n.
+  sentence-dynamic-min:<n>[:<ov>]   like sentence, but keeps packing past n
+                                    until a min-chars floor is met, so short
+                                    fragments (shredded tables) aren't left tiny.
 """
 
 import argparse
@@ -31,17 +37,67 @@ EXTRACTORS = {
     "pdfplumber": {"json_suffix": ".json", "text_field": "full_text"},
 }
 
-CHUNK_TYPES = ("fixed_size", "sentence", "semantic")
+CHUNK_TYPES = ("fixed_size", "sentence", "sentence-dynamic-min", "semantic")
+
+# Sentence methods share parsing/grouping; only the min-chars floor differs.
+SENTENCE_METHODS = ("sentence", "sentence-dynamic-min")
 
 PAGE_RE = re.compile(r"^page_(\d+)")
 
+# Sentence-chunk sizing, calibrated against the pdfplumber corpus
+# (mean 34.5 words/sentence, 5.82 chars/word incl. spaces). A "sentence" that
+# exceeds the derived cap is almost always a flattened table/chart with no real
+# boundary, so it is hard-split; see chunk-strategy eval notes.
+SENT_AVG_WORDS = 35
+SENT_MIN_WORDS = 15
+SENT_CHARS_PER_WORD = 6
+SENT_CAP_BUFFER = 0.20
+
+
+def sentence_cap_chars(n_per_chunk):
+    """Max chars a sentence chunk may reach before it is force-split."""
+    return int(n_per_chunk * SENT_AVG_WORDS * SENT_CHARS_PER_WORD * (1 + SENT_CAP_BUFFER))
+
+
+def sentence_min_chars(n_per_chunk):
+    """Floor (chars) a sentence-dynamic-min chunk must reach; it keeps absorbing
+    sentences past n_per_chunk until met, so short fragments get packed together."""
+    return int(n_per_chunk * SENT_MIN_WORDS * SENT_CHARS_PER_WORD)
+
 
 def parse_type(type_str):
-    """Return (method, size, overlap). size/overlap are None unless fixed_size."""
+    """Return (method, size, overlap).
+
+    fixed_size:            size=chars/chunk, overlap=chars.
+    sentence:              size=sentences/chunk, overlap=sentences (default 0).
+    sentence-dynamic-min:  same params; packs past size until a min-chars floor.
+    semantic:              size/overlap None.
+    """
     parts = type_str.split(":")
     method = parts[0]
     if method not in CHUNK_TYPES:
         sys.exit(f"ERROR: unknown chunk type '{method}'. Valid types: {', '.join(CHUNK_TYPES)}")
+
+    if method in SENTENCE_METHODS:
+        if len(parts) not in (2, 3):
+            sys.exit(f"ERROR: {method} must be of form {method}:<sentences per chunk>[:<overlap sentences>], e.g. {method}:3 or {method}:3:1")
+        try:
+            size = int(parts[1])
+        except ValueError:
+            sys.exit(f"ERROR: invalid sentences-per-chunk '{parts[1]}' (must be an integer)")
+        if size <= 0:
+            sys.exit("ERROR: sentences per chunk must be > 0")
+        overlap = 0
+        if len(parts) == 3:
+            try:
+                overlap = int(parts[2])
+            except ValueError:
+                sys.exit(f"ERROR: invalid overlap '{parts[2]}' (must be an integer number of sentences)")
+            if overlap < 0:
+                sys.exit("ERROR: overlap must be >= 0")
+            if overlap >= size:
+                sys.exit(f"ERROR: overlap ({overlap}) must be less than sentences per chunk ({size})")
+        return method, size, overlap
 
     if method != "fixed_size":
         if len(parts) > 1:
@@ -194,10 +250,9 @@ def load_and_validate_pages(ds):
     return pages
 
 
-def fixed_size_chunks(pages, size, overlap):
-    """Concatenate page texts (newline-joined) and cut fixed-size overlapping chunks."""
-    # Build full text with per-page character spans so chunks can report
-    # which pages they start/end on.
+def build_full_text(pages):
+    """Join page texts with newlines; return (full_text, page_at) where page_at
+    maps a char position back to the page number it falls on."""
     full_parts = []
     spans = []  # (page, start, end) in full-text coordinates
     pos = 0
@@ -220,6 +275,13 @@ def fixed_size_chunks(pages, size, overlap):
                 return n
         return spans[-1][0]
 
+    return full_text, page_at
+
+
+def fixed_size_chunks(pages, size, overlap):
+    """Concatenate page texts (newline-joined) and cut fixed-size overlapping chunks."""
+    full_text, page_at = build_full_text(pages)
+
     chunks = []
     step = size - overlap
     start = 0
@@ -238,6 +300,89 @@ def fixed_size_chunks(pages, size, overlap):
         if end >= len(full_text):
             break
         start += step
+    return chunks, len(full_text)
+
+
+def segment_sentences(full_text, cap):
+    """Split full_text into (sentence_text, start_char) pairs using pysbd.
+
+    Any single sentence longer than `cap` chars (almost always a flattened
+    table/chart with no real boundary) is hard-split into cap-sized pieces so
+    no downstream chunk can be oversized.
+    """
+    import pysbd  # local import: only needed for the sentence method
+
+    seg = pysbd.Segmenter(language="en", clean=False)
+    out = []
+    cursor = 0
+    for sent in seg.segment(full_text):
+        if not sent.strip():
+            continue
+        # Recover the char offset; clean=False keeps sentences as substrings.
+        idx = full_text.find(sent, cursor)
+        if idx == -1:  # defensive: fall back to current cursor
+            idx = cursor
+        cursor = idx + len(sent)
+        if len(sent) <= cap:
+            out.append((sent, idx))
+        else:
+            for off in range(0, len(sent), cap):
+                out.append((sent[off:off + cap], idx + off))
+    return out
+
+
+def sentence_chunks(pages, n_per_chunk, overlap, min_chars=None):
+    """Group sentences into chunks of n_per_chunk (with sentence overlap).
+
+    A chunk closes early if adding the next sentence would exceed the char cap
+    derived from n_per_chunk, so table blobs can't inflate a chunk. If min_chars
+    is set (sentence-dynamic-min), a chunk instead keeps absorbing sentences
+    *past* n_per_chunk until it reaches the floor, so short pysbd fragments
+    (shredded tables) get packed together rather than left as tiny chunks.
+    """
+    full_text, page_at = build_full_text(pages)
+    cap = sentence_cap_chars(n_per_chunk)
+    sentences = segment_sentences(full_text, cap)
+
+    chunks = []
+    i = 0
+    while i < len(sentences):
+        group = []
+        chars = 0
+        j = i
+        while j < len(sentences):
+            sent, sstart = sentences[j]
+            addition = len(sent) + (1 if group else 0)  # +1 for joining space
+            if group:
+                if chars + addition > cap:
+                    break  # cap always wins: this sentence starts the next chunk
+                # Stop once we have enough sentences AND (if a floor is set) enough chars.
+                reached_floor = min_chars is None or chars >= min_chars
+                if len(group) >= n_per_chunk and reached_floor:
+                    break
+            group.append((sent, sstart))
+            chars += addition
+            j += 1
+
+        start_char = group[0][1]
+        last_sent, last_start = group[-1]
+        end_char = last_start + len(last_sent)
+        text = full_text[start_char:end_char]
+        chunks.append({
+            "chunk_index": len(chunks),
+            "text": text,
+            "start_char": start_char,
+            "end_char": end_char,
+            "num_chars": len(text),
+            "num_sentences": len(group),
+            "start_page": page_at(start_char),
+            "end_page": page_at(end_char - 1),
+        })
+        if j >= len(sentences):
+            break
+        # Advance by however many sentences this chunk emitted, minus overlap;
+        # always make progress (>=1) even if the cap forced a 1-sentence chunk.
+        i += max(1, len(group) - overlap)
     return chunks, len(full_text)
 
 
@@ -269,35 +414,49 @@ def main():
             size_in = input("Chunk size (characters): ").strip()
             overlap_in = input("Overlap (characters, or percent like 10%): ").strip()
             type_str = f"fixed_size:{size_in}:{overlap_in}"
+        elif type_str in SENTENCE_METHODS:
+            n_in = input("Sentences per chunk: ").strip()
+            ov_in = input("Overlap (sentences, blank for 0): ").strip()
+            type_str = f"{type_str}:{n_in}:{ov_in}" if ov_in else f"{type_str}:{n_in}"
 
     method, size, overlap = parse_type(type_str)
-    if method != "fixed_size":
-        sys.exit(f"ERROR: chunk type '{method}' is not implemented yet (only fixed_size)")
+    if method == "semantic":
+        sys.exit(f"ERROR: chunk type '{method}' is not implemented yet")
 
     datasets = scan_datasets()
     ds = choose_dataset(datasets, preselect=args.dataset)
     pages = load_and_validate_pages(ds)
 
-    chunks, total_chars = fixed_size_chunks(pages, size, overlap)
+    if method in SENTENCE_METHODS:
+        min_chars = sentence_min_chars(size) if method == "sentence-dynamic-min" else None
+        chunks, total_chars = sentence_chunks(pages, size, overlap, min_chars=min_chars)
+    else:
+        chunks, total_chars = fixed_size_chunks(pages, size, overlap)
 
     now = datetime.now()
     out_dir = ds["path"] / f"{now.strftime('%Y%m%d_%H%M%S')}_chunk_{method}_{size}_{overlap}"
     out_dir.mkdir(parents=True, exist_ok=False)
 
-    result = {
-        "metadata": {
-            "datetime": now.isoformat(timespec="seconds"),
-            "dataset": ds["rel"],
-            "extractor": ds["extractor"],
-            "chunk_method": method,
-            "chunk_size": size,
-            "overlap": overlap,
-            "num_pages": len(pages),
-            "total_chars": total_chars,
-            "num_chunks": len(chunks),
-        },
-        "chunks": chunks,
+    metadata = {
+        "datetime": now.isoformat(timespec="seconds"),
+        "dataset": ds["rel"],
+        "extractor": ds["extractor"],
+        "chunk_method": method,
+        "num_pages": len(pages),
+        "total_chars": total_chars,
+        "num_chunks": len(chunks),
     }
+    if method in SENTENCE_METHODS:
+        metadata["sentences_per_chunk"] = size
+        metadata["overlap_sentences"] = overlap
+        metadata["char_cap"] = sentence_cap_chars(size)
+        if method == "sentence-dynamic-min":
+            metadata["char_floor"] = sentence_min_chars(size)
+    else:
+        metadata["chunk_size"] = size
+        metadata["overlap"] = overlap
+
+    result = {"metadata": metadata, "chunks": chunks}
 
     out_file = out_dir / "chunked_text.json"
     out_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
