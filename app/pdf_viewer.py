@@ -475,7 +475,8 @@ def chunk_document(dtype: str, run: str, name: str):
     payload = request.get_json(force=True) or {}
 
     method = payload.get("type")
-    if method not in ("fixed_size", "sentence", "semantic"):
+    if method not in ("fixed_size", "sentence", "sentence-dynamic-min",
+                      "plumber-struct", "semantic"):
         abort(400, "invalid chunk type")
     if method == "fixed_size":
         size = payload.get("size")
@@ -485,6 +486,19 @@ def chunk_document(dtype: str, run: str, name: str):
         if not re.fullmatch(r"\d+(?:\.\d+)?%|\d+", overlap):
             abort(400, "overlap must be an integer or a percent like 10%")
         type_str = f"fixed_size:{size}:{overlap}"
+    elif method in ("sentence", "sentence-dynamic-min"):
+        size = payload.get("size")
+        overlap = payload.get("overlap", 0)
+        if not (isinstance(size, int) and size > 0):
+            abort(400, "sentences per chunk must be a positive integer")
+        if not (isinstance(overlap, int) and 0 <= overlap < size):
+            abort(400, "overlap must be a non-negative integer below the chunk size")
+        type_str = f"{method}:{size}:{overlap}"
+    elif method == "plumber-struct":
+        size = payload.get("size")
+        if size is not None and not (isinstance(size, int) and size > 0):
+            abort(400, "sentences per text chunk must be a positive integer")
+        type_str = f"plumber-struct:{size}" if size else "plumber-struct"
     else:
         type_str = method
 
@@ -661,6 +675,99 @@ def run_eval(dtype: str, run: str, name: str):
                 "aggregates": data.get("aggregates", {}),
             })
     return jsonify(results)
+
+
+CHUNK_SPEC = re.compile(
+    r"fixed_size:\d+:(?:\d+(?:\.\d+)?%|\d+)"
+    r"|(?:sentence|sentence-dynamic-min):\d+(?::\d+)?"
+    r"|plumber-struct(?::\d+)?"
+    r"|semantic"
+)
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/pipeline")
+def run_full_pipeline(dtype: str, run: str, name: str):
+    """Run the full grid pipeline (run_pipeline.py) on this document and
+    return the pipeline results JSON it produced."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    chunk_types = payload.get("chunk_types")
+    if not (isinstance(chunk_types, list) and chunk_types
+            and all(isinstance(c, str) and CHUNK_SPEC.fullmatch(c) for c in chunk_types)):
+        abort(400, "chunk_types must be a non-empty list of chunk specs like fixed_size:256:50")
+
+    def csv_of(key, valid, default):
+        vals = payload.get(key) or default
+        if not (isinstance(vals, list) and vals and all(v in valid for v in vals)):
+            abort(400, f"{key} must be a non-empty list from: {', '.join(valid)}")
+        return ",".join(dict.fromkeys(vals))
+
+    embeddings = csv_of("embeddings", ("small", "large"), ["small"])
+    tokenizers = csv_of("tokenizers", ("simple", "word", "porter"), ["word"])
+    retrievals = csv_of("retrievals", ("bm25", "vector", "hybrid"),
+                        ["bm25", "vector", "hybrid"])
+    qa_types = csv_of("qa_types", ("direct", "inference", "paraphrased"),
+                      ["direct", "inference", "paraphrased"])
+
+    vector_db = payload.get("vector_db", "milvus")
+    if vector_db not in ("milvus", "chromadb"):
+        abort(400, "vector_db must be milvus or chromadb")
+    alpha = payload.get("alpha", 0.7)
+    if not (isinstance(alpha, (int, float)) and 0 <= alpha <= 1):
+        abort(400, "alpha must be between 0 and 1")
+    qa_num = payload.get("qa_num", 20)
+    if not (isinstance(qa_num, int) and qa_num > 0):
+        abort(400, "qa_num must be a positive integer")
+    topk = payload.get("topk", 10)
+    if not (isinstance(topk, int) and topk > 0):
+        abort(400, "topk must be a positive integer")
+    ks = str(payload.get("ks", "1,3,5,10")).replace(" ", "")
+    if not re.fullmatch(r"\d+(,\d+)*", ks):
+        abort(400, "ks must be comma-separated integers")
+
+    cmd = [sys.executable, str(SCRIPT_DIR / "run_pipeline.py"),
+           "--dataset", doc_dir.relative_to(PROJECT_ROOT).as_posix(),
+           "--chunk-types", ",".join(dict.fromkeys(chunk_types)),
+           "--embeddings", embeddings, "--vector-db", vector_db,
+           "--tokenizers", tokenizers, "--retrievals", retrievals,
+           "--alpha", str(alpha), "--qa-num", str(qa_num), "--qa-types", qa_types,
+           "--topk", str(topk), "--ks", ks]
+    if payload.get("seed") is not None:
+        if not isinstance(payload["seed"], int):
+            abort(400, "seed must be an integer")
+        cmd += ["--seed", str(payload["seed"])]
+
+    started = time.time()
+    code = run_and_stream(cmd)
+    if code != 0:
+        abort(500, f"run_pipeline.py failed with exit code {code}")
+
+    results_dir = doc_dir / "pipeline_runs"
+    candidates = [f for f in results_dir.glob("pipeline_*.json")
+                  if f.stat().st_mtime >= started - 1] if results_dir.is_dir() else []
+    if not candidates:
+        abort(500, "pipeline ran but produced no results file")
+    newest = max(candidates, key=lambda f: f.name)
+    try:
+        return jsonify(json.loads(newest.read_text(encoding="utf-8")))
+    except (OSError, json.JSONDecodeError):
+        abort(500, f"could not read {newest.name}")
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/pipeline-runs")
+def pipeline_runs(dtype: str, run: str, name: str):
+    """Past pipeline results for this document, newest first."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    results_dir = doc_dir / "pipeline_runs"
+    out = []
+    if results_dir.is_dir():
+        for f in sorted(results_dir.glob("pipeline_*.json"), reverse=True):
+            try:
+                out.append(json.loads(f.read_text(encoding="utf-8")))
+            except (OSError, json.JSONDecodeError):
+                continue
+    return jsonify(out)
 
 
 @app.post("/api/documents/<run>/<name>/ocr/<int:page>")

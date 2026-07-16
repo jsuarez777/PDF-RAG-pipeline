@@ -66,7 +66,12 @@ def test_parse_overlap_just_below_size_ok(caplog):
         "fixed_size",             # missing size and overlap
         "fixed_size:100:20:5",    # too many parts
         "bogus_type",             # unknown type
-        "sentence:5",             # non-fixed_size type takes no params
+        "sentence",               # sentence types need a sentences-per-chunk count
+        "sentence:0",             # zero sentences per chunk
+        "sentence:5:5",           # sentence overlap must be below the chunk size
+        "sentence:5:1:2",         # too many parts
+        "sentence-dynamic-min",   # same rules as sentence
+        "semantic:5",             # semantic takes no params
     ],
 )
 def test_parse_type_rejects_bad_specs(spec):
@@ -84,9 +89,14 @@ def test_parse_no_warning_at_exactly_half(caplog):
     assert "WARNING" not in caplog.text
 
 
-def test_parse_other_types_take_no_params():
-    assert chunk_text.parse_type("sentence") == ("sentence", None, None)
+def test_parse_semantic_takes_no_params():
     assert chunk_text.parse_type("semantic") == ("semantic", None, None)
+
+
+def test_parse_sentence_specs():
+    assert chunk_text.parse_type("sentence:5") == ("sentence", 5, 0)
+    assert chunk_text.parse_type("sentence:5:1") == ("sentence", 5, 1)
+    assert chunk_text.parse_type("sentence-dynamic-min:3:2") == ("sentence-dynamic-min", 3, 2)
 
 
 # --------------------------------------------------------- fixed_size_chunks
@@ -236,10 +246,66 @@ def test_main_end_to_end(data_root, monkeypatch):
 
 def test_main_rejects_unimplemented_type(data_root, monkeypatch):
     with pytest.raises(SystemExit) as exc:
-        run_main(monkeypatch, "--type", "sentence")
+        run_main(monkeypatch, "--type", "semantic")
     assert "not implemented" in str(exc.value)
 
 
 def test_main_bad_overlap_exits_before_dataset_prompt(data_root, monkeypatch):
     with pytest.raises(SystemExit):
         run_main(monkeypatch, "--type", "fixed_size:100:120")
+
+
+# ------------------------------------------------------ plumber-struct chunks
+
+def test_parse_plumber_struct_specs():
+    assert chunk_text.parse_type("plumber-struct") == (
+        "plumber-struct", chunk_text.PLUMBER_STRUCT_DEFAULT_SENTENCES, 0)
+    assert chunk_text.parse_type("plumber-struct:3") == ("plumber-struct", 3, 0)
+    with pytest.raises(SystemExit):
+        chunk_text.parse_type("plumber-struct:3:1")
+    with pytest.raises(SystemExit):
+        chunk_text.parse_type("plumber-struct:0")
+
+
+def test_table_row_lines_labels_cells_with_headers():
+    table = [["Year", "Rate", None],
+             ["2012", "45%", ""],
+             [None, "38%", "note"]]
+    lines = chunk_text.table_row_lines(table)
+    assert lines == ["Year: 2012; Rate: 45%", "Rate: 38%; col3: note"]
+
+
+def test_table_row_lines_single_row_and_empty():
+    assert chunk_text.table_row_lines([["a", None, "b"]]) == ["a; b"]
+    assert chunk_text.table_row_lines([]) == []
+    assert chunk_text.table_row_lines([[None, ""], ["", None]]) == []
+
+
+def test_pack_lines_respects_cap():
+    blocks = chunk_text.pack_lines(["x" * 40, "y" * 40, "z" * 40], cap=90)
+    assert blocks == ["x" * 40 + "\n" + "y" * 40, "z" * 40]
+    # a single oversized line still becomes its own block
+    assert chunk_text.pack_lines(["w" * 200], cap=90) == ["w" * 200]
+
+
+def test_plumber_struct_chunks_sources():
+    pages = [
+        {"page": 1,
+         "text": "One sentence here. Another sentence follows. A third one ends it.",
+         "tables": [[["H1", "H2"], ["a", "b"], ["c", "d"]]],
+         "images": [{"file": "page_1_image_1.png", "image_number": 1,
+                     "name": "Im0", "width": 100.0, "height": 50.0}]},
+        {"page": 2, "text": "", "tables": [], "images": []},
+    ]
+    chunks, total = chunk_text.plumber_struct_chunks(pages, n_per_chunk=5)
+    by_source = {}
+    for c in chunks:
+        by_source.setdefault(c["source"], []).append(c)
+    assert set(by_source) == {"text", "table", "image"}
+    assert [c["chunk_index"] for c in chunks] == list(range(len(chunks)))
+    (table_chunk,) = by_source["table"]
+    assert "H1: a; H2: b" in table_chunk["text"]
+    assert table_chunk["text"].startswith("Table 1 on page 1")
+    (image_chunk,) = by_source["image"]
+    assert "Im0" in image_chunk["text"] and "page_1_image_1.png" in image_chunk["text"]
+    assert all(c["start_page"] == 1 for c in chunks)  # page 2 had no content

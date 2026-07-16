@@ -45,6 +45,11 @@
   .menu-form .opt-group { display: flex; flex-direction: column; gap: 5px;
                           border-top: 1px solid #eee; padding-top: 8px; }
   .menu-form .opt-group[hidden] { display: none; }
+  #pipe-menu { max-height: 75vh; overflow-y: auto; min-width: 300px; }
+  #pipe-menu .pc-size, #pipe-menu .pc-ov { width: 62px; padding: 2px 5px;
+    border: 1px solid #ccc; border-radius: 5px; }
+  #pipe-menu #pipe-alpha { width: 62px; }
+  #pipe-count { font-weight: 600; padding: 2px 0; }
 
   /* Modal dialog (eval results) */
   #modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.4);
@@ -84,15 +89,21 @@
 
   /* Viewer */
   #viewer { flex: 1; display: none; min-height: 0; }
-  #thumbs { width: 20%; min-width: 120px; overflow-y: auto; padding: 10px;
+  #thumbs { width: 120px; min-width: 120px; overflow-y: auto; padding: 10px;
             background: #fff; border-right: 1px solid #ddd; }
   .thumb { border: 2px solid transparent; border-radius: 6px; padding: 4px;
            cursor: pointer; margin-bottom: 8px; text-align: center; }
   .thumb.selected { border-color: #0071e3; background: #eaf3fe; }
   .thumb img { width: 100%; display: block; border: 1px solid #e0e0e0; }
   .thumb .label { font-size: 12px; color: #6e6e73; margin-top: 4px; }
-  #divider { width: 5px; cursor: col-resize; background: #ddd; flex-shrink: 0; }
+  #divider { width: 5px; cursor: col-resize; background: #ddd; flex-shrink: 0;
+             position: relative; }
   #divider:hover, #divider.dragging { background: #0071e3; }
+  #thumbs-toggle { position: absolute; top: 50%; left: 100%; transform: translateY(-50%);
+                   z-index: 5; width: 15px; height: 48px; padding: 0; cursor: pointer;
+                   border: 1px solid #ddd; border-left: none; border-radius: 0 6px 6px 0;
+                   background: #fff; color: #6e6e73; font-size: 9px; line-height: 1; }
+  #thumbs-toggle:hover { color: #0071e3; border-color: #0071e3; }
   #preview { flex: 1; overflow-y: auto; padding: 16px; }
   #preview .placeholder { color: #6e6e73; display: block; text-align: center; margin-top: 40px; }
   .page-row { display: flex; gap: 16px; align-items: flex-start; padding: 12px;
@@ -237,6 +248,8 @@
         <select id="chunk-method">
           <option value="fixed_size" selected>fixed_size</option>
           <option value="sentence">sentence</option>
+          <option value="sentence-dynamic-min">sentence-dynamic-min</option>
+          <option value="plumber-struct">plumber-struct (text/tables/images)</option>
           <option value="semantic">semantic</option>
         </select>
       </label>
@@ -244,6 +257,16 @@
         <label>Chunk size <input id="chunk-size" type="number" min="1" value="256"></label>
         <label>Overlap <input id="chunk-overlap" type="text" value="50"></label>
         <small>Overlap in characters, or a percent of size like 10%</small>
+      </div>
+      <div id="chunk-sent" class="opt-group" hidden>
+        <label>Sentences/chunk <input id="chunk-sent-n" type="number" min="1" value="5"></label>
+        <label>Overlap <input id="chunk-sent-ov" type="number" min="0" value="1"></label>
+        <small>Overlap in sentences (must be below sentences/chunk)</small>
+      </div>
+      <div id="chunk-plumber" class="opt-group" hidden>
+        <label>Sentences/text chunk <input id="chunk-plumber-n" type="number" min="1" value="5"></label>
+        <small>pdfplumber only: prose as sentence chunks, tables as
+          header-labeled rows, images as descriptors</small>
       </div>
       <button id="chunk-go" class="primary">Create Chunks</button>
     </div>
@@ -284,6 +307,64 @@
     </div>
   </div>
   <button id="eval-view-btn" style="display:none" disabled>View Evaluations&hellip;</button>
+  <div class="menu-wrap">
+    <button id="pipe-btn" style="display:none" disabled>Run Pipeline&hellip;</button>
+    <div id="pipe-menu" class="dropdown menu-form" hidden>
+      <small>Chunking strategies (size / overlap)</small>
+      <div class="opt-group" id="pipe-chunks">
+        <label><input type="checkbox" class="pchunk" data-kind="fixed_size" checked> fixed_size
+          <input class="pc-size" type="number" min="1" value="256">
+          <input class="pc-ov" type="text" value="50"></label>
+        <label><input type="checkbox" class="pchunk" data-kind="fixed_size"> fixed_size
+          <input class="pc-size" type="number" min="1" value="512">
+          <input class="pc-ov" type="text" value="100"></label>
+        <label><input type="checkbox" class="pchunk" data-kind="sentence"> sentence
+          <input class="pc-size" type="number" min="1" value="5">
+          <input class="pc-ov" type="number" min="0" value="1"></label>
+        <label><input type="checkbox" class="pchunk" data-kind="sentence-dynamic-min"> sent-dyn-min
+          <input class="pc-size" type="number" min="1" value="5">
+          <input class="pc-ov" type="number" min="0" value="1"></label>
+        <label><input type="checkbox" class="pchunk" data-kind="plumber-struct"> plumber-struct
+          <input class="pc-size" type="number" min="1" value="5"></label>
+      </div>
+      <small>Embedding models</small>
+      <div class="opt-group">
+        <label><input type="checkbox" class="pemb" value="small" checked> small (text-embedding-3-small)</label>
+        <label><input type="checkbox" class="pemb" value="large"> large (text-embedding-3-large)</label>
+        <label>Vector DB
+          <select id="pipe-vdb">
+            <option value="milvus" selected>milvus</option>
+            <option value="chromadb">chromadb</option>
+          </select>
+        </label>
+      </div>
+      <small>BM25 tokenizers</small>
+      <div class="opt-group">
+        <label><input type="checkbox" class="ptok" value="simple"> simple</label>
+        <label><input type="checkbox" class="ptok" value="word" checked> word</label>
+        <label><input type="checkbox" class="ptok" value="porter"> porter</label>
+      </div>
+      <small>Retrieval methods</small>
+      <div class="opt-group">
+        <label><input type="checkbox" class="pret" value="bm25" checked> bm25 (lexical)</label>
+        <label><input type="checkbox" class="pret" value="vector" checked> vector (semantic)</label>
+        <label><input type="checkbox" class="pret" value="hybrid" checked> hybrid
+          &alpha; <input id="pipe-alpha" type="number" min="0" max="1" step="0.05" value="0.7"></label>
+      </div>
+      <small>QA generation</small>
+      <div class="opt-group">
+        <label>Chunks to sample <input id="pipe-qanum" type="number" min="1" value="20"></label>
+        <label><input type="checkbox" class="pqat" value="direct" checked> direct</label>
+        <label><input type="checkbox" class="pqat" value="inference" checked> inference</label>
+        <label><input type="checkbox" class="pqat" value="paraphrased" checked> paraphrased</label>
+      </div>
+      <label>Top-K <input id="pipe-topk" type="number" min="1" value="10"></label>
+      <label>Cutoffs <input id="pipe-ks" type="text" value="1,3,5,10"></label>
+      <div id="pipe-count"></div>
+      <button id="pipe-go" class="primary">Run Pipeline</button>
+    </div>
+  </div>
+  <button id="pipe-view-btn" style="display:none" disabled>Pipeline Results&hellip;</button>
   <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
   <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
   <span id="head-spacer"></span>
@@ -310,7 +391,9 @@
 
 <div id="viewer">
   <div id="thumbs"></div>
-  <div id="divider"></div>
+  <div id="divider">
+    <button id="thumbs-toggle" title="Hide page list">&#9664;</button>
+  </div>
   <div id="preview"><span class="placeholder">Select a page on the left</span></div>
   <div id="qa-pane" hidden></div>
 </div>
@@ -763,12 +846,15 @@ function refreshGenButton() {
    disabled while any script run is in flight. Eval also needs a QA dataset. */
 function refreshPipelineButtons() {
   const show = current ? '' : 'none';
-  for (const id of ['chunk-btn', 'index-btn', 'eval-btn', 'eval-view-btn'])
+  for (const id of ['chunk-btn', 'index-btn', 'eval-btn', 'eval-view-btn',
+                    'pipe-btn', 'pipe-view-btn'])
     $(id).style.display = show;
   $('chunk-btn').disabled = generating;
   $('index-btn').disabled = generating;
   $('eval-btn').disabled = generating || !qaData;
   $('eval-view-btn').disabled = generating;
+  $('pipe-btn').disabled = generating;
+  $('pipe-view-btn').disabled = generating;
 }
 
 $('deselect-btn').onclick = () => {
@@ -1253,7 +1339,10 @@ async function runPipeline(path, body, statusMsg) {
 /* Chunk Text: options popup -> chunk_text.py on this document */
 setupMenu('chunk-btn', 'chunk-menu');
 $('chunk-method').onchange = () => {
-  $('chunk-fixed').hidden = $('chunk-method').value !== 'fixed_size';
+  const method = $('chunk-method').value;
+  $('chunk-fixed').hidden = method !== 'fixed_size';
+  $('chunk-sent').hidden = method !== 'sentence' && method !== 'sentence-dynamic-min';
+  $('chunk-plumber').hidden = method !== 'plumber-struct';
 };
 $('chunk-go').onclick = async () => {
   const body = { type: $('chunk-method').value };
@@ -1262,6 +1351,19 @@ $('chunk-go').onclick = async () => {
     body.overlap = $('chunk-overlap').value.trim();
     if (!(body.size > 0)) {
       $('status').textContent = 'Chunk size must be a positive integer';
+      return;
+    }
+  } else if (body.type === 'sentence' || body.type === 'sentence-dynamic-min') {
+    body.size = parseInt($('chunk-sent-n').value, 10);
+    body.overlap = parseInt($('chunk-sent-ov').value, 10) || 0;
+    if (!(body.size > 0) || !(body.overlap >= 0 && body.overlap < body.size)) {
+      $('status').textContent = 'Sentences/chunk must be positive and overlap below it';
+      return;
+    }
+  } else if (body.type === 'plumber-struct') {
+    body.size = parseInt($('chunk-plumber-n').value, 10);
+    if (!(body.size > 0)) {
+      $('status').textContent = 'Sentences/text chunk must be a positive integer';
       return;
     }
   }
@@ -1369,6 +1471,169 @@ $('eval-go').onclick = async () => {
 /* View Evaluations: open the results dialog on the document's newest eval,
    with the dropdown letting the user browse every past eval. */
 $('eval-view-btn').onclick = () => openEvalModal();
+
+/* Run Pipeline: full grid config (chunking x embeddings x retrieval), with a
+   live count of how many experiments the current selection will run. */
+setupMenu('pipe-btn', 'pipe-menu', updatePipeCount);
+function pipeConfig() {
+  const vals = sel => [...document.querySelectorAll(sel + ':checked')].map(c => c.value);
+  const chunk_types = [];
+  document.querySelectorAll('#pipe-chunks label').forEach(l => {
+    const check = l.querySelector('.pchunk');
+    if (!check.checked) return;
+    const size = l.querySelector('.pc-size').value.trim();
+    const ov = l.querySelector('.pc-ov');  // plumber-struct has no overlap input
+    chunk_types.push(ov ? `${check.dataset.kind}:${size}:${ov.value.trim()}`
+                        : `${check.dataset.kind}:${size}`);
+  });
+  return {
+    chunk_types,
+    embeddings: vals('.pemb'),
+    vector_db: $('pipe-vdb').value,
+    tokenizers: vals('.ptok'),
+    retrievals: vals('.pret'),
+    alpha: parseFloat($('pipe-alpha').value),
+    qa_num: parseInt($('pipe-qanum').value, 10),
+    qa_types: vals('.pqat'),
+    topk: parseInt($('pipe-topk').value, 10),
+    ks: $('pipe-ks').value.trim(),
+  };
+}
+/* bm25 runs once per tokenizer, vector once per embedding model, hybrid once
+   per embedding x tokenizer pair — all times the number of chunk configs. */
+function pipePermutations(cfg) {
+  let perChunk = 0;
+  if (cfg.retrievals.includes('bm25')) perChunk += cfg.tokenizers.length;
+  if (cfg.retrievals.includes('vector')) perChunk += cfg.embeddings.length;
+  if (cfg.retrievals.includes('hybrid'))
+    perChunk += cfg.embeddings.length * cfg.tokenizers.length;
+  return cfg.chunk_types.length * perChunk;
+}
+function updatePipeCount() {
+  const n = pipePermutations(pipeConfig());
+  $('pipe-count').textContent = `${n} experiment${n === 1 ? '' : 's'} will run`;
+}
+$('pipe-menu').addEventListener('change', updatePipeCount);
+$('pipe-menu').addEventListener('input', updatePipeCount);
+
+$('pipe-go').onclick = async () => {
+  const cfg = pipeConfig();
+  const needVec = cfg.retrievals.includes('vector') || cfg.retrievals.includes('hybrid');
+  const needTok = cfg.retrievals.includes('bm25') || cfg.retrievals.includes('hybrid');
+  let error = null;
+  if (!cfg.chunk_types.length) error = 'Pick at least one chunking strategy';
+  else if (!cfg.retrievals.length) error = 'Pick at least one retrieval method';
+  else if (needVec && !cfg.embeddings.length) error = 'Pick at least one embedding model';
+  else if (needTok && !cfg.tokenizers.length) error = 'Pick at least one tokenizer';
+  else if (!cfg.qa_types.length) error = 'Pick at least one QA question type';
+  else if (!(cfg.qa_num > 0)) error = 'QA chunks to sample must be a positive integer';
+  else if (!(cfg.topk > 0)) error = 'Top-K must be a positive integer';
+  else if (!(cfg.alpha >= 0 && cfg.alpha <= 1)) error = 'Alpha must be between 0 and 1';
+  if (error) {
+    $('status').textContent = error;
+    return;
+  }
+  closeMenus();
+  const doc = current;
+  const data = await runPipeline('pipeline', cfg, 'Running pipeline');
+  if (data && current === doc) {
+    renderPipelineModal([data], 0);
+    if (qaData) loadEvalList(doc);  // pipeline evals belong in the QA pane too
+  }
+};
+
+/* Pipeline Results: browse past pipeline runs of this document */
+$('pipe-view-btn').onclick = async () => {
+  const doc = current;
+  if (!doc) return;
+  $('modal-title').textContent = 'Pipeline results';
+  const body = $('modal-body');
+  body.innerHTML = '<small>Loading pipeline runs…</small>';
+  $('modal-overlay').hidden = false;
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/pipeline-runs`);
+    if (!resp.ok) throw new Error(await resp.text());
+    if (current !== doc || $('modal-overlay').hidden) return;
+    const runs = await resp.json();
+    if (!runs.length) {
+      body.innerHTML = '';
+      body.textContent = 'No pipeline runs yet for this document.';
+      return;
+    }
+    renderPipelineModal(runs, 0);
+  } catch (err) {
+    body.innerHTML = '';
+    body.textContent = 'Failed to load pipeline runs: ' + err.message;
+  }
+};
+
+/* Pipeline results modal: run selector + ranked experiment table + best line */
+function renderPipelineModal(runs, index) {
+  $('modal-title').textContent = 'Pipeline results';
+  const body = $('modal-body');
+  body.innerHTML = '';
+  $('modal-overlay').hidden = false;
+
+  if (runs.length > 1) {
+    const bar = document.createElement('div');
+    bar.className = 'modal-eval-select';
+    const label = document.createElement('span');
+    label.textContent = 'Run:';
+    const sel = document.createElement('select');
+    runs.forEach((r, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      const m = r.metadata || {};
+      opt.textContent = `${m.datetime || '?'} · ${m.num_experiments || 0} experiments`;
+      sel.appendChild(opt);
+    });
+    sel.value = index;
+    sel.onchange = () => renderPipelineModal(runs, parseInt(sel.value, 10));
+    bar.append(label, sel);
+    body.appendChild(bar);
+  }
+
+  const run = runs[index];
+  const meta = run.metadata || {};
+  const info = document.createElement('div');
+  info.className = 'eval-db-head';
+  info.textContent = `${meta.datetime || ''} — chunk types: ` +
+    `${(meta.chunk_types || []).join(', ')} · QA ${meta.qa_num} chunks · ` +
+    `top_k ${meta.topk} · alpha ${meta.alpha}`;
+  body.appendChild(info);
+
+  const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
+  const maxk = Math.max(...ks);
+  const table = document.createElement('table');
+  table.className = 'eval-table';
+  const head = table.insertRow();
+  ['Experiment', `R@${maxk}`, 'MRR', 'MAP', `NDCG@${maxk}`, 'Avg time (s)'].forEach(t => {
+    const th = document.createElement('th');
+    th.textContent = t;
+    head.appendChild(th);
+  });
+  const experiments = [...(run.experiments || [])]
+    .sort((a, b) => ((b.metrics || {}).mrr || 0) - ((a.metrics || {}).mrr || 0));
+  for (const e of experiments) {
+    const m = e.metrics || {};
+    const tr = table.insertRow();
+    tr.insertCell().textContent = e.experiment_id;
+    for (const v of [m[`recall@${maxk}`], m.mrr, m.map, m[`ndcg@${maxk}`]])
+      tr.insertCell().textContent = v == null ? '' : v.toFixed(3);
+    tr.insertCell().textContent =
+      m.avg_retrieval_time == null ? '' : m.avg_retrieval_time.toFixed(4);
+  }
+  body.appendChild(table);
+
+  if (run.best_by_mrr) {
+    const best = document.createElement('div');
+    best.className = 'eval-db-head';
+    best.textContent = `Best by MRR: ${run.best_by_mrr.experiment_id} ` +
+      `(MRR=${((run.best_by_mrr.metrics || {}).mrr || 0).toFixed(3)})`;
+    body.appendChild(best);
+  }
+}
 
 /* Eval results modal: the metrics table for the selected eval file */
 function evalTable(r) {
@@ -1520,14 +1785,15 @@ $('file-input').onchange = async () => {
   }
 };
 
-/* Draggable divider: adjusts left pane width, clamped 10-60% */
+/* Draggable divider: adjusts left pane width, clamped 120px-60% */
 const divider = $('divider');
 divider.addEventListener('mousedown', e => {
+  if (e.target.id === 'thumbs-toggle' || $('thumbs').style.display === 'none') return;
   e.preventDefault();
   divider.classList.add('dragging');
   const onMove = ev => {
-    const pct = (ev.clientX / $('viewer').clientWidth) * 100;
-    $('thumbs').style.width = Math.min(60, Math.max(10, pct)) + '%';
+    const max = $('viewer').clientWidth * 0.6;
+    $('thumbs').style.width = Math.min(max, Math.max(120, ev.clientX)) + 'px';
   };
   const onUp = () => {
     divider.classList.remove('dragging');
@@ -1537,6 +1803,14 @@ divider.addEventListener('mousedown', e => {
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseup', onUp);
 });
+
+/* Arrow tab on the divider: collapses/restores the thumbnail pane */
+$('thumbs-toggle').onclick = () => {
+  const hidden = $('thumbs').style.display === 'none';
+  $('thumbs').style.display = hidden ? '' : 'none';
+  $('thumbs-toggle').innerHTML = hidden ? '&#9664;' : '&#9654;';
+  $('thumbs-toggle').title = hidden ? 'Hide page list' : 'Show page list';
+};
 
 /* Bottom log pane: SSE stream with auto-scroll and drag-to-resize height */
 const logEl = $('log');

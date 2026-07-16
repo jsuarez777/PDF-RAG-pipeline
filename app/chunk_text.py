@@ -5,8 +5,8 @@ Datasets live under data/{pdf2image,pdfplumber}/<date>/<title>/.
   - pdf2image:  page_N_easyocr.json, text field "extracted_text"
   - pdfplumber: page_N.json,         text field "full_text"
 
-Chunk types: fixed_size, sentence, sentence-dynamic-min, semantic
-(semantic not yet implemented).
+Chunk types: fixed_size, sentence, sentence-dynamic-min, plumber-struct,
+semantic (semantic not yet implemented).
   fixed_size:<size>:<overlap>       overlap chars, or a percent of size ("10%").
   sentence:<n>[:<overlap>]          exactly n sentences/chunk (optional sentence
                                     overlap); oversized "sentences" (flattened
@@ -14,6 +14,11 @@ Chunk types: fixed_size, sentence, sentence-dynamic-min, semantic
   sentence-dynamic-min:<n>[:<ov>]   like sentence, but keeps packing past n
                                     until a min-chars floor is met, so short
                                     fragments (shredded tables) aren't left tiny.
+  plumber-struct[:<n>]              pdfplumber only: prose (table-filtered
+                                    'text') as sentence chunks, tables as
+                                    header-labeled row chunks, images as
+                                    descriptor chunks; each chunk records its
+                                    source kind.
 """
 
 import argparse
@@ -37,10 +42,13 @@ EXTRACTORS = {
     "pdfplumber": {"json_suffix": ".json", "text_field": "full_text"},
 }
 
-CHUNK_TYPES = ("fixed_size", "sentence", "sentence-dynamic-min", "semantic")
+CHUNK_TYPES = ("fixed_size", "sentence", "sentence-dynamic-min", "plumber-struct", "semantic")
 
 # Sentence methods share parsing/grouping; only the min-chars floor differs.
 SENTENCE_METHODS = ("sentence", "sentence-dynamic-min")
+
+# plumber-struct: sentences packed per text chunk when no :n is given.
+PLUMBER_STRUCT_DEFAULT_SENTENCES = 5
 
 PAGE_RE = re.compile(r"^page_(\d+)")
 
@@ -98,6 +106,19 @@ def parse_type(type_str):
             if overlap >= size:
                 sys.exit(f"ERROR: overlap ({overlap}) must be less than sentences per chunk ({size})")
         return method, size, overlap
+
+    if method == "plumber-struct":
+        if len(parts) > 2:
+            sys.exit("ERROR: plumber-struct must be of form plumber-struct[:<sentences per text chunk>]")
+        size = PLUMBER_STRUCT_DEFAULT_SENTENCES
+        if len(parts) == 2:
+            try:
+                size = int(parts[1])
+            except ValueError:
+                sys.exit(f"ERROR: invalid sentences-per-chunk '{parts[1]}' (must be an integer)")
+            if size <= 0:
+                sys.exit("ERROR: sentences per chunk must be > 0")
+        return method, size, 0
 
     if method != "fixed_size":
         if len(parts) > 1:
@@ -386,6 +407,126 @@ def sentence_chunks(pages, n_per_chunk, overlap, min_chars=None):
     return chunks, len(full_text)
 
 
+def load_plumber_pages(ds):
+    """Load full pdfplumber page records (text/tables/images) for plumber-struct.
+
+    Unlike load_and_validate_pages, which only reads the flattened full_text,
+    this keeps the structured fields so tables and images can be chunked on
+    their own terms."""
+    if ds["extractor"] != "pdfplumber":
+        sys.exit("ERROR: plumber-struct chunking needs a pdfplumber dataset "
+                 "(it uses the structured text/tables/images fields)")
+    pages = []
+    for n in ds["pages"]:
+        jpath = ds["path"] / f"page_{n}.json"
+        try:
+            data = json.loads(jpath.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as e:
+            sys.exit(f"ERROR: could not read {jpath.relative_to(ROOT)}: {e}")
+        if not isinstance(data.get("text"), str):
+            sys.exit(f"ERROR: {jpath.relative_to(ROOT)} is missing required string field 'text'")
+        pages.append({
+            "page": n,
+            "text": data["text"],
+            "tables": data.get("tables") or [],
+            "images": data.get("images") or [],
+        })
+    log.info(f"Validated {len(pages)} pages: all have string 'text'")
+    return pages
+
+
+def table_row_lines(table):
+    """Flatten one pdfplumber table into 'Header: value; ...' lines, one per
+    data row. A single-row table has no data rows, so its cells become the line."""
+    rows = [[("" if cell is None else str(cell).strip()) for cell in row] for row in table]
+    rows = [row for row in rows if any(row)]
+    if not rows:
+        return []
+    if len(rows) == 1:
+        return ["; ".join(cell for cell in rows[0] if cell)]
+    header = rows[0]
+    lines = []
+    for row in rows[1:]:
+        fields = []
+        for i, cell in enumerate(row):
+            if not cell:
+                continue
+            label = header[i] if i < len(header) and header[i] else f"col{i + 1}"
+            fields.append(f"{label}: {cell}")
+        if fields:
+            lines.append("; ".join(fields))
+    return lines
+
+
+def pack_lines(lines, cap):
+    """Group lines into newline-joined blocks of at most cap chars each."""
+    blocks = []
+    group = []
+    chars = 0
+    for line in lines:
+        addition = len(line) + (1 if group else 0)
+        if group and chars + addition > cap:
+            blocks.append("\n".join(group))
+            group, chars = [], 0
+            addition = len(line)
+        group.append(line)
+        chars += addition
+    if group:
+        blocks.append("\n".join(group))
+    return blocks
+
+
+def plumber_struct_chunks(pages, n_per_chunk):
+    """Chunk pdfplumber pages by content kind instead of the flattened full_text.
+
+    Per page, in order: prose (the table-filtered 'text' field) is packed into
+    sentence chunks with the dynamic-min floor; each detected table becomes
+    row chunks with header-labeled fields (packed up to the char cap); each
+    embedded image becomes a small descriptor chunk. Every chunk records its
+    source kind so downstream analysis can compare them."""
+    cap = sentence_cap_chars(n_per_chunk)
+    floor = sentence_min_chars(n_per_chunk)
+    chunks = []
+    total_chars = 0
+
+    def add(text, page, source, extra=None):
+        chunks.append({
+            "chunk_index": len(chunks),
+            "text": text,
+            "num_chars": len(text),
+            "start_page": page,
+            "end_page": page,
+            "source": source,
+            **(extra or {}),
+        })
+
+    for p in pages:
+        total_chars += len(p["text"])
+        prose = p["text"].strip()
+        if prose:
+            groups, _ = sentence_chunks([(p["page"], prose)], n_per_chunk, 0, min_chars=floor)
+            for g in groups:
+                add(g["text"], p["page"], "text",
+                    {"num_sentences": g.get("num_sentences")})
+        for t_num, table in enumerate(p["tables"], 1):
+            lines = table_row_lines(table)
+            total_chars += sum(len(line) for line in lines)
+            parts = pack_lines(lines, cap)
+            for part_num, block in enumerate(parts, 1):
+                part = f" (part {part_num}/{len(parts)})" if len(parts) > 1 else ""
+                add(f"Table {t_num} on page {p['page']}{part}:\n{block}",
+                    p["page"], "table", {"table_number": t_num})
+        for img in p["images"]:
+            name = img.get("name") or f"image {img.get('image_number', '?')}"
+            size = ""
+            if img.get("width") and img.get("height"):
+                size = f", {round(img['width'])}x{round(img['height'])} px"
+            file_note = f" (file {img['file']})" if img.get("file") else ""
+            add(f"Image on page {p['page']}: {name}{size}{file_note}",
+                p["page"], "image", {"image_file": img.get("file")})
+    return chunks, total_chars
+
+
 def main():
     parser = argparse.ArgumentParser(description="Chunk extracted dataset text.")
     parser.add_argument(
@@ -418,6 +559,10 @@ def main():
             n_in = input("Sentences per chunk: ").strip()
             ov_in = input("Overlap (sentences, blank for 0): ").strip()
             type_str = f"{type_str}:{n_in}:{ov_in}" if ov_in else f"{type_str}:{n_in}"
+        elif type_str == "plumber-struct":
+            n_in = input(f"Sentences per text chunk (blank for {PLUMBER_STRUCT_DEFAULT_SENTENCES}): ").strip()
+            if n_in:
+                type_str = f"plumber-struct:{n_in}"
 
     method, size, overlap = parse_type(type_str)
     if method == "semantic":
@@ -425,12 +570,17 @@ def main():
 
     datasets = scan_datasets()
     ds = choose_dataset(datasets, preselect=args.dataset)
-    pages = load_and_validate_pages(ds)
 
-    if method in SENTENCE_METHODS:
+    if method == "plumber-struct":
+        plumber_pages = load_plumber_pages(ds)
+        chunks, total_chars = plumber_struct_chunks(plumber_pages, size)
+        pages = plumber_pages
+    elif method in SENTENCE_METHODS:
+        pages = load_and_validate_pages(ds)
         min_chars = sentence_min_chars(size) if method == "sentence-dynamic-min" else None
         chunks, total_chars = sentence_chunks(pages, size, overlap, min_chars=min_chars)
     else:
+        pages = load_and_validate_pages(ds)
         chunks, total_chars = fixed_size_chunks(pages, size, overlap)
 
     now = datetime.now()
@@ -446,7 +596,15 @@ def main():
         "total_chars": total_chars,
         "num_chunks": len(chunks),
     }
-    if method in SENTENCE_METHODS:
+    if method == "plumber-struct":
+        metadata["sentences_per_text_chunk"] = size
+        metadata["char_cap"] = sentence_cap_chars(size)
+        metadata["char_floor"] = sentence_min_chars(size)
+        by_source = {}
+        for c in chunks:
+            by_source[c["source"]] = by_source.get(c["source"], 0) + 1
+        metadata["chunks_by_source"] = by_source
+    elif method in SENTENCE_METHODS:
         metadata["sentences_per_chunk"] = size
         metadata["overlap_sentences"] = overlap
         metadata["char_cap"] = sentence_cap_chars(size)

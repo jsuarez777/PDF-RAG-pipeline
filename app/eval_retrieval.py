@@ -31,6 +31,7 @@ import json
 import logging
 import math
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -39,7 +40,14 @@ DATA_DIR = ROOT / "data"
 sys.path.insert(0, str(ROOT))
 
 from logging_utils import setup_logging  # noqa: E402
-from retriever_topk import EXTRACTORS, SEARCHERS, embed_query, scan_dbs  # noqa: E402
+from retriever_topk import (  # noqa: E402
+    DEFAULT_ALPHA,
+    EXTRACTORS,
+    SEARCHERS,
+    embed_query,
+    scan_dbs,
+    search_hybrid,
+)
 
 log = logging.getLogger(__name__)
 
@@ -162,9 +170,6 @@ def choose_eval_dbs(dbs, qa_chunk_run, preselect=None, force=False):
         sys.exit("ERROR: no indexes found under data/*/*/*/{embedding_databases,bm25}; "
                  "run embed_chunks.py or index_bm25.py first")
 
-    for db in dbs:
-        db["chunk_run"] = index_chunk_run(db)
-
     log.info("\nAvailable indexes ([x] = built from this QA file's chunk run):")
     type_labels = {"bm25": "BM-25", "milvus": "Milvus", "chromadb": "ChromaDB"}
     for i, db in enumerate(dbs, 1):
@@ -194,26 +199,78 @@ def choose_eval_dbs(dbs, qa_chunk_run, preselect=None, force=False):
         if token.isdigit() and 1 <= int(token) <= len(dbs):
             db = dbs[int(token) - 1]
         else:
-            norm = token.rstrip("/")
-            if norm.endswith(".json"):  # accept the bm25 sidecar as an alias for the pkl
-                norm = norm[:-len(".json")] + ".pkl"
-            matches = [d for d in dbs if norm in (d["rel"], str(d["path"]))]
-            if not matches:
-                sys.exit(f"ERROR: '{token}' is not a valid index choice")
-            db = matches[0]
+            db = find_db(dbs, token)
         if db not in picked:
             picked.append(db)
 
     for db in picked:
-        if db["chunk_run"] != qa_chunk_run:
-            msg = (f"index {db['rel']} was built from chunk run "
-                   f"'{db['chunk_run']}' but the QA file is from '{qa_chunk_run}'; "
-                   "chunk_index values are not comparable")
-            if force:
-                log.warning(f"WARNING: {msg} (--force)")
-            else:
-                sys.exit(f"ERROR: {msg} (pass --force to evaluate anyway)")
+        check_chunk_run(db, qa_chunk_run, force)
     return picked
+
+
+def check_chunk_run(db, qa_chunk_run, force):
+    """Refuse (or warn with --force) when an index's chunk run doesn't match the QA file's."""
+    if db["chunk_run"] != qa_chunk_run:
+        msg = (f"index {db['rel']} was built from chunk run "
+               f"'{db['chunk_run']}' but the QA file is from '{qa_chunk_run}'; "
+               "chunk_index values are not comparable")
+        if force:
+            log.warning(f"WARNING: {msg} (--force)")
+        else:
+            sys.exit(f"ERROR: {msg} (pass --force to evaluate anyway)")
+
+
+def find_db(dbs, token):
+    norm = token.rstrip("/")
+    if norm.endswith(".json"):  # accept the bm25 sidecar as an alias for the pkl
+        norm = norm[:-len(".json")] + ".pkl"
+    for db in dbs:
+        if norm in (db["rel"], str(db["path"])):
+            return db
+    sys.exit(f"ERROR: '{token}' is not a valid index choice")
+
+
+def resolve_hybrids(dbs, arg, qa_chunk_run, alpha, force=False):
+    """Turn --hybrid into a list of synthetic hybrid 'db' entries.
+
+    arg is 'auto' (pair every matching vector index with every matching bm25
+    index) or comma-separated 'VECTOR_PATH+BM25_PATH' pairs."""
+    pairs = []
+    if arg.strip().lower() == "auto":
+        vecs = [db for db in dbs
+                if db["type"] in ("milvus", "chromadb") and db["chunk_run"] == qa_chunk_run]
+        bms = [db for db in dbs if db["type"] == "bm25" and db["chunk_run"] == qa_chunk_run]
+        if not vecs or not bms:
+            sys.exit(f"ERROR: --hybrid auto needs at least one vector index and one bm25 "
+                     f"index built from chunk run '{qa_chunk_run}' "
+                     f"(found {len(vecs)} vector, {len(bms)} bm25)")
+        pairs = [(v, b) for v in vecs for b in bms]
+    else:
+        for token in arg.split(","):
+            token = token.strip()
+            if token.count("+") != 1:
+                sys.exit(f"ERROR: --hybrid pair must look like VECTOR_PATH+BM25_PATH, got '{token}'")
+            vec_tok, bm_tok = token.split("+")
+            vec, bm = find_db(dbs, vec_tok.strip()), find_db(dbs, bm_tok.strip())
+            if vec["type"] not in ("milvus", "chromadb"):
+                sys.exit(f"ERROR: --hybrid left side must be a vector index, got {vec['rel']}")
+            if bm["type"] != "bm25":
+                sys.exit(f"ERROR: --hybrid right side must be a bm25 index, got {bm['rel']}")
+            for db in (vec, bm):
+                check_chunk_run(db, qa_chunk_run, force)
+            pairs.append((vec, bm))
+
+    hybrids = []
+    for vec, bm in pairs:
+        hybrids.append({
+            "type": "hybrid",
+            "vec": vec,
+            "bm25": bm,
+            "rel": f"hybrid(alpha={alpha}) {vec['rel']} + {bm['rel']}",
+            "stem": f"hybrid_{vec['path'].stem}__{bm['path'].stem}",
+            "chunk_run": vec["chunk_run"],
+        })
+    return hybrids
 
 
 def parse_ks(arg, topk):
@@ -246,14 +303,16 @@ def gold_rank(results, gold):
     return None
 
 
-def aggregate(ranks, ks):
-    """Metrics over a list of gold ranks (None = miss). Single gold chunk per query."""
-    n = len(ranks)
-    hits = [r for r in ranks if r is not None]
+def aggregate(records, ks):
+    """Metrics over per-question records (gold_rank None = miss). Single gold
+    chunk per query."""
+    n = len(records)
+    hits = [r["gold_rank"] for r in records if r["gold_rank"] is not None]
     out = {
         "num_questions": n,
         "mrr": sum(1.0 / r for r in hits) / n,
         "map": sum(1.0 / r for r in hits) / n,
+        "avg_retrieval_time": sum(r["retrieval_seconds"] for r in records) / n,
     }
     for k in ks:
         khits = [r for r in hits if r <= k]
@@ -263,18 +322,28 @@ def aggregate(ranks, ks):
     return out
 
 
-def evaluate_db(run_search, questions, vectors, ks):
-    """Run every question against one index; return (records, aggregates)."""
+def evaluate_db(run_search, questions, vectors, ks, hybrid=False):
+    """Run every question against one index; return (records, aggregates).
+
+    hybrid searchers need both the question text and its embedding, so their
+    run_search takes a (text, vector) tuple."""
     records = []
     for i, q in enumerate(questions, 1):
         print(f"  [{i}/{len(questions)}] querying ...", end="\r", flush=True)
-        results = run_search(q["question"] if vectors is None else vectors[i - 1])
+        if hybrid:
+            query = (q["question"], vectors[i - 1])
+        else:
+            query = q["question"] if vectors is None else vectors[i - 1]
+        started = time.perf_counter()
+        results = run_search(query)
+        elapsed = time.perf_counter() - started
         records.append({
             "chunk_index": q["chunk_index"],
             "question_type": q["question_type"],
             "question": q["question"],
             "answer": q["answer"],
             "gold_rank": gold_rank(results, q["chunk_index"]),
+            "retrieval_seconds": elapsed,
             "retrieved": [
                 {"rank": r["rank"], "chunk_index": r["chunk"].get("chunk_index"),
                  "score": r["score"], "similarity": r["similarity"],
@@ -284,12 +353,12 @@ def evaluate_db(run_search, questions, vectors, ks):
         })
     print()
 
-    aggregates = {"overall": aggregate([r["gold_rank"] for r in records], ks)}
+    aggregates = {"overall": aggregate(records, ks)}
     by_type = {}
     for r in records:
-        by_type.setdefault(r["question_type"], []).append(r["gold_rank"])
+        by_type.setdefault(r["question_type"], []).append(r)
     aggregates["by_question_type"] = {
-        qtype: aggregate(ranks, ks) for qtype, ranks in sorted(by_type.items())
+        qtype: aggregate(recs, ks) for qtype, recs in sorted(by_type.items())
     }
     return records, aggregates
 
@@ -297,7 +366,8 @@ def evaluate_db(run_search, questions, vectors, ks):
 def print_aggregates(aggregates, ks):
     def line(label, m):
         cuts = "  ".join(f"R@{k}={m[f'recall@{k}']:.3f}" for k in ks)
-        log.info(f"    {label:<12} MRR={m['mrr']:.3f}  {cuts}  NDCG@{ks[-1]}={m[f'ndcg@{ks[-1]}']:.3f}")
+        log.info(f"    {label:<12} MRR={m['mrr']:.3f}  {cuts}  NDCG@{ks[-1]}={m[f'ndcg@{ks[-1]}']:.3f}"
+                 f"  t={m['avg_retrieval_time'] * 1000:.1f}ms")
 
     line("overall", aggregates["overall"])
     for qtype, m in aggregates["by_question_type"].items():
@@ -313,6 +383,12 @@ def main():
     parser.add_argument("--qa", help="QA file path (data/.../<chunk dir>/qa_*.json) or list number")
     parser.add_argument("--db", help="Index path(s)/number(s), comma-separated, or 'all' for "
                                      "every index built from the QA file's chunk run")
+    parser.add_argument("--hybrid", help="Hybrid retrieval: comma-separated VECTOR_PATH+BM25_PATH "
+                                         "pairs, or 'auto' to pair every matching vector index "
+                                         "with every matching bm25 index")
+    parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
+                        help="Hybrid weight of the vector score; bm25 gets 1-alpha "
+                             f"(default {DEFAULT_ALPHA})")
     parser.add_argument("--topk", type=int, default=DEFAULT_TOPK,
                         help=f"Results to retrieve per question (default {DEFAULT_TOPK})")
     parser.add_argument("--ks", default=DEFAULT_KS,
@@ -326,6 +402,8 @@ def main():
 
     if args.topk <= 0:
         sys.exit("ERROR: --topk must be > 0")
+    if not 0 <= args.alpha <= 1:
+        sys.exit("ERROR: --alpha must be between 0 and 1")
     ks = parse_ks(args.ks, args.topk)
 
     qa = choose_qa(scan_qa_files(), preselect=args.qa)
@@ -335,12 +413,25 @@ def main():
         sys.exit(f"ERROR: {qa['rel']} does not record its chunk_run; cannot verify indexes "
                  "(pass --force to skip the check)")
 
-    selected = choose_eval_dbs(scan_dbs(), qa_chunk_run, preselect=args.db, force=args.force)
+    dbs = scan_dbs()
+    for db in dbs:
+        db["chunk_run"] = index_chunk_run(db)
+
+    selected = []
+    if args.db or not args.hybrid:
+        selected = choose_eval_dbs(dbs, qa_chunk_run, preselect=args.db, force=args.force)
+    if args.hybrid:
+        selected += resolve_hybrids(dbs, args.hybrid, qa_chunk_run, args.alpha, force=args.force)
 
     # Build every searcher first so questions can be embedded once per model.
     searchers = []
     for db in selected:
-        method, run_search = SEARCHERS[db["type"]](db, args.topk)
+        if db["type"] == "hybrid":
+            (method, tokenizer), run_search = search_hybrid(db["vec"], db["bm25"],
+                                                            args.topk, args.alpha)
+            db["tokenizer"] = tokenizer
+        else:
+            method, run_search = SEARCHERS[db["type"]](db, args.topk)
         if db["type"] != "bm25" and not method:
             sys.exit(f"ERROR: could not determine embedding model for {db['rel']}")
         searchers.append((db, method, run_search))
@@ -362,10 +453,16 @@ def main():
         if db["type"] == "bm25":
             vectors = None
             method_meta = {"tokenizer": method}
+        elif db["type"] == "hybrid":
+            vectors = vectors_by_model[method]
+            method_meta = {"embedding_model": method, "tokenizer": db["tokenizer"],
+                           "alpha": args.alpha, "vector_db": db["vec"]["rel"],
+                           "bm25_db": db["bm25"]["rel"]}
         else:
             vectors = vectors_by_model[method]
             method_meta = {"embedding_model": method}
-        records, aggregates = evaluate_db(run_search, questions, vectors, ks)
+        records, aggregates = evaluate_db(run_search, questions, vectors, ks,
+                                          hybrid=db["type"] == "hybrid")
 
         out = {
             "metadata": {
@@ -383,7 +480,7 @@ def main():
             "aggregates": aggregates,
             "questions": records,
         }
-        out_file = out_dir / f"eval_{stamp}_{db['path'].stem}.json"
+        out_file = out_dir / f"eval_{stamp}_{db['stem'] if db['type'] == 'hybrid' else db['path'].stem}.json"
         out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
         print_aggregates(aggregates, ks)

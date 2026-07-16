@@ -13,9 +13,10 @@ to visualizations/<ts>/:
   6. recall-curve - Recall@K vs K line chart, small multiples per chunk config
   7. qtype        - metric by question type (direct/inference/paraphrased)
                     per experiment; extra data eval_retrieval.py collects
-
-The project also asks for a response-time vs quality scatter; eval_retrieval.py
-does not record retrieval timing yet, so that chart is not implemented.
+  8. time-quality - avg retrieval time vs MRR scatter, Pareto-optimal
+                    configurations annotated (needs evals from 2026-07-16 on,
+                    when eval_retrieval.py started recording timing; older
+                    evals are dropped from this chart only)
 
 Evals are computed at ks {1,3,5,10}; the project mostly reports @5, so
 metric/k-dependent charts take --metric and -k (default mrr / k=5).
@@ -58,15 +59,19 @@ KS = [1, 3, 5, 10]
 K_METRICS = ["recall", "precision", "ndcg"]
 SCALAR_METRICS = ["mrr", "map"]
 
-# Categorical palette (validated): color follows the retrieval backend, the
-# darker step of the same hue marks the -large embedding model. The aqua and
-# yellow slots sit below 3:1 on white, so bars always carry direct value labels.
+# Categorical palette (validated, incl. the hybrid violet): color follows the
+# retrieval backend, the darker step of the same hue marks the -large embedding
+# model. The aqua and yellow slots sit below 3:1 on white, so bars always carry
+# direct value labels.
 C_BLUE, C_BLUE_D = "#2a78d6", "#1c5cab"
 C_AQUA, C_AQUA_D = "#1baf7a", "#12855c"
 C_YELLOW, C_YELLOW_D = "#eda100", "#c98500"
+C_VIOLET, C_VIOLET_D = "#8a5cd0", "#6f46ad"
 GRID_COLOR = "#d5d4d0"
 
-METHOD_COLORS = {"chromadb": C_BLUE, "milvus": C_AQUA, "bm25": C_YELLOW}
+METHOD_COLORS = {"chromadb": C_BLUE, "milvus": C_AQUA, "bm25": C_YELLOW,
+                 "hybrid": C_VIOLET}
+METHOD_LABELS = {"bm25": "BM25 (lexical)", "hybrid": "Hybrid (vector + BM25)"}
 INDEX_COLORS = {
     ("chromadb", "small"): C_BLUE,
     ("chromadb", "large"): C_BLUE_D,
@@ -74,7 +79,13 @@ INDEX_COLORS = {
     ("milvus", "large"): C_AQUA_D,
     ("bm25", "word"): C_YELLOW,
     ("bm25", "simple"): C_YELLOW_D,
+    ("hybrid", "small"): C_VIOLET,
+    ("hybrid", "large"): C_VIOLET_D,
 }
+
+
+def _method_label(method: str) -> str:
+    return METHOD_LABELS.get(method, f"Vector ({method})")
 QTYPE_COLORS = {"direct": C_BLUE, "inference": C_AQUA, "paraphrased": C_YELLOW}
 # In the recall curves dashed marks the -large model; BM25 tokenizer variants
 # never share a panel, so both stay solid.
@@ -111,7 +122,7 @@ def _pick_dataset(explicit: str | None) -> Path:
         for i, d in enumerate(dirs, 1):
             n = len(list((d / "evaluations").glob("eval_*.json")))
             print(f"  {i}. {d.relative_to(DATA_DIR)}  ({n} eval files)")
-        choice = input(f"\nChoose a dataset (number, Enter for [1]): ").strip()
+        choice = input("\nChoose a dataset (number, Enter for [1]): ").strip()
         if choice:
             dirs[0] = dirs[int(choice) - 1]
     return dirs[0]
@@ -133,6 +144,8 @@ def _index_parts(meta: dict) -> tuple[str, str, str]:
         return "bm25", tok, f"BM25 ({tok})"
     model = meta.get("embedding_model", "?")
     short = "large" if model.endswith("large") else "small"
+    if meta["db_type"] == "hybrid":
+        return "hybrid", short, f"hybrid · 3-{short}+{meta.get('tokenizer', '?')}"
     return meta["db_type"], short, f"{meta['db_type']} · 3-{short}"
 
 
@@ -161,6 +174,7 @@ def load_experiments(dataset: Path, all_evals: bool) -> pd.DataFrame:
             "by_question_type": data["aggregates"]["by_question_type"],
             "mrr": overall["mrr"],
             "map": overall["map"],
+            "avg_time": overall.get("avg_retrieval_time"),
         }
         for k in KS:
             for m in K_METRICS:
@@ -225,7 +239,7 @@ def _bar_labels(ax, bars, fmt: str = "{:.2f}") -> None:
 
 
 def _method_legend(ax, methods: list[str]) -> None:
-    handles = [Patch(color=METHOD_COLORS[m], label="BM25 (lexical)" if m == "bm25" else f"Vector ({m})") for m in methods]
+    handles = [Patch(color=METHOD_COLORS[m], label=_method_label(m)) for m in methods]
     ax.legend(handles=handles, title="Retrieval method", frameon=False, fontsize=9)
 
 
@@ -421,8 +435,7 @@ def plot_recall_curve(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
         ax.set_axisbelow(True)
     axes[0][0].set_ylabel("Recall@K")
     handles = [
-        Line2D([], [], color=METHOD_COLORS[m], linewidth=2,
-               label="BM25 (lexical)" if m == "bm25" else f"Vector ({m})")
+        Line2D([], [], color=METHOD_COLORS[m], linewidth=2, label=_method_label(m))
         for m in METHOD_COLORS
         if m in set(df["method"])
     ] + [
@@ -479,6 +492,61 @@ def plot_qtype(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int)
     _save(fig, out_dir, f"question_type_{key.replace('@', '_at_')}", show)
 
 
+def plot_time_quality(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -> None:
+    """Required chart 8: avg retrieval time vs MRR scatter, Pareto-optimal
+    configurations annotated. Time is log-scaled (BM25 is ~20x faster than
+    vector search). Evals recorded before timing existed are dropped."""
+    d = _require(df, "avg_time").copy()
+    if d.empty:
+        log.warning("  skipping time-quality chart: no eval records avg_retrieval_time "
+                    "(re-run eval_retrieval.py; timing was added 2026-07-16)")
+        return
+    d["ms"] = d["avg_time"] * 1000
+
+    # Pareto frontier: scan fastest-first, keep every strict MRR improvement.
+    frontier = []
+    best = float("-inf")
+    for _, r in d.sort_values(["ms", "mrr"], ascending=[True, False]).iterrows():
+        if r["mrr"] > best:
+            frontier.append(r)
+            best = r["mrr"]
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+    ax.step([r["ms"] for r in frontier], [r["mrr"] for r in frontier],
+            where="post", color=GRID_COLOR, linewidth=1.2, zorder=2)
+    for method in METHOD_COLORS:
+        sub = d[d["method"] == method]
+        if sub.empty:
+            continue
+        ax.scatter(sub["ms"], sub["mrr"], s=70, color=METHOD_COLORS[method],
+                   edgecolors="white", linewidths=1.5, zorder=3)
+    # selective labels: only the Pareto-optimal configurations, alternating sides
+    offsets = [(10, 8), (10, -14), (-10, 10), (10, 12), (-10, -18), (10, -8)]
+    for r, off in zip(frontier, offsets * (len(frontier) // len(offsets) + 1)):
+        ax.annotate(
+            r["experiment"],
+            (r["ms"], r["mrr"]),
+            xytext=off,
+            textcoords="offset points",
+            ha="left" if off[0] > 0 else "right",
+            fontsize=7.5,
+            color="#0b0b0b",
+            arrowprops={"arrowstyle": "-", "color": GRID_COLOR, "shrinkB": 3},
+        )
+    ax.set_xscale("log")
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("Avg retrieval time per query (ms, log scale)")
+    ax.set_ylabel("MRR")
+    ax.set_title(
+        "Response Time vs Quality Trade-off\n(Pareto-optimal configurations labeled)",
+        fontsize=13,
+    )
+    ax.grid(color=GRID_COLOR, linewidth=0.7)
+    ax.set_axisbelow(True)
+    _method_legend(ax, [m for m in METHOD_COLORS if m in set(d["method"])])
+    _save(fig, out_dir, "time_vs_quality", show)
+
+
 # --------------------------------------------------------------------------- driver
 
 CHARTS = {
@@ -489,6 +557,7 @@ CHARTS = {
     "correlation": plot_correlation,
     "recall-curve": plot_recall_curve,
     "qtype": plot_qtype,
+    "time-quality": plot_time_quality,
 }
 
 

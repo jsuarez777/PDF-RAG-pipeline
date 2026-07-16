@@ -276,6 +276,80 @@ def search_bm25(db, k):
 SEARCHERS = {"milvus": search_milvus, "chromadb": search_chromadb, "bm25": search_bm25}
 
 
+# ------------------------------------------------------------------- hybrid
+
+# Candidates fetched from each underlying index before scores are fused; a
+# wider pool than k so a chunk ranked just outside one index's top-k can still
+# win on its combined score.
+HYBRID_FETCH_MULTIPLIER = 5
+HYBRID_FETCH_MIN = 50
+DEFAULT_ALPHA = 0.7
+
+
+def minmax_normalize(results):
+    """Map each result's similarity to [0, 1] within the list (min-max).
+
+    BM25 scores are unbounded and vector similarities live in [-1, 1], so both
+    must be squashed to the same range before they can be combined. All-equal
+    scores normalize to 1.0 (every candidate is equally the best)."""
+    if not results:
+        return {}
+    sims = [r["similarity"] for r in results]
+    lo, hi = min(sims), max(sims)
+    span = hi - lo
+    return {
+        r["chunk"]["chunk_index"]: (1.0 if span == 0 else (r["similarity"] - lo) / span)
+        for r in results
+    }
+
+
+def combine_hybrid(vector_results, bm25_results, alpha, k):
+    """Fuse two ranked result lists into one: alpha * vector + (1-alpha) * bm25.
+
+    Scores are min-max normalized per list first; a chunk missing from one
+    list contributes 0 from that side. Returns a standard top-k result list
+    where score == combined similarity in [0, 1]."""
+    vec_norm = minmax_normalize(vector_results)
+    bm_norm = minmax_normalize(bm25_results)
+
+    chunks = {}
+    for res in (vector_results, bm25_results):
+        for r in res:
+            idx = r["chunk"]["chunk_index"]
+            # prefer the copy that carries the chunk text
+            if idx not in chunks or ("text" not in chunks[idx] and "text" in r["chunk"]):
+                chunks[idx] = r["chunk"]
+
+    combined = {
+        idx: alpha * vec_norm.get(idx, 0.0) + (1 - alpha) * bm_norm.get(idx, 0.0)
+        for idx in chunks
+    }
+    order = sorted(combined, key=lambda idx: (-combined[idx], idx))[:k]
+    return [
+        {"rank": rank, "score": combined[idx], "similarity": combined[idx],
+         "chunk": chunks[idx]}
+        for rank, idx in enumerate(order, 1)
+    ]
+
+
+def search_hybrid(vec_db, bm25_db, k, alpha):
+    """Return ((embedding_model, tokenizer), run). run takes (query_text, vector)
+    and fuses vector and BM25 results with combine_hybrid."""
+    if vec_db["type"] not in ("milvus", "chromadb"):
+        sys.exit(f"ERROR: hybrid vector side must be a milvus/chromadb index, got {vec_db['rel']}")
+    if bm25_db["type"] != "bm25":
+        sys.exit(f"ERROR: hybrid bm25 side must be a bm25 index, got {bm25_db['rel']}")
+    fetch_k = max(k * HYBRID_FETCH_MULTIPLIER, HYBRID_FETCH_MIN)
+    model, run_vec = SEARCHERS[vec_db["type"]](vec_db, fetch_k)
+    tokenizer, run_bm25 = search_bm25(bm25_db, fetch_k)
+
+    def run(query):
+        text, vector = query
+        return combine_hybrid(run_vec(vector), run_bm25(text), alpha, k)
+
+    return (model, tokenizer), run
+
+
 EMBED_BATCH_SIZE = 1000
 
 
@@ -299,18 +373,42 @@ def main():
     parser.add_argument("--topk", help="Number of results to retrieve")
     parser.add_argument("--db", help="Index path (data/.../embedding_databases/<file> or "
                                      "data/.../bm25/<file>.pkl) or list number")
+    parser.add_argument("--bm25-db", help="BM25 index path to fuse with --db (a vector index) "
+                                          "for hybrid retrieval")
+    parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
+                        help="Hybrid weight of the vector score; bm25 gets 1-alpha "
+                             f"(default {DEFAULT_ALPHA})")
     parser.add_argument("--query-text", help="Query as a string")
     parser.add_argument("--query-json", help='Query json file: {"type": "text", "query": "..."}')
     args = parser.parse_args()
 
     setup_logging("retriever_topk")
 
+    if not 0 <= args.alpha <= 1:
+        sys.exit("ERROR: --alpha must be between 0 and 1")
+
     dbs = scan_dbs()
     db = choose_db(dbs, preselect=args.db)
     query, query_source = get_query(args)
     k = get_topk(args.topk)
 
-    if db["type"] == "bm25":
+    if args.bm25_db:
+        bm25_db = choose_db(dbs, preselect=args.bm25_db)
+        (model, tokenizer), run_search = search_hybrid(db, bm25_db, k, args.alpha)
+        if not model:
+            sys.exit(f"ERROR: could not determine embedding model for {db['rel']}")
+        log.info(f"\nHybrid retrieval (alpha={args.alpha}): embedding query with {model}, "
+                 f"tokenizing with '{tokenizer}' ...")
+        vector = embed_query(model, [query])[0]
+        results = run_search((query, vector))
+        method_meta = {
+            "embedding_model": model,
+            "tokenizer": tokenizer,
+            "alpha": args.alpha,
+            "bm25_db": bm25_db["rel"],
+            "similarity": "hybrid: alpha * minmax(vector) + (1-alpha) * minmax(bm25), in [0, 1]",
+        }
+    elif db["type"] == "bm25":
         tokenizer, run_search = SEARCHERS["bm25"](db, k)
         log.info(f"\nTokenizing query with '{tokenizer}' tokenizer ...")
         results = run_search(query)
@@ -338,7 +436,7 @@ def main():
         "metadata": {
             "datetime": now.isoformat(timespec="seconds"),
             "db": db["rel"],
-            "db_type": db["type"],
+            "db_type": "hybrid" if args.bm25_db else db["type"],
             **method_meta,
             "top_k": k,
             "query_type": "text",

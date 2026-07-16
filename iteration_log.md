@@ -100,3 +100,19 @@ Structured log of major experiments and pipeline changes, per the format in `scr
   - QA pane now opens automatically when a document with QA pairs is opened (and after generation) instead of waiting for a click.
   - All runs stream to the log pane and share one busy-lock so only one script runs at a time.
 - **Next step**: The viewer can now execute the Iteration 3 "next levers" (new chunking strategies, index variants, re-evals) without the CLI; candidates for later are exposing `--num-chunks`/`--seed`/question types on the generate button and a side-by-side eval comparison view.
+
+### Iteration 5: Hybrid retrieval (min-max normalized BM25 + vector fusion) (KEEP)
+- **Date**: 2026-07-16
+- **Change**: Added hybrid retrieval: `combine_hybrid` in `app/retriever_topk.py` fetches a 5×k candidate pool from a vector index and a BM25 index, min-max normalizes each list's scores to [0, 1], fuses them as `alpha·vector + (1−alpha)·bm25` (alpha 0.7 default), and returns the re-ranked top-k. `eval_retrieval.py` gained `--hybrid VEC+BM25` pairs (or `auto`) and `--alpha`, and now records per-question retrieval timing (`avg_retrieval_time` in aggregates). Fusion math is unit-tested (`tests/test_hybrid.py`).
+- **Hypothesis**: The reference implementation warns hybrid MRR collapses to ~0-6% when normalization is broken (unbounded BM25 scores swamp cosine similarities). With per-list min-max normalization, hybrid should land *between* BM25 and pure vector, not below both.
+- **Result**: On `20260713_03/uk_knowledge_and_innovation_analysis` (fixed_size 256/50, 60 questions): hybrid (3-small + word, α=0.7) MRR 0.648 / R@5 0.833 vs BM25 0.526 / 0.650 — hybrid sits between BM25 and vector as expected, so normalization is correct. On `20260715_01` plumber-struct chunks (12 questions): vector 0.958 > hybrid 0.896 > BM25 0.806. Timing: BM25 ~0.3-0.8 ms, vector ~14-16 ms, hybrid ~11 ms per query.
+- **Decision**: Keep. Hybrid never beat pure vector on these datasets (consistent with the reference's "hybrid underperforms" finding, but for the legitimate reason — BM25's weaker signal dilutes vector's, not broken scaling).
+- **Next step**: Sweep alpha (0.5-0.9) via the pipeline's `--alpha` flag to see if any weighting beats pure vector; run the ≥12-experiment grid via `run_pipeline.py`.
+
+### Iteration 6: plumber-struct chunking — structured text/tables/images (KEEP)
+- **Date**: 2026-07-16
+- **Change**: New chunk type `plumber-struct[:<n>]` in `app/chunk_text.py` that uses pdfplumber's structured fields instead of the flattened `full_text`: prose (table-filtered `text`) becomes sentence chunks with the dynamic-min floor, each detected table becomes header-labeled row chunks ("Year: 2012; Rate: 45%", packed under the char cap), and each embedded image becomes a small descriptor chunk. Every chunk records its `source` (text/table/image). Integrated into the pipeline grid, both viewer chunk menus, and covered by unit tests.
+- **Hypothesis**: pysbd shreds flattened tables into low-signal fragments (Iteration 3 territory); chunking tables structurally with header labels should preserve their meaning and lift retrieval quality on table-bearing report PDFs.
+- **Result**: On `20260715_01/uk_knowledge_and_innovation_analysis` (29 pages → 134 chunks: 127 text / 6 table / 1 image, 12 questions, seed 7): plumber-struct + 3-small vector reached **MRR 0.958 / Recall@10 1.000 / NDCG@10 0.969** — the best configuration measured so far, vs 0.776 for fixed_size 256/50 + 3-small vector on the same document. BM25 on plumber-struct chunks also jumped (0.806 vs 0.555 on fixed_size).
+- **Decision**: Keep. First configuration to clear the MRR ≥ 0.85 / Recall@5 ≥ 0.90 project targets.
+- **Next step**: Confirm at the required scale (≥20 QA chunks) and across documents in a full grid run; compare table-chunk hit rates vs text-chunk hit rates using the recorded `source` field.
