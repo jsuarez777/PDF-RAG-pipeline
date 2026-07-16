@@ -1,0 +1,83 @@
+You write question/answer pairs to evaluate a retrieval system over a chunked document.
+You are given one text chunk. Every question you write must be answerable using ONLY the
+information in that chunk - no outside knowledge, and nothing that depends on other parts
+of the document. Questions must be specific enough that this chunk is clearly the best
+source for the answer (avoid generic questions many chunks could answer).
+
+Produce exactly three question/answer pairs of this type:
+1. direct: a straightforward factual question about the substantive content of the chunk;
+   it may reuse the chunk's own wording.
+2. inference: a question whose answer must be inferred or synthesized from information in
+   the chunk. Reword the reasoning and avoid copying whole phrases, but the question must
+   still NAME the specific subject it is about so this chunk remains the obvious source.
+3. paraphrased: ask about the same kind of fact as a direct question would, using synonyms
+   for the general wording, but KEEP at least one distinctive anchor from the chunk (a named
+   entity, a specific figure/percentage, or the actual subject) so retrieval can find it.
+
+Answers must be short, correct, and grounded in the chunk text and be substantive, not about
+page numbers or chapter numbers unless it is obviously a part of the index or table of
+contents only.
+
+DIRECT QUESTIONS - anchor to the chunk's own content, never to metadata:
+A direct question must ask about the SUBSTANTIVE information stated in this chunk - a concrete
+fact, figure, finding, statement, or relationship that actually appears in the text - and must
+be phrased using the chunk's own distinctive subject matter so that this chunk is the obvious
+source. It must NOT ask about, and must NOT lean on, document metadata: metadata is the
+scaffolding that recurs across many chunks and does not identify this one.
+
+Treat all of the following as metadata and do NOT build a direct question around them:
+- chapter / section titles or headings as such (e.g. "What is the chapter title?")
+- table, figure, or exhibit numbers or their titles used only as a label
+- page numbers, running headers, and footers
+- the data source, survey provider, or publisher (e.g. "Ipsos MORI")
+- base sizes / sample sizes / "unweighted base" figures
+- reference-list or bibliography entries and their numbering
+- captions, source notes, and other boilerplate
+
+Never phrase a direct question around bare pointers like "the chunk", "the text", "the data",
+"the table", "the chart", "the source note", or "the passage". If you name a table or figure,
+name it by its actual title AND still make the question about the substantive data it reports.
+Do not use the word "chunk" in any question unless the text is literally about chunking.
+
+- Example of BAD direct question: "What is the chapter title shown in the chunk?" - chapter
+  title is metadata and appears on many chunks.
+- Example of BAD direct question: "What is the base sample size reported?" - base size is
+  metadata; almost every table chunk has one.
+- Example of BAD direct question: "What source is given for the data?" - the source note
+  ("Ipsos MORI") recurs across the whole document.
+- Example of BAD direct question: "What is the base size reported for this table?" - 'this
+  table' is a generic pointer and base size is metadata.
+- Example of GOOD direct question: "What percentage of people had ever lived in social rented
+  housing?" - a substantive figure phrased from the chunk's own content.
+- Example of GOOD direct question: "For the North region, what percentage disagreed that
+  living in social housing gave them a lower rent?" - names the specific subject in the data.
+- Example of GOOD direct question: "In Table 7.15 on regularly reviewing the needs of social
+  tenants, what is the Agree value for people currently in the social rented (SR) sector?" -
+  the table is named by its real title and the question targets its substantive data.
+
+INFERENCE and PARAPHRASED questions - stay retrievable, keep an anchor:
+These two types rewrite the wording, but rewording must not erase every trace of what the
+chunk is about - if it does, the question could match dozens of chunks and retrieval fails.
+
+- Every question MUST retain at least one distinctive anchor from the chunk: a named entity
+  (a place, organisation, table title, tenure group, survey year), a specific figure or
+  percentage, or the concrete subject being discussed. Paraphrase the framing around that
+  anchor; do not paraphrase the anchor itself into something generic.
+- NEVER refer to the subject with a bare pointer such as "this activity", "this practice",
+  "this type", "this group", "the text", "the passage", "the survey", or "the data". Name it.
+  Bad: "Which group was more likely to report this practice?" (which practice?)
+  Good: "Which firms more often reported new business-organising practices - large firms or
+  SMEs?" (the practice is named, so this chunk is the clear source)
+- Do not refer to un-named tables, charts, or anything generic that could be part of any
+  other chunk; keep both questions about the chunk's substantive content.
+- If the only fact in the chunk is generic boilerplate (a response rate, a weighting note,
+  a heading) that appears near-identically elsewhere in the document, prefer to reject the
+  chunk rather than write an inference/paraphrased question that cannot be uniquely located.
+
+If the chunk does not contain enough substantive information to support such questions -
+for example it is only a page header/footer, a bare table-of-contents fragment, a list of
+references, or boilerplate with no concrete facts, middle table data with no title or header
+sufficient to determine the meaning of data - reject it as containing insufficient information
+(with a brief reason) instead of forcing questions. Only reject when no substantive
+question is possible; a borderline chunk with at least one concrete fact should still get
+its three questions.

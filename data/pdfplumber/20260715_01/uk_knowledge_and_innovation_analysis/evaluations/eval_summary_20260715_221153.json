@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "datetime": "2026-07-15T22:11:53",
+    "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50/qa_20260715_221046_gpt-4.1-mini.json",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50",
+    "top_k": 5,
+    "ks": [
+      5
+    ],
+    "num_questions": 60,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "indexes": [
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-large.chroma",
+      "db_type": "chromadb",
+      "embedding_model": "text-embedding-3-large",
+      "eval_file": "eval_20260715_221153_chromadb_20260715_221017_text-embedding-3-large.json",
+      "overall": {
+        "num_questions": 60,
+        "mrr": 0.7794444444444444,
+        "map": 0.7794444444444444,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8096177782783972
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.7516666666666667,
+          "map": 0.7516666666666667,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.7889821033974458
+        },
+        "inference": {
+          "num_questions": 20,
+          "mrr": 0.7916666666666667,
+          "map": 0.7916666666666667,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.8065464876785728
+        },
+        "paraphrased": {
+          "num_questions": 20,
+          "mrr": 0.795,
+          "map": 0.795,
+          "recall@5": 0.95,
+          "precision@5": 0.19,
+          "ndcg@5": 0.8333247437591729
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-small.chroma",
+      "db_type": "chromadb",
+      "embedding_model": "text-embedding-3-small",
+      "eval_file": "eval_20260715_221153_chromadb_20260715_221017_text-embedding-3-small.json",
+      "overall": {
+        "num_questions": 60,
+        "mrr": 0.7241666666666667,
+        "map": 0.7241666666666667,
+        "recall@5": 0.8833333333333333,
+        "precision@5": 0.17666666666666667,
+        "ndcg@5": 0.7642875043932974
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.7224999999999999,
+          "map": 0.7224999999999999,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.7539694436225425
+        },
+        "inference": {
+          "num_questions": 20,
+          "mrr": 0.7791666666666667,
+          "map": 0.7791666666666667,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.8096268032608155
+        },
+        "paraphrased": {
+          "num_questions": 20,
+          "mrr": 0.6708333333333333,
+          "map": 0.6708333333333333,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.729266266296534
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-large.db",
+      "db_type": "milvus",
+      "embedding_model": "text-embedding-3-large",
+      "eval_file": "eval_20260715_221153_milvus_20260715_221017_text-embedding-3-large.json",
+      "overall": {
+        "num_questions": 60,
+        "mrr": 0.7794444444444444,
+        "map": 0.7794444444444444,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8096177782783972
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.7516666666666667,
+          "map": 0.7516666666666667,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.7889821033974458
+        },
+        "inference": {
+          "num_questions": 20,
+          "mrr": 0.7916666666666667,
+          "map": 0.7916666666666667,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.8065464876785728
+        },
+        "paraphrased": {
+          "num_questions": 20,
+          "mrr": 0.795,
+          "map": 0.795,
+          "recall@5": 0.95,
+          "precision@5": 0.19,
+          "ndcg@5": 0.8333247437591729
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-small.db",
+      "db_type": "milvus",
+      "embedding_model": "text-embedding-3-small",
+      "eval_file": "eval_20260715_221153_milvus_20260715_221017_text-embedding-3-small.json",
+      "overall": {
+        "num_questions": 60,
+        "mrr": 0.7241666666666667,
+        "map": 0.7241666666666667,
+        "recall@5": 0.8833333333333333,
+        "precision@5": 0.17666666666666667,
+        "ndcg@5": 0.7642875043932974
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.7224999999999999,
+          "map": 0.7224999999999999,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.7539694436225425
+        },
+        "inference": {
+          "num_questions": 20,
+          "mrr": 0.7791666666666667,
+          "map": 0.7791666666666667,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.8096268032608155
+        },
+        "paraphrased": {
+          "num_questions": 20,
+          "mrr": 0.6708333333333333,
+          "map": 0.6708333333333333,
+          "recall@5": 0.9,
+          "precision@5": 0.18,
+          "ndcg@5": 0.729266266296534
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260715_221010_word.pkl",
+      "db_type": "bm25",
+      "tokenizer": "word",
+      "eval_file": "eval_20260715_221153_bm25_20260715_221010_word.json",
+      "overall": {
+        "num_questions": 60,
+        "mrr": 0.5850000000000001,
+        "map": 0.5850000000000001,
+        "recall@5": 0.7166666666666667,
+        "precision@5": 0.14333333333333334,
+        "ndcg@5": 0.6179511116117306
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.6916666666666667,
+          "map": 0.6916666666666667,
+          "recall@5": 0.75,
+          "precision@5": 0.15,
+          "ndcg@5": 0.7065464876785729
+        },
+        "inference": {
+          "num_questions": 20,
+          "mrr": 0.61,
+          "map": 0.61,
+          "recall@5": 0.75,
+          "precision@5": 0.15,
+          "ndcg@5": 0.6455285910760186
+        },
+        "paraphrased": {
+          "num_questions": 20,
+          "mrr": 0.4533333333333333,
+          "map": 0.4533333333333333,
+          "recall@5": 0.65,
+          "precision@5": 0.13,
+          "ndcg@5": 0.5017782560805999
+        }
+      }
+    }
+  ]
+}

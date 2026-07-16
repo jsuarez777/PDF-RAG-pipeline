@@ -1,0 +1,215 @@
+{
+  "metadata": {
+    "datetime": "2026-07-15T22:28:40",
+    "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50/qa_20260715_222823_gpt-4.1-mini.json",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50",
+    "top_k": 5,
+    "ks": [
+      5
+    ],
+    "num_questions": 57,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "indexes": [
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-large.chroma",
+      "db_type": "chromadb",
+      "embedding_model": "text-embedding-3-large",
+      "eval_file": "eval_20260715_222840_chromadb_20260715_221017_text-embedding-3-large.json",
+      "overall": {
+        "num_questions": 57,
+        "mrr": 0.7383040935672515,
+        "map": 0.7383040935672515,
+        "recall@5": 0.8771929824561403,
+        "precision@5": 0.17543859649122806,
+        "ndcg@5": 0.7738428831616933
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 19,
+          "mrr": 0.7280701754385965,
+          "map": 0.7280701754385965,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7575152242481249
+        },
+        "inference": {
+          "num_questions": 19,
+          "mrr": 0.7543859649122807,
+          "map": 0.7543859649122807,
+          "recall@5": 0.8947368421052632,
+          "precision@5": 0.17894736842105263,
+          "ndcg@5": 0.7907220533834648
+        },
+        "paraphrased": {
+          "num_questions": 19,
+          "mrr": 0.7324561403508771,
+          "map": 0.7324561403508771,
+          "recall@5": 0.8947368421052632,
+          "precision@5": 0.17894736842105263,
+          "ndcg@5": 0.7732913718534898
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-small.chroma",
+      "db_type": "chromadb",
+      "embedding_model": "text-embedding-3-small",
+      "eval_file": "eval_20260715_222840_chromadb_20260715_221017_text-embedding-3-small.json",
+      "overall": {
+        "num_questions": 57,
+        "mrr": 0.7242690058479532,
+        "map": 0.7242690058479532,
+        "recall@5": 0.8421052631578947,
+        "precision@5": 0.16842105263157894,
+        "ndcg@5": 0.754313985043001
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 19,
+          "mrr": 0.7807017543859649,
+          "map": 0.7807017543859649,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7963647238721819
+        },
+        "inference": {
+          "num_questions": 19,
+          "mrr": 0.7210526315789473,
+          "map": 0.7210526315789473,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7515601088394166
+        },
+        "paraphrased": {
+          "num_questions": 19,
+          "mrr": 0.6710526315789473,
+          "map": 0.6710526315789473,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7150171224174042
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-large.db",
+      "db_type": "milvus",
+      "embedding_model": "text-embedding-3-large",
+      "eval_file": "eval_20260715_222840_milvus_20260715_221017_text-embedding-3-large.json",
+      "overall": {
+        "num_questions": 57,
+        "mrr": 0.7383040935672515,
+        "map": 0.7383040935672515,
+        "recall@5": 0.8771929824561403,
+        "precision@5": 0.17543859649122806,
+        "ndcg@5": 0.7738428831616933
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 19,
+          "mrr": 0.7280701754385965,
+          "map": 0.7280701754385965,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7575152242481249
+        },
+        "inference": {
+          "num_questions": 19,
+          "mrr": 0.7543859649122807,
+          "map": 0.7543859649122807,
+          "recall@5": 0.8947368421052632,
+          "precision@5": 0.17894736842105263,
+          "ndcg@5": 0.7907220533834648
+        },
+        "paraphrased": {
+          "num_questions": 19,
+          "mrr": 0.7324561403508771,
+          "map": 0.7324561403508771,
+          "recall@5": 0.8947368421052632,
+          "precision@5": 0.17894736842105263,
+          "ndcg@5": 0.7732913718534898
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-small.db",
+      "db_type": "milvus",
+      "embedding_model": "text-embedding-3-small",
+      "eval_file": "eval_20260715_222840_milvus_20260715_221017_text-embedding-3-small.json",
+      "overall": {
+        "num_questions": 57,
+        "mrr": 0.7242690058479532,
+        "map": 0.7242690058479532,
+        "recall@5": 0.8421052631578947,
+        "precision@5": 0.16842105263157894,
+        "ndcg@5": 0.754313985043001
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 19,
+          "mrr": 0.7807017543859649,
+          "map": 0.7807017543859649,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7963647238721819
+        },
+        "inference": {
+          "num_questions": 19,
+          "mrr": 0.7210526315789473,
+          "map": 0.7210526315789473,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7515601088394166
+        },
+        "paraphrased": {
+          "num_questions": 19,
+          "mrr": 0.6710526315789473,
+          "map": 0.6710526315789473,
+          "recall@5": 0.8421052631578947,
+          "precision@5": 0.16842105263157894,
+          "ndcg@5": 0.7150171224174042
+        }
+      }
+    },
+    {
+      "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260715_221010_word.pkl",
+      "db_type": "bm25",
+      "tokenizer": "word",
+      "eval_file": "eval_20260715_222840_bm25_20260715_221010_word.json",
+      "overall": {
+        "num_questions": 57,
+        "mrr": 0.5005847953216375,
+        "map": 0.5005847953216375,
+        "recall@5": 0.6140350877192983,
+        "precision@5": 0.12280701754385964,
+        "ndcg@5": 0.5287893891946615
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 19,
+          "mrr": 0.7017543859649124,
+          "map": 0.7017543859649124,
+          "recall@5": 0.7368421052631579,
+          "precision@5": 0.14736842105263157,
+          "ndcg@5": 0.7105263157894737
+        },
+        "inference": {
+          "num_questions": 19,
+          "mrr": 0.5719298245614035,
+          "map": 0.5719298245614035,
+          "recall@5": 0.7368421052631579,
+          "precision@5": 0.14736842105263157,
+          "ndcg@5": 0.6130901218093399
+        },
+        "paraphrased": {
+          "num_questions": 19,
+          "mrr": 0.22807017543859648,
+          "map": 0.22807017543859648,
+          "recall@5": 0.3684210526315789,
+          "precision@5": 0.07368421052631578,
+          "ndcg@5": 0.2627517299851707
+        }
+      }
+    }
+  ]
+}

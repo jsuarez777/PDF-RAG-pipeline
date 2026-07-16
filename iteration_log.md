@@ -49,6 +49,23 @@ Structured log of major experiments and pipeline changes, per the format in `scr
 - **Decision**: Keep. Use `qa_20260713_130754` / the new prompt for future benchmarks; always pass `--seed` when sampling.
 - **Next step**: Retrieval quality itself is still far below targets (best R@5 0.667 vs target ≥ 0.90). Next levers: chunking strategy (table-aware chunking; many misses are near-identical survey-table chunks indistinguishable from question text alone), hybrid BM25+embedding retrieval, and/or reranking.
 
+### Iteration 4: Prompt v3 — metadata-free direct, anchored inference/paraphrased; controlled A/B (KEEP)
+- **Date**: 2026-07-15
+- **Change**: Copied `prompts/generate_qa/v2/` → `v3/` and split the anchoring rules by question type, driven by a failure analysis of all `eval_20260713*` misses (gold chunk not in top-5) on `attitudes_to_housing` and `uk_knowledge_and_innovation_analysis`:
+  - **direct**: must ask about substantive chunk content, never document metadata — chapter/section titles, table/figure numbers-as-labels, page numbers/headers, data source or survey provider (e.g. "Ipsos MORI"), base/sample sizes, reference-list entries, captions. No bare pointers ("the table/data/source").
+  - **inference / paraphrased**: must retain at least one distinctive anchor (named entity, specific figure, or the concrete subject) and never use vague anaphora ("this practice", "the survey"); prefer rejecting a chunk whose only fact is boilerplate that recurs elsewhere.
+  - Pipeline: added parallel API calls (`ThreadPoolExecutor`, `--parallel`, default 20, resampling preserved) mirroring miniproject2; added `--prompt-version` to pin a prompt for A/B; changed `DEFAULT_MODEL` to `gpt-4.1-mini`.
+- **Why the split**: direct misses were almost all metadata questions that recur across chunks. Inference/paraphrased misses were mostly **not** metadata (~25%); the dominant causes were (a) the two types stripping the chunk's distinctive wording by design, so retrieval loses its anchors — gold absent from top-**10** in 76% of inference / 92% of paraphrased misses; and (b) overlapping fixed-size chunks (256/50) duplicating the gold fact into a neighbor, so a ±2-index neighbor outranks gold in 18% of misses (a chunking artifact, not a question flaw).
+- **Hypothesis**: Anchoring questions to distinctive chunk content should raise retrievability, most for lexical (BM25) and weak-embedding retrievers that suffer when anchors are removed.
+- **Result** — controlled A/B holding chunking, model (`gpt-4.1-mini`), the 19 shared chunks, and the 5 indexes constant; only the prompt differs (v2 vs v3), 57 questions each, top-k=5 (`eval_20260715_222840` vs `eval_20260715_221153`). v3 wins or ties everywhere; nothing regresses:
+  - BM25/word: MRR 0.501→0.577 (+0.077), R@5 0.614→0.702 (+0.088), NDCG@5 +0.080 — the largest gain, confirming the anchor rule matters most for keyword search.
+  - 3-large (chromadb/milvus identical): MRR 0.738→0.777 (+0.038), R@5 0.877→0.895 (+0.018), NDCG@5 +0.032.
+  - 3-small: R@5 0.842→0.877 (+0.035), NDCG@5 +0.008, MRR flat (−0.001).
+  - Regenerating v3 over the earlier failed-question chunks rejected ~half of them as insufficient (TOC/fragment/duplicate chunks) — expected, since those failures are the chunking strategy under test, not prompt bugs.
+  - Note: an earlier uncontrolled comparison (20260715 vs 20260713 runs) showed similar gains but confounded prompt with the `gpt-5.4-mini`→`gpt-4.1-mini` model swap and even a spurious R@5 dip on 3-large; the controlled run removes that confound and the dip disappears.
+- **Decision**: Keep. Use v3 for future benchmarks.
+- **Next step**: Retrieval is still below targets and ~half of failures are structural. Move to **chunking strategy** — table/structure-aware chunking to stop emitting fragment/TOC chunks and to stop duplicating a fact across overlapping neighbors — and/or relabel the eval gold set to credit any chunk containing the fact. (`--prompt-version` now supports rerunning this A/B on any future prompt.)
+
 ### Tooling: QA overlay, editing, and targeted generation in the PDF viewer
 - **Date**: 2026-07-12
 - **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`), `app/generate_qa.py`

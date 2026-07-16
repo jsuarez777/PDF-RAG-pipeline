@@ -1,0 +1,618 @@
+Direct-question regeneration via prompt v3
+Model: gpt-5.4-mini (temp 0.7)   |   Prompt: prompts/generate_qa/v3
+Failed direct questions (gold chunk not in top 5): 29
+
+====================================================================================================
+CHUNK 12   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+action 30
+Chapter 4 31
+Social renters
+4.1. Who are social renters? 31
+4.2. Length of time as a social tenant 33
+4.3. Reasons for moving into social housing 35
+4.4. The benefits of living in social rented housing 35
+4.5. The disadvantages of living in socia
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the chapter title shown in the chunk?
+  A: Social renters
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: This chunk is only a table-of-contents fragment with section titles and page numbers, and it does not contain substantive facts that can support direct, inference, and paraphrased question-answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the base sample size reported in the chunk?
+  A: 356
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a table with unlabeled numeric entries and a truncated footnote, so there is not enough substantive context to write three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 416   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008).
+Source: Ipsos MORI
+5.7. Potential demand for social housing
+Tenants were asked to indicate whether they would like to move to social
+housing,
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What source is given for the data?
+  A: Ipsos MORI
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is only a partial heading and introductory sentence with no substantive result or specific fact beyond that tenants were asked whether they would like to move to social housing. It does not provide enough concrete information to form three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 541   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ are explored
+in further depth in the qualitative research undertaken at the same time and
+reported on separately 9.
+9 Communities and Local Government (2009) Attitudes to housing: Findings from focus groups
+84 | Attitudes to housing
+Chapter 7
+Public attit
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What source is cited as report 9?
+  A: Communities and Local Government (2009) Attitudes to housing: Findings from focus groups
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: This chunk is mostly a cross-reference, citation, and page/header text, with only a truncated chapter heading and no concrete substantive fact sufficient to form three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the table, what is the agree percentage for people currently in the social rented (SR) sector?
+  A: 42
+
+NEW direct question (v3 prompt):
+  Q: What are the Agree and Disagree values for people currently in the social rented sector?
+  A: Agree 33, Disagree 42.
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What are the values shown for London?
+  A: 28 39 +12
+
+NEW direct question (v3 prompt):
+  Q: For people currently in the social rented sector, what are the two percentages shown after the base figure?
+  A: 36 and 43
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=9):
+  Q: What does Table 7.15 show variations in the views on?
+  A: regularly reviewing the needs of social tenants
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk only shows a table title and the beginning of a survey statement, but no substantive data, results, or complete claim to ask about. There is not enough concrete information to form three answerable question/answer pairs from this excerpt alone.>
+  A: 
+
+====================================================================================================
+CHUNK 938   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+%
+Base: All valid responses (2,664) (1,336) (1,328)
+Yes – on social housing register/ 3 3 3
+waiting list
+No – not on social housing register/ 94 93 95
+waiting list
+Don’t know 3 3 2
+Appendices Appendix 2 | 147
+Q12. Approximately how long have you or your pa
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=6):
+  Q: What percentage answered "No – not on social housing register/waiting list" in the base sample?
+  A: 94
+
+NEW direct question (v3 prompt):
+  Q: What percentage of respondents said they were not on a social housing register or waiting list?
+  A: 94%
+
+====================================================================================================
+CHUNK 1029   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 30
+Get repairs done for you/less 13 14 11
+responsibility for upkeep
+More freedom to do what I want 6 5 6
+with the property (e.g. decorations/
+alterations)
+Being able to get involved in decisions 1 – 3
+about my home
+Reliable landlord 7 9 6
+Have right to bu
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=10):
+  Q: What does the chunk say about "Reliable landlord" in the three columns?
+  A: 7 9 6
+
+NEW direct question (v3 prompt):
+  Q: According to the list, what percentage said "Reliable landlord"?
+  A: 7, 9 and 6
+
+====================================================================================================
+CHUNK 211   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ greater depth the views of those currently living in both
+social and private rented accommodation at the time of the survey which are
+considered further in the following chapters.
+Chapter 4 Social renters | 31
+Chapter 4
+Social renters
+In this chapter we l
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=6):
+  Q: What chapter title appears in this excerpt?
+  A: Social renters
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: This excerpt is only a fragment of surrounding text and a chapter heading, with no concrete substantive facts beyond indicating that later chapters consider views of current social and private renters.>
+  A: 
+
+====================================================================================================
+CHUNK 253   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+37 20 12 10
+children (150)
+55+ With or without 46 21 23 11 7
+children (224)
+Region
+North (236) 44 32 22 9 5
+Midlands (140) 46 31 24 17 10
+South (145) 42 28 22 13 7
+London (159) 21 25 18 15 12
+Source: Ipsos MORI
+Note: base sizes in brackets * ‘Other’ life s
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the table, what is the base size for people aged 55+ with or without children?
+  A: 224
+
+NEW direct question (v3 prompt):
+  Q: According to the regional figures, which region has the highest first value after the base size: North, Midlands, South, or London?
+  A: Midlands, at 46.
+
+====================================================================================================
+CHUNK 484   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+he upkeep of the
+property. These perceptions were strongly supported by social renters themselves,
+who, as we have seen earlier, identified these same three factors as the best
+things about living in social housing. Reliability of the landlord was also per
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=7):
+  Q: What did social renters identify as the best things about living in social housing?
+  A: The same three factors.
+
+NEW direct question (v3 prompt):
+  Q: What did social renters identify as the best things about living in social housing, according to the chunk?
+  A: The same three factors.
+
+====================================================================================================
+CHUNK 702   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+8 39 +1
+45-64 (1,044) 46 34 -12
+65-74 (490) 32 46 +14
+75+ (336) 28 44 +15
+Household type (life stage)*
+<55 Single no children (547) 37 38 +1
+<55 Single with children (288) 37 41 +4
+<55 Couple with no children (434) 46 35 -10
+<55 Couple with children (712) 
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What are the values for the 65-74 age group, and what is the change shown for that group?
+  A: 32, 46, and +14
+
+NEW direct question (v3 prompt):
+  Q: For people aged 65-74, what are the two percentages shown, and what is the difference between them?
+  A: 32 and 46, a difference of +14.
+
+====================================================================================================
+CHUNK 806   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 18 60 +42
+£30k+ (655) 22 62 +40
+Age
+16-24 (401) 12 67 +55
+25-44 (1,073) 19 58 +39
+45-64 (1,044) 26 56 +30
+65-74 (490) 23 55 +32
+75+ (336) 16 58 +41
+Household type (life stage)*
+<55 Single no children (547) 16 63 +46
+<55 Single with children (288) 16 63 +4
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the value shown for the 65-74 age group?
+  A: 23
+
+NEW direct question (v3 prompt):
+  Q: For people aged 16-24, what are the three figures shown next to that age group?
+  A: 12, 67, and +55
+
+====================================================================================================
+CHUNK 987   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+cult to get a job 3 4 3
+because of postcode
+Problems getting repairs done 17 22 14
+Not being able to get involved in 6 5 –
+decisions about my home
+Difficult to move to other types of 3 4 –
+property when needs change
+Not owning my own home/lack of 6 5 –
+sec
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=10):
+  Q: According to the table, how many people reported problems getting repairs done in the first column of figures?
+  A: 17
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a table with truncated labels and unlabeled numeric columns, so there is not enough substantive context to form three specific question/answer pairs that can be answered unambiguously from this chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 1002   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+mbined July August
+% % %
+Base: All respondents who social rent (680) (314) (366)
+Very satisfied 35 36 35
+Fairly satisfied 46 44 48
+Neither satisfied nor dissatisfied 9 10 8
+Fairly dissatisfied 4 4 4
+Very dissatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the table, what percentage of all social renters were very satisfied in the combined July-August figures?
+  A: 35%
+
+NEW direct question (v3 prompt):
+  Q: What percentage of all respondents who social rent were very satisfied?
+  A: 35%
+
+====================================================================================================
+CHUNK 1003   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ssatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 83
+Dissatisfied 8 8 8
+Net satisfaction +74 +73 +75
+Q27a. To what extent do you agree or disagree with each of the
+following statements that having a lower rent by living in
+social housing has helped you… to
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the table, what is the percentage of people who are satisfied in the three columns?
+  A: 82, 81, and 83
+
+NEW direct question (v3 prompt):
+  Q: According to Q27a, what was the net satisfaction value in the first column?
+  A: +74
+
+====================================================================================================
+CHUNK 245   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ relevant responses as applicable
+The table below shows the five most commonly mentioned best things about
+social housing by key characteristics. Lower income social tenants were more
+likely to consider getting repairs done as one of the best things of the
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What does the table below show about social housing by key characteristics?
+  A: The five most commonly mentioned best things about social housing by key characteristics.
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete to support three substantive question/answer pairs: it only states that a table shows the five most commonly mentioned best things about social housing by key characteristics and begins a sentence about lower income social tenants, but it does not include the actual table content or any complete factual findings.>
+  A: 
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the base size reported for this table?
+  A: 356 respondents
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: This chunk is only a fragment of numeric table values with no row/column labels or substantive context, so specific factual questions cannot be grounded unambiguously in the chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the table, what is the Agree (±) value for people currently in the social rented (SR) sector?
+  A: -10
+
+NEW direct question (v3 prompt):
+  Q: For people currently in the social rented sector, what are the Agree and Disagree values?
+  A: Agree 33, Disagree 42.
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the figure for London, and what change is shown next to it?
+  A: (488) 28 39 +12
+
+NEW direct question (v3 prompt):
+  Q: For London, what are the two values shown and what is the change?
+  A: 28, 39, and +12
+
+====================================================================================================
+CHUNK 416   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008).
+Source: Ipsos MORI
+5.7. Potential demand for social housing
+Tenants were asked to indicate whether they would like to move to social
+housing,
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: According to the source note, who were the respondents and where and when were they questioned?
+  A: Private renters questioned in-home in England, July 24–31 and August 14–21 2008.
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk only gives a partial methodological note and the start of a section heading, plus an incomplete sentence. It does not contain enough substantive information to form three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the title of Table 7.15?
+  A: Variations in the views on regularly reviewing the needs of social tenants
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk only shows a table heading and the beginning of a statement, but no substantive data, figures, or completed claim to base three question/answer pairs on.>
+  A: 
+
+====================================================================================================
+CHUNK 768   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 64%) whereas those
+living in the north showed the lowest level of support (57%).
+Chapter 7 Public attitudes to rented housing | 115
+Table 7.14 Variations in the views on under-occupation
+To what extent do you agree or disagree with the following
+statement
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=9):
+  Q: What was the lowest level of support, and which region showed it?
+  A: 57% in the north.
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk only gives a partial sentence and a table heading/instruction, without enough substantive data or a complete statement to form three answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 63   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 39
+Wider innovator 31 35 31
+Activities 33 38 33
+Product innovator 19 23 19
+of which (share with new-to-market products) 46 50 46
+Process innovator 10 17 10
+of which (share with new-to-industry processes) 27 24 26
+Abandoned activities 4 6 4
+On-going activi
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What is the value for "Product innovator"?
+  A: 19 23 19
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a table with labels and numbers but no title, column headings, or context to identify what the figures represent, so it does not support three specific question/answer pairs grounded only in this text.>
+  A: 
+
+====================================================================================================
+CHUNK 154   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ere:
+• internal: from within the enterprise itself or other enterprises within the enterprise
+group;
+• market: from suppliers, customers, clients, consultants, competitors, commercial
+laboratories or research and development enterprises;
+• institutional: f
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What are the three listed sources of innovation information in the passage?
+  A: Internal, market, and institutional.
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk is an incomplete list fragment and does not contain enough substantive information to form three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 155   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ch and development enterprises;
+• institutional: from the public sector such as government research organisations
+and universities or private research institutes; and
+• other sources: from conferences, trade fairs and exhibitions; scientific journals,
+trad
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=None):
+  Q: What are the listed examples of "other sources"?
+  A: Conferences, trade fairs and exhibitions, and scientific journals.
+
+NEW direct question (v3 prompt):
+  Q: According to the list, what are the three source categories mentioned after the first bullet point?
+  A: Institutional and other sources, plus the first category ending in “ch and development enterprises.”
+
+====================================================================================================
+CHUNK 181   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+Shares of innovation active businesses by country (all enterprises)
+Wales
+England
+Scotland
+2011
+Northern Ireland
+2013
+0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50%
+Unweighted base = 14,487 in 2013 and 14342 in 2011
+8.2 Regional level differences
+Figure 7 shows
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=7):
+  Q: What is the unweighted base in 2013 and in 2011?
+  A: 14,487 in 2013 and 14,342 in 2011.
+
+NEW direct question (v3 prompt):
+  Q: According to the figure, which country is shown for 2011?
+  A: Scotland
+
+====================================================================================================
+CHUNK 241   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ data, with the notable increases on the shares of innovation active and
+broader innovators.
+Figure 10: UKIS – cross section data 2007, 2009, 2011 and 2013
+70%
+60%
+50%
+40%
+30%
+20%
+10%
+0%
+2007 Survey 2009 Survey 2011 Survey 2013 Survey
+Innovation-active Inn
+----------------------------------------------------------------------------------------------------
+ORIGINAL direct question (gold_rank=6):
+  Q: What does Figure 10 show data for?
+  A: UKIS cross section data for 2007, 2009, 2011 and 2013.
+
+NEW direct question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a partial figure caption and a truncated chart label, without enough substantive data or complete statements to form three grounded question/answer pairs.>
+  A: 

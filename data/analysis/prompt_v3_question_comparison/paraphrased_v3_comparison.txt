@@ -1,0 +1,1169 @@
+Paraphrased-question regeneration via prompt v3
+Model: gpt-5.4-mini (temp 0.7)   |   Prompt: prompts/generate_qa/v3
+Failed paraphrased questions (gold not in top 5): 59
+
+====================================================================================================
+CHUNK 12   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+action 30
+Chapter 4 31
+Social renters
+4.1. Who are social renters? 31
+4.2. Length of time as a social tenant 33
+4.3. Reasons for moving into social housing 35
+4.4. The benefits of living in social rented housing 35
+4.5. The disadvantages of living in socia
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What heading is given for people who live in public housing?
+  A: Social renters
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: This chunk is only a table of contents fragment with section headings and page numbers, without substantive content to support three answerable questions.>
+  A: 
+
+====================================================================================================
+CHUNK 66   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+n module on to the Public Affairs Monitor,
+the questions developed for this programme of research were extensively
+cognitively tested with members of the public across all tenure groups. Questions
+were tested and modified to ensure they were being correctl
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Who took part in the thorough pretesting of the survey items, and what broad categories did they cover?
+  A: Members of the public across all tenure groups.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a partial sentence about cognitive testing of questions for a research programme and does not contain enough distinct substantive facts to support three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 138   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+3
+Housing experiences
+The housing experiences of the population have an important role to play in
+shaping aspirations and housing choices. Here we consider in further detail
+past and present (at the time of the survey) tenure experiences, together with
+inf
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What influence do people's living arrangements have, according to the text?
+  A: They help shape aspirations and housing choices.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only an introductory fragment and ends mid-sentence, with no concrete substantive facts beyond a general statement about housing experiences and tenure experiences. It does not contain enough distinct information to form three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 170   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ever lived in social
+rented housing 18%
+56% Previously lived in
+26%
+social rented housing
+but not now
+Base: 3,344 (respondents are general public questioned in-home in England in the
+periods July 24-31 and August 14-21 2008)
+Source: Ipsos MORI
+It was those
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What percentage had at some point lived in publicly subsidized rental accommodation?
+  A: 18%
+
+NEW paraphrased question (v3 prompt):
+  Q: According to the figures on social rented housing, what share had ever lived in it?
+  A: 18%
+
+====================================================================================================
+CHUNK 318   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ extent do you agree or disagree with each of the following
+statements that having a lower rent by living in social housing has
+helped you…to save up a deposit to help buy a home in the future?
+% Disagree % Agree Net agree (±)
+Region
+North (236) 60 15 -45
+
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the northern area, what share said they were not helped by reduced housing payments to put money aside for a down payment on a home later?
+  A: 60%
+
+NEW paraphrased question (v3 prompt):
+  Q: In the North, what was the net agree score for the statement about social housing lowering rent and helping save a deposit to buy a home later?
+  A: -45.
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: How many people were included in the survey overall?
+  A: 356
+
+NEW paraphrased question (v3 prompt):
+  Q: For the £9.5k – £17.4k income band, what percentage is reported?
+  A: 54
+
+====================================================================================================
+CHUNK 416   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008).
+Source: Ipsos MORI
+5.7. Potential demand for social housing
+Tenants were asked to indicate whether they would like to move to social
+housing,
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which organization is cited as the origin of the information?
+  A: Ipsos MORI
+
+NEW paraphrased question (v3 prompt):
+  Q: In the part labeled "Potential demand for social housing," what were tenants asked about moving into social housing?
+  A: They were asked whether they would like to move to social housing.
+
+====================================================================================================
+CHUNK 444   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ private renting according to social renters and their
+characteristics
+What do you consider to be the ADVANTAGES of renting from a private
+landlord rather than the council or housing association?
+%
+Better choice Choice of Get repairs done for
+of properties
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is one benefit of leasing from an individual owner instead of the local authority or a housing association?
+  A: Better choice of properties.
+
+NEW paraphrased question (v3 prompt):
+  Q: In the section on advantages of renting from a private landlord rather than the council or housing association, what benefit is mentioned besides "Better choice of properties"?
+  A: Getting repairs done.
+
+====================================================================================================
+CHUNK 540   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+tudes towards how social housing is allocated and what
+changes they would like to see to make it fairer. These and wider issues relating
+to the role of social housing in shaping aspirations and life chances are explored
+in further depth in the qualitative 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What do respondents say about the way public housing is handed out, and what do they want altered?
+  A: They want it made fairer.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: This chunk is only a partial sentence about attitudes toward social housing allocation and broader issues to be explored in qualitative analysis, without enough substantive detail to form three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 541   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ are explored
+in further depth in the qualitative research undertaken at the same time and
+reported on separately 9.
+9 Communities and Local Government (2009) Attitudes to housing: Findings from focus groups
+84 | Attitudes to housing
+Chapter 7
+Public attit
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which publication is listed as note 9?
+  A: Communities and Local Government (2009) Attitudes to housing: Findings from focus groups
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of surrounding text and metadata/citation material ('reported on separately', a reference, page/chapter header). It does not contain enough substantive information to form three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: For people who have never lived in social housing, what is the percentage who agree?
+  A: 25
+
+NEW paraphrased question (v3 prompt):
+  Q: For people who are currently in SR, what percentage is shown under Agree in the experience of the social rented (SR) sector figures?
+  A: 33
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What figures are listed for the capital city row?
+  A: 28 39 +12
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is a fragment of a table with truncated labels and no full question stem or complete substantive context. It shows some regional and social-rented-sector figures, but not enough clearly defined information to write three precise, uniquely answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 768   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 64%) whereas those
+living in the north showed the lowest level of support (57%).
+Chapter 7 Public attitudes to rented housing | 115
+Table 7.14 Variations in the views on under-occupation
+To what extent do you agree or disagree with the following
+statement
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which area had the weakest backing, according to the passage?
+  A: The north.
+
+NEW paraphrased question (v3 prompt):
+  Q: For people living in the north, what was the reported level of support?
+  A: 57%.
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What does the table say is being looked at repeatedly for people renting from the council or similar providers?
+  A: their needs
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a table heading and a truncated statement, with no substantive data or results to ask about. It does not provide enough information to form three answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 883   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+
+Top five mentions
+% <£9.5k % £9.5k – £17.49k % £17.5k+
+37
+General advice on
+20
+my tenancy
+28
+27
+Dealing with my landlord
+20
+about repairs
+18
+General financial advice relating 18
+to housing/saving for a deposit 19
+to buy a property
+17
+20
+How to apply for a
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is the leading topic listed for help with your rental agreement in the lowest earnings band?
+  A: General advice on my tenancy
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is a partial, truncated list of 'Top five mentions' with incomplete entries and no full substantive statement that can support three distinct question/answer pairs reliably.>
+  A: 
+
+====================================================================================================
+CHUNK 938   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+%
+Base: All valid responses (2,664) (1,336) (1,328)
+Yes – on social housing register/ 3 3 3
+waiting list
+No – not on social housing register/ 94 93 95
+waiting list
+Don’t know 3 3 2
+Appendices Appendix 2 | 147
+Q12. Approximately how long have you or your pa
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: How many people said they were not listed for public housing or on a waiting roster?
+  A: 94
+
+NEW paraphrased question (v3 prompt):
+  Q: For the social housing register / waiting list item, what share answered "No"?
+  A: 94%
+
+====================================================================================================
+CHUNK 939   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+47
+Q12. Approximately how long have you or your partner been on the
+housing register or waiting list?
+Combined July August
+% % %
+Base: All respondents on housing register or (80) (41) (39)
+waiting list
+Less than 3 months 12 15 9
+3 months but less than 6 mo
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the question about how long someone has been listed for housing, what is the overall respondent count used as the base?
+  A: 80
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is truncated and only shows one complete substantive response option ('Less than 3 months 12 15 9'); the rest of the table content is missing, so there is not enough information to generate three reliable question/answer pairs grounded solely in this chunk.>
+  A: 
+
+====================================================================================================
+CHUNK 1029   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 30
+Get repairs done for you/less 13 14 11
+responsibility for upkeep
+More freedom to do what I want 6 5 6
+with the property (e.g. decorations/
+alterations)
+Being able to get involved in decisions 1 – 3
+about my home
+Reliable landlord 7 9 6
+Have right to bu
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What numbers are listed for "more independence to change or decorate the property"?
+  A: 6 5 6
+
+NEW paraphrased question (v3 prompt):
+  Q: In the list that includes “Get repairs done for you/less responsibility for upkeep,” what figure is shown for “More freedom to do what I want with the property (e.g. decorations/alterations)” across the three columns?
+  A: 6, 5, and 6.
+
+====================================================================================================
+CHUNK 58   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ of the qualitative project
+was designed to explore the housing experiences of people on low-to-middle
+incomes, and the implications of these experiences on their aspirations and life
+chances.
+Phase two of the qualitative work was designed to build on the 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What was the study intended to investigate about people with modest earnings, and what broader effects were considered?
+  A: Their housing experiences and the effects on their aspirations and life chances.
+
+NEW paraphrased question (v3 prompt):
+  Q: In the qualitative project, whose housing experiences were being examined, and what broader effects were they linked to?
+  A: People on low-to-middle incomes, and the effects on their aspirations and life chances.
+
+====================================================================================================
+CHUNK 208   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+re than four out of five social renters (82%) were satisfied with
+being a social tenant and just under three-quarters of private renters (74%) were
+satisfied.
+Figure 3.11 Overall satisfaction
+Taking everything into account, how satisfied or dissatisfied ar
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What share of people renting from a private landlord were content with their tenancy?
+  A: 74%
+
+NEW paraphrased question (v3 prompt):
+  Q: In Figure 3.11 Overall satisfaction, what share of private renters were satisfied?
+  A: 74%
+
+====================================================================================================
+CHUNK 211   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ greater depth the views of those currently living in both
+social and private rented accommodation at the time of the survey which are
+considered further in the following chapters.
+Chapter 4 Social renters | 31
+Chapter 4
+Social renters
+In this chapter we l
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is the heading for the section about tenants in publicly provided housing?
+  A: Social renters
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a brief transition into Chapter 4 and does not contain enough substantive facts to support three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 245   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ relevant responses as applicable
+The table below shows the five most commonly mentioned best things about
+social housing by key characteristics. Lower income social tenants were more
+likely to consider getting repairs done as one of the best things of the
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=8):
+  Q: According to the text, what was one of the top positives of council or housing-association accommodation for lower-income tenants?
+  A: Getting repairs done.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is truncated and only states that lower income social tenants were more likely to consider getting repairs done as one of the best things about social housing, without enough complete substantive detail to form three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 253   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+37 20 12 10
+children (150)
+55+ With or without 46 21 23 11 7
+children (224)
+Region
+North (236) 44 32 22 9 5
+Midlands (140) 46 31 24 17 10
+South (145) 42 28 22 13 7
+London (159) 21 25 18 15 12
+Source: Ipsos MORI
+Note: base sizes in brackets * ‘Other’ life s
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is the bracketed sample count for the older group shown as having either children or no children?
+  A: 224
+
+NEW paraphrased question (v3 prompt):
+  Q: For London, what is the second figure shown in the row of values?
+  A: 25
+
+====================================================================================================
+CHUNK 285   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+e asked to assess the contribution
+social housing had made to their financial independence, their training and
+employment prospects and their ability to access market housing. In the following
+sections we look at the proportion of respondents who agreed an
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What did the survey ask people to judge social housing’s role in improving?
+  A: Their economic autonomy, job and training chances, and ability to get private-sector housing.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is incomplete and only sets up a discussion of social housing’s contribution to financial independence, training and employment prospects, and access to market housing. It does not include any substantive findings or specific facts that can support three question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 366   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+onsidered the choice of location to be one of the best things
+about private renting, nearly three times the proportion that considered choice
+of property to be a key advantage.
+Responsibility for repairs resting with the landlord and flexible tenancy
+arran
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=7):
+  Q: What aspect of private rental was seen as a top benefit by nearly three times as many people as the option to select the type of home?
+  A: Choosing the area.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three substantive question/answer pairs. It only states that choice of location was seen as one of the best things about private renting, nearly three times the proportion who saw choice of property as a key advantage, and begins a fragment about landlord repairs and flexible tenancy arrangements without enough context or complete facts.>
+  A: 
+
+====================================================================================================
+CHUNK 484   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+he upkeep of the
+property. These perceptions were strongly supported by social renters themselves,
+who, as we have seen earlier, identified these same three factors as the best
+things about living in social housing. Reliability of the landlord was also per
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=8):
+  Q: Which feature of the housing provider was also noted as important?
+  A: Reliability of the landlord.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is truncated and only contains a partial sentence about perceptions of social housing; it does not provide enough complete substantive information to form three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 702   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+8 39 +1
+45-64 (1,044) 46 34 -12
+65-74 (490) 32 46 +14
+75+ (336) 28 44 +15
+Household type (life stage)*
+<55 Single no children (547) 37 38 +1
+<55 Single with children (288) 37 41 +4
+<55 Couple with no children (434) 46 35 -10
+<55 Couple with children (712) 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: For the category of respondents aged 75 and over, what are the two figures and the difference listed?
+  A: 28, 44, and +15
+
+NEW paraphrased question (v3 prompt):
+  Q: In the Household type (life stage) section, what figures are given for <55 Couple with no children?
+  A: 46, 35, and -10
+
+====================================================================================================
+CHUNK 769   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+you agree or disagree with the following
+statements – People who are living in social housing that is larger than
+they need should be required to move to a smaller property
+% % Net agree
+Disagree Agree (±)
+Tenure
+Owners (2,281) 19 62 +43
+Social renters (68
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: For people who own their homes, what is the net balance of agreement minus disagreement?
+  A: +43
+
+NEW paraphrased question (v3 prompt):
+  Q: For Owners, what is the net agree score on the statement that people in social housing that is larger than they need should be required to move to a smaller property?
+  A: +43
+
+====================================================================================================
+CHUNK 806   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 18 60 +42
+£30k+ (655) 22 62 +40
+Age
+16-24 (401) 12 67 +55
+25-44 (1,073) 19 58 +39
+45-64 (1,044) 26 56 +30
+65-74 (490) 23 55 +32
+75+ (336) 16 58 +41
+Household type (life stage)*
+<55 Single no children (547) 16 63 +46
+<55 Single with children (288) 16 63 +4
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: For people aged 75 and over, what figure is listed?
+  A: 16
+
+NEW paraphrased question (v3 prompt):
+  Q: In the Age breakdown, what figures are shown for the £30k+ group?
+  A: 22, 62, and +40
+
+====================================================================================================
+CHUNK 925   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+/saving for a deposit to buy a
+property
+What to do if my circumstances change 18 16 20
+(e.g. need a bigger home or move to a
+new area)
+Dealing with my landlord about rent 9 6 12
+Dealing with my landlord about repairs 17 15 19
+How to complain to my landlord
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which entry is about resolving payment issues with a property owner, and what numbers follow it?
+  A: Dealing with my landlord about rent — 9 6 12
+
+NEW paraphrased question (v3 prompt):
+  Q: For "Dealing with my landlord about repairs," what figures are shown alongside it?
+  A: 17, 15, and 19
+
+====================================================================================================
+CHUNK 952   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+des to housing
+Q15b. More low income working households should be allocated
+social housing rather than always allocating to very vulnerable
+groups, like homeless people and others in the greatest need?
+Combined July August
+% % %
+Base: All respondents (3,34
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which group is suggested as a better candidate for public housing than only the most desperate applicants?
+  A: Low-income working households.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and mostly consists of a truncated survey question/header with no substantive results or fully stated facts beyond the question wording. It does not provide enough concrete information to support three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 958   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 24 24
+Strongly disagree 6 7 5
+Don’t know 5 4 5
+Agree 48 47 49
+Disagree 30 31 29
+Net agree +18 +16 +20
+Q15e. Social housing tenants should be able to remain in their home
+as long as they want even if they now earn enough that they
+could afford to rent priv
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is the stated rule about public-housing residents staying in their dwelling even after their income rises enough for private renting?
+  A: They should be able to stay as long as they want.
+
+NEW paraphrased question (v3 prompt):
+  Q: In Q15e, what is the net agree figure for the statement that social housing tenants can stay in their home as long as they want, even if they can now afford private rent?
+  A: +18
+
+====================================================================================================
+CHUNK 987   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+cult to get a job 3 4 3
+because of postcode
+Problems getting repairs done 17 22 14
+Not being able to get involved in 6 5 –
+decisions about my home
+Difficult to move to other types of 3 4 –
+property when needs change
+Not owning my own home/lack of 6 5 –
+sec
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What difficulty is listed as getting maintenance work completed, and what figure is shown for it in the first column?
+  A: Problems getting repairs done, 17
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a partial list of issues with truncated labels and unlabeled numeric columns, so it does not provide enough clear substantive context to form three specific question/answer pairs grounded only in this text.>
+  A: 
+
+====================================================================================================
+CHUNK 1002   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+mbined July August
+% % %
+Base: All respondents who social rent (680) (314) (366)
+Very satisfied 35 36 35
+Fairly satisfied 46 44 48
+Neither satisfied nor dissatisfied 9 10 8
+Fairly dissatisfied 4 4 4
+Very dissatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the combined July and August results, how many respondents were fairly pleased?
+  A: 46%
+
+NEW paraphrased question (v3 prompt):
+  Q: In the July-August results for people who social rent, what was the percentage who said they were fairly satisfied?
+  A: 46%
+
+====================================================================================================
+CHUNK 1003   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ssatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 83
+Dissatisfied 8 8 8
+Net satisfaction +74 +73 +75
+Q27a. To what extent do you agree or disagree with each of the
+following statements that having a lower rent by living in
+social housing has helped you… to
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What share of respondents report being content in the three columns?
+  A: 82, 81, and 83
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too fragmentary to support three grounded question/answer pairs. It only shows partial response categories and the start of Q27a without enough context to identify the statement being rated or what the three columns refer to.>
+  A: 
+
+====================================================================================================
+CHUNK 65   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ss, to reflect the known population profile of England.
+1 Communities and Local Government (2009) Attitudes to housing: Findings from focus groups
+10 | Attitudes to housing
+Prior to inclusion of the question module on to the Public Affairs Monitor,
+the que
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=7):
+  Q: Before being added to the public opinion tracking survey, what did the question set go on to?
+  A: the Public Affairs Monitor
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and mostly contains boilerplate/citation text plus a cut-off sentence; it does not provide enough substantive information to form three distinct question/answer pairs answerable from this chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the income band shown as £30,000 or more, what figure is listed?
+  A: 20
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk contains only unlabeled numeric values and partial category labels without enough context to identify the substantive subject or the meaning of the figures, so no reliable question/answer pairs can be formed from this chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 444   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ private renting according to social renters and their
+characteristics
+What do you consider to be the ADVANTAGES of renting from a private
+landlord rather than the council or housing association?
+%
+Better choice Choice of Get repairs done for
+of properties
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What is one benefit mentioned for tenants who rent from a non-council, non-association owner?
+  A: Choice of properties.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three substantive question/answer pairs. It only shows a partial survey question about advantages of renting from a private landlord, with no complete statements or data values to ask about.>
+  A: 
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: For respondents who have a lot or a little knowledge of allocation rules, what is the Agree (±) figure?
+  A: -15
+
+NEW paraphrased question (v3 prompt):
+  Q: For people who have a lot or a little knowledge of allocations policies, what is the Agree figure?
+  A: 26
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Among people who have never lived in social housing, what are the two percentages shown and the net change?
+  A: 38 38 0
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is a partial table fragment with no clear question stem or column headings for the numeric values, and it ends mid-phrase at 'Knowledge of allo'. Without the missing context, substantive questions would be ambiguous.>
+  A: 
+
+====================================================================================================
+CHUNK 768   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 64%) whereas those
+living in the north showed the lowest level of support (57%).
+Chapter 7 Public attitudes to rented housing | 115
+Table 7.14 Variations in the views on under-occupation
+To what extent do you agree or disagree with the following
+statement
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What proportion of people in the northern area supported it?
+  A: 57%.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a partial sentence about regional support levels and the start of a table title/question, but not enough substantive detail to form three distinct question/answer pairs grounded solely in this excerpt.>
+  A: 
+
+====================================================================================================
+CHUNK 780   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ee-quarters (73%) of people on incomes of
+£30,000 or more agreeing with regular reviews.
+12 Hills, J (2007) Ends and Means: The future of social housing in England, ESRC
+Chapter 7 Public attitudes to rented housing | 117
+Table 7.15 Variations in the views 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What share of respondents with an annual income of at least £30,000 agreed that reviews should be carried out regularly?
+  A: Three-quarters, or 73%
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three grounded question/answer pairs. It only contains a fragment mentioning 73% of people on incomes of £30,000 or more agreeing with regular reviews, plus a partial table heading, without enough context to form distinct direct, inference, and paraphrased questions.>
+  A: 
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What does the table say is being examined about people who rent from the social sector?
+  A: Their views on regularly reviewing their needs
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a table title and the beginning of a survey statement, with no substantive results or complete factual content to question. It does not provide enough information to create three answerable question/answer pairs grounded solely in this chunk.>
+  A: 
+
+====================================================================================================
+CHUNK 939   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+47
+Q12. Approximately how long have you or your partner been on the
+housing register or waiting list?
+Combined July August
+% % %
+Base: All respondents on housing register or (80) (41) (39)
+waiting list
+Less than 3 months 12 15 9
+3 months but less than 6 mo
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the table, what proportion of people had been on the accommodation queue for under three months in the overall figures?
+  A: 12%
+
+NEW paraphrased question (v3 prompt):
+  Q: In Q12, how many percent of people on the housing register or waiting list had been there for under 3 months in the combined July and August results?
+  A: 12%
+
+====================================================================================================
+CHUNK 1029   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 30
+Get repairs done for you/less 13 14 11
+responsibility for upkeep
+More freedom to do what I want 6 5 6
+with the property (e.g. decorations/
+alterations)
+Being able to get involved in decisions 1 – 3
+about my home
+Reliable landlord 7 9 6
+Have right to bu
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=10):
+  Q: What numbers are listed for having maintenance handled on your behalf and having less upkeep to manage?
+  A: 13 14 11
+
+NEW paraphrased question (v3 prompt):
+  Q: In the list of housing advantages, which item mentions having a landlord you can rely on?
+  A: Reliable landlord
+
+====================================================================================================
+CHUNK 29   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+urvey had a 51 per
+cent response rate. The results in this report are based on weighted data in order to be
+representative of firms. The responses were weighted back to the total business
+population of those in the Inter-Departmental Business Registration 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What proportion of the survey replied?
+  A: 51 per cent
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk contains only survey methodology boilerplate: a 51% response rate and a note that results were weighted to represent firms and the business population. It does not provide enough substantive content to form three distinct question/answer pairs beyond generic metadata-like facts.>
+  A: 
+
+====================================================================================================
+CHUNK 63   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 39
+Wider innovator 31 35 31
+Activities 33 38 33
+Product innovator 19 23 19
+of which (share with new-to-market products) 46 50 46
+Process innovator 10 17 10
+of which (share with new-to-industry processes) 27 24 26
+Abandoned activities 4 6 4
+On-going activi
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What figure is shown for firms that introduced a new product?
+  A: 19 23 19
+
+NEW paraphrased question (v3 prompt):
+  Q: In the figures for Wider innovator, what value is listed for Process innovator?
+  A: 10
+
+====================================================================================================
+CHUNK 82   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+than that of SMEs in both this and the 2011 surveys (44 per cent and 46 per
+cent, respectively).
+Furthermore, process innovation remained exactly the same. One in ten firms reported
+engaging in process innovations. Whilst the share of SMEs reporting engage
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: How large a proportion of small and medium-sized enterprises said they were involved in improving their production methods?
+  A: One in ten firms.
+
+NEW paraphrased question (v3 prompt):
+  Q: According to the discussion of process innovation, what proportion of firms said they were involved in it?
+  A: One in ten firms.
+
+====================================================================================================
+CHUNK 114   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ds and services) and process change. There are also non-technological forms of
+8
+http://www.ons.gov.uk/ons/rel/rdit1/bus-ent-res-and-dev/index.html.
+8
+UK Innovation Survey 2013 – First findings report
+innovation, such as new business practices for organisi
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Besides tech-based improvements, what other kind of inventive activity is referred to?
+  A: Non-technological innovation, such as new business practices.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and fragmented to support three substantive question/answer pairs. It only contains a partial sentence about non-technological innovation and a document title fragment, without enough context to form clear direct, inference, and paraphrased questions grounded solely in the chunk.>
+  A: 
+
+====================================================================================================
+CHUNK 131   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+l, 90 per cent answered the question about the geographical
+markets. Of these valid responses, only 64 per cent went on to provide estimates. Over
+half (57 per cent) reported that their largest markets were ‘UK regional’ (within
+approximately 100 miles of 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: How many of the usable replies continued on to give figures?
+  A: 64 per cent
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three reliable question/answer pairs: it only states percentages about answering a question on geographical markets and that 57% reported their largest markets were 'UK regional' within approximately 100 miles of an unspecified place. There is not enough complete substantive context to form distinct direct, inference, and paraphrased questions grounded solely in this chunk.>
+  A: 
+
+====================================================================================================
+CHUNK 142   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 3) New and significantly improved forms of organisation,
+business structures or practices and marketing concepts or strategies; 4) Activities in areas such as internal
+research and development, training, acquisition of external knowledge or machinery and 
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which example of innovative business methods is named in the first item?
+  A: Marketing concepts or strategies.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a list item and does not provide enough standalone substantive information to form three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 154   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ere:
+• internal: from within the enterprise itself or other enterprises within the enterprise
+group;
+• market: from suppliers, customers, clients, consultants, competitors, commercial
+laboratories or research and development enterprises;
+• institutional: f
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What are the three named origins of ideas or knowledge in the excerpt?
+  A: Internal, market, and institutional.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is truncated and only lists partial categories of sources ('internal', 'market', 'institutional') without a complete substantive statement or enough context to form three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 155   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ch and development enterprises;
+• institutional: from the public sector such as government research organisations
+and universities or private research institutes; and
+• other sources: from conferences, trade fairs and exhibitions; scientific journals,
+trad
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What are the examples given for the non-business source category?
+  A: Conferences, trade fairs and exhibitions, and scientific journals.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a list of information sources (“institutional”, “other sources”) and is cut off before enough substantive detail is given to support three distinct, answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 181   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+Shares of innovation active businesses by country (all enterprises)
+Wales
+England
+Scotland
+2011
+Northern Ireland
+2013
+0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50%
+Unweighted base = 14,487 in 2013 and 14342 in 2011
+8.2 Regional level differences
+Figure 7 shows
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: How many businesses were used as the sample in 2013 and 2011?
+  A: 14,487 in 2013 and 14,342 in 2011.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk contains only a chart title, region labels, years, axis percentages, and base sizes, but no substantive data values or findings to ask about. It is insufficient for three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 189   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 per cent) of businesses described as broader innovator.
+There was a significant increase in the numbers citing ‘replacing outdated products or
+processes’ which was the second most frequently mentioned factor driving innovation
+(rated ‘high’ by 31 per cen
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: What share of firms was labeled as wider innovators?
+  A: 6 per cent
+
+NEW paraphrased question (v3 prompt):
+  Q: Which innovation driver, mentioned as the second most common, was rated 'high' by 31 per cent of businesses?
+  A: Replacing outdated products or processes.
+
+====================================================================================================
+CHUNK 220   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+results for a range of skills asked about in the survey. These skills can relate
+either to employees or skills brought in. As can be seen, large firms were more likely to
+use each of the listed skills than SMEs.
+Table 7: Share (%) of individuals employed i
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which category of companies had a higher likelihood of using every skill named in the survey than small and medium-sized enterprises?
+  A: Large firms.
+
+NEW paraphrased question (v3 prompt):
+  Q: For the skills in Table 7, which group had a higher share of use: large firms or SMEs?
+  A: Large firms.
+
+====================================================================================================
+CHUNK 241   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ data, with the notable increases on the shares of innovation active and
+broader innovators.
+Figure 10: UKIS – cross section data 2007, 2009, 2011 and 2013
+70%
+60%
+50%
+40%
+30%
+20%
+10%
+0%
+2007 Survey 2009 Survey 2011 Survey 2013 Survey
+Innovation-active Inn
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the figure, which survey years are compared?
+  A: 2007, 2009, 2011 and 2013.
+
+NEW paraphrased question (v3 prompt):
+  Q: In the UKIS cross section data, which years are compared in Figure 10?
+  A: 2007, 2009, 2011 and 2013.
+
+====================================================================================================
+CHUNK 28   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+stionnaire and telephone interview for businesses that had not yet completed a postal
+1
+UK Innovation Survey 2013 – First findings report
+response. With over 14,000 enterprises in the achieved sample, the survey had a 51 per
+cent response rate. The results
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: In the 2013 UK Innovation Survey first findings report, what proportion of the sample replied?
+  A: 51 per cent
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and boilerplate-like to support three distinct, substantive question/answer pairs. It only mentions a survey response rate, achieved sample size, and truncated surrounding text, without enough context for specific factual, inferential, and paraphrased questions.>
+  A: 
+
+====================================================================================================
+CHUNK 116   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ractices (including knowledge management), workplace organisation or external
+relations that has not been previously used.
+Enterprises were asked whether they had made any major changes to their business
+structure and practices in the three-year period fro
+----------------------------------------------------------------------------------------------------
+ORIGINAL paraphrased question (gold_rank=None):
+  Q: Which types of work methods are cited as examples of previously unused approaches?
+  A: Knowledge management, workplace organisation, and external relations.
+
+NEW paraphrased question (v3 prompt):
+  Q: <REJECTED: The chunk is truncated and only states that enterprises were asked whether they had made major changes to business structure and practices in a three-year period; it does not include enough substantive detail to form three specific question/answer pairs with clear, answerable facts.>
+  A: 

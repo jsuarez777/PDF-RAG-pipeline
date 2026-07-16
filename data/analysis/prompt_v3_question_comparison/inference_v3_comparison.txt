@@ -1,0 +1,1022 @@
+Inference-question regeneration via prompt v3
+Model: gpt-5.4-mini (temp 0.7)   |   Prompt: prompts/generate_qa/v3
+Failed inference questions (gold not in top 5): 51
+
+====================================================================================================
+CHUNK 12   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+action 30
+Chapter 4 31
+Social renters
+4.1. Who are social renters? 31
+4.2. Length of time as a social tenant 33
+4.3. Reasons for moving into social housing 35
+4.4. The benefits of living in social rented housing 35
+4.5. The disadvantages of living in socia
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What part of the chapter seems to be about the reasons people choose this type of housing?
+  A: Section 4.3
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: This chunk is only a table-of-contents fragment with chapter and subsection titles, plus a truncated heading, and contains no substantive facts that can support direct, inference, and paraphrased question/answer pairs without relying on metadata.>
+  A: 
+
+====================================================================================================
+CHUNK 138   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+3
+Housing experiences
+The housing experiences of the population have an important role to play in
+shaping aspirations and housing choices. Here we consider in further detail
+past and present (at the time of the survey) tenure experiences, together with
+inf
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=6):
+  Q: What kinds of tenure experiences are being examined in this section?
+  A: Both past and present tenure experiences.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only an introductory fragment and ends mid-sentence, with no concrete substantive facts beyond the general topic of housing experiences and tenure experiences. It does not support three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 153   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+or for the longest time. This is consistent with the growth in home ownership
+seen over the last fifty years, which by 1971 had become the predominant tenure
+in England.
+Chapter 3 Housing experiences | 21
+Figure 3.3 Types of accommodation lived in for the 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=7):
+  Q: What long-term shift does the chunk say the rise in home ownership reflects?
+  A: A growing move toward owning homes over the last fifty years.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three substantive, uniquely grounded question/answer pairs. It only states that home ownership grew over the last fifty years and had become the predominant tenure in England by 1971, plus a cut-off figure caption with no usable content.>
+  A: 
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which age group appears to have the largest count in the data shown?
+  A: 25–44
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk only contains unlabeled numeric values, age bands, income bands, and a truncated footnote. Without the table title or column headings, the substantive meaning of the figures cannot be determined, so no reliable question/answer pairs can be written from this chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 416   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008).
+Source: Ipsos MORI
+5.7. Potential demand for social housing
+Tenants were asked to indicate whether they would like to move to social
+housing,
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Who were the people surveyed, and where were they interviewed?
+  A: Private renters interviewed in-home in England.
+
+NEW inference question (v3 prompt):
+  Q: What kind of demand is being explored in the section on potential demand for social housing?
+  A: Tenants’ willingness to move to social housing.
+
+====================================================================================================
+CHUNK 540   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+tudes towards how social housing is allocated and what
+changes they would like to see to make it fairer. These and wider issues relating
+to the role of social housing in shaping aspirations and life chances are explored
+in further depth in the qualitative 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=9):
+  Q: What broader topic is discussed in relation to social housing beyond allocation rules?
+  A: Its role in shaping aspirations and life chances.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a sentence and does not contain enough substantive, self-contained information to form three answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group shows the largest gap between disagree and agree, and what is that gap?
+  A: Previously in SR but not now; 20 points.
+
+NEW inference question (v3 prompt):
+  Q: What pattern do the figures suggest about Agree responses as experience of the social rented (SR) sector becomes less direct, from currently in SR to never lived in SR?
+  A: Agree falls from 33 to 21.
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group has the largest positive change, and what is that change?
+  A: London, +12
+
+NEW inference question (v3 prompt):
+  Q: How do the figures for people currently in SR compare with those for people who previously lived in SR but do not now?
+  A: Currently in SR are 4 points lower on the first figure and 5 points higher on the second, with a +7 change versus -4.
+
+====================================================================================================
+CHUNK 780   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ee-quarters (73%) of people on incomes of
+£30,000 or more agreeing with regular reviews.
+12 Hills, J (2007) Ends and Means: The future of social housing in England, ESRC
+Chapter 7 Public attitudes to rented housing | 117
+Table 7.15 Variations in the views 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=7):
+  Q: Among higher-income respondents, did most or fewer than half support regular reviews?
+  A: Most supported them.
+
+NEW inference question (v3 prompt):
+  Q: What does the chunk suggest about higher-income people’s support for regular reviews of social housing needs?
+  A: Support was high, at around three-quarters.
+
+====================================================================================================
+CHUNK 883   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+
+Top five mentions
+% <£9.5k % £9.5k – £17.49k % £17.5k+
+37
+General advice on
+20
+my tenancy
+28
+27
+Dealing with my landlord
+20
+about repairs
+18
+General financial advice relating 18
+to housing/saving for a deposit 19
+to buy a property
+17
+20
+How to apply for a
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which income group shows the highest value for advice about landlord repair issues, and what is that value?
+  A: <£9.5k, 28
+
+NEW inference question (v3 prompt):
+  Q: In the top five mentions, which income group appears to rely most on general advice on my tenancy, and what does the pattern suggest about that topic across income bands?
+  A: The £17.5k+ group; it is mentioned most there, at 37%.
+
+====================================================================================================
+CHUNK 938   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+%
+Base: All valid responses (2,664) (1,336) (1,328)
+Yes – on social housing register/ 3 3 3
+waiting list
+No – not on social housing register/ 94 93 95
+waiting list
+Don’t know 3 3 2
+Appendices Appendix 2 | 147
+Q12. Approximately how long have you or your pa
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which response was chosen by the vast majority of respondents in this table?
+  A: No – not on social housing register/waiting list.
+
+NEW inference question (v3 prompt):
+  Q: Based on the Q12 lead-in, what kind of time period is being asked about after the social housing register/waiting list question?
+  A: How long you or your partner have been on the register/waiting list.
+
+====================================================================================================
+CHUNK 1029   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 30
+Get repairs done for you/less 13 14 11
+responsibility for upkeep
+More freedom to do what I want 6 5 6
+with the property (e.g. decorations/
+alterations)
+Being able to get involved in decisions 1 – 3
+about my home
+Reliable landlord 7 9 6
+Have right to bu
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which option in the chunk is associated with the smallest numbers overall, suggesting the least emphasis?
+  A: Being able to get involved in decisions about my home
+
+NEW inference question (v3 prompt):
+  Q: Which preference in the list suggests wanting less day-to-day responsibility for the property, and what does it imply about upkeep?
+  A: "Get repairs done for you/less responsibility for upkeep"; it implies the landlord handles more of the maintenance.
+
+====================================================================================================
+CHUNK 444   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ private renting according to social renters and their
+characteristics
+What do you consider to be the ADVANTAGES of renting from a private
+landlord rather than the council or housing association?
+%
+Better choice Choice of Get repairs done for
+of properties
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=9):
+  Q: According to the chunk, what kind of benefit is associated with private renting instead of renting through a public or nonprofit provider?
+  A: Having more options.
+
+NEW inference question (v3 prompt):
+  Q: From the listed advantages of renting from a private landlord rather than the council or housing association, what kind of benefit is suggested by the phrase "Get repairs done for"?
+  A: A quicker or easier repairs service.
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What kind of housing arrangement is being discussed in the statement about someone being given a property and continuing to live there?
+  A: social housing
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk only shows a table title and the beginning of a survey statement, but no substantive results or answerable facts beyond the incomplete wording. It does not contain enough information to generate three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 208   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+re than four out of five social renters (82%) were satisfied with
+being a social tenant and just under three-quarters of private renters (74%) were
+satisfied.
+Figure 3.11 Overall satisfaction
+Taking everything into account, how satisfied or dissatisfied ar
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which renter group reported the higher satisfaction level, and by how much?
+  A: Social renters, by 8 percentage points.
+
+NEW inference question (v3 prompt):
+  Q: Which renter group was more satisfied with being a tenant: social renters or private renters?
+  A: Social renters, at 82%, compared with 74% of private renters.
+
+====================================================================================================
+CHUNK 253   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+37 20 12 10
+children (150)
+55+ With or without 46 21 23 11 7
+children (224)
+Region
+North (236) 44 32 22 9 5
+Midlands (140) 46 31 24 17 10
+South (145) 42 28 22 13 7
+London (159) 21 25 18 15 12
+Source: Ipsos MORI
+Note: base sizes in brackets * ‘Other’ life s
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which region shows the highest first percentage among the regions listed, and what is that percentage?
+  A: Midlands, 46
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is a truncated table fragment with incomplete labels and only isolated percentages, so there is not enough clear substantive information to create three specific question/answer pairs without ambiguity.>
+  A: 
+
+====================================================================================================
+CHUNK 285   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+e asked to assess the contribution
+social housing had made to their financial independence, their training and
+employment prospects and their ability to access market housing. In the following
+sections we look at the proportion of respondents who agreed an
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which three areas of life were being evaluated in relation to social housing?
+  A: Financial independence, training and employment prospects, and access to market housing.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a sentence and does not contain enough complete substantive information to form three distinct question/answer pairs answerable from this text alone.>
+  A: 
+
+====================================================================================================
+CHUNK 366   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+onsidered the choice of location to be one of the best things
+about private renting, nearly three times the proportion that considered choice
+of property to be a key advantage.
+Responsibility for repairs resting with the landlord and flexible tenancy
+arran
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which advantage was viewed as less important than being able to pick where to live?
+  A: Choice of property.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and fragmentary to support three specific question/answer pairs. It only gives a partial comparison about choice of location versus choice of property in private renting, plus an unfinished phrase about repairs and flexible tenancy arrangements, without enough context to ask clear substantive questions.>
+  A: 
+
+====================================================================================================
+CHUNK 695   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ same type of property regardless of income.
+People in the private rented sector were more likely to agree that all social tenants
+should pay the same, regardless of income: 46 per cent of private renters agreed
+compared with 43 per cent of social renters 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group was slightly more likely to support equal payments for social tenants: people in the private rented sector or social renters?
+  A: Private renters
+
+NEW inference question (v3 prompt):
+  Q: Which tenure group was more likely to agree that all social tenants should pay the same, regardless of income: private renters or social renters?
+  A: Private renters
+
+====================================================================================================
+CHUNK 702   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+8 39 +1
+45-64 (1,044) 46 34 -12
+65-74 (490) 32 46 +14
+75+ (336) 28 44 +15
+Household type (life stage)*
+<55 Single no children (547) 37 38 +1
+<55 Single with children (288) 37 41 +4
+<55 Couple with no children (434) 46 35 -10
+<55 Couple with children (712) 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which age group appears to have the largest increase, based on the last column?
+  A: 75+
+
+NEW inference question (v3 prompt):
+  Q: Among the age groups shown, which one has the largest positive change, and what is that change?
+  A: The 75+ group, with a +15 change.
+
+====================================================================================================
+CHUNK 769   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+you agree or disagree with the following
+statements – People who are living in social housing that is larger than
+they need should be required to move to a smaller property
+% % Net agree
+Disagree Agree (±)
+Tenure
+Owners (2,281) 19 62 +43
+Social renters (68
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which tenure group shown has a net agreement of +43 with the statement?
+  A: Owners
+
+NEW inference question (v3 prompt):
+  Q: Based on the figures shown for owners, did agreement or disagreement dominate on the statement about moving to a smaller property, and by how much in net terms?
+  A: Agreement dominated by 43 points net.
+
+====================================================================================================
+CHUNK 806   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 18 60 +42
+£30k+ (655) 22 62 +40
+Age
+16-24 (401) 12 67 +55
+25-44 (1,073) 19 58 +39
+45-64 (1,044) 26 56 +30
+65-74 (490) 23 55 +32
+75+ (336) 16 58 +41
+Household type (life stage)*
+<55 Single no children (547) 16 63 +46
+<55 Single with children (288) 16 63 +4
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which age group has the largest third-number value, and what is that value?
+  A: 16-24, with 55.
+
+NEW inference question (v3 prompt):
+  Q: Which age group in the Age section has the highest first value, and what is that value?
+  A: 45-64, with 26
+
+====================================================================================================
+CHUNK 925   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+/saving for a deposit to buy a
+property
+What to do if my circumstances change 18 16 20
+(e.g. need a bigger home or move to a
+new area)
+Dealing with my landlord about rent 9 6 12
+Dealing with my landlord about repairs 17 15 19
+How to complain to my landlord
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which listed topic would most likely apply when someone needs to relocate or find a larger home?
+  A: What to do if my circumstances change
+
+NEW inference question (v3 prompt):
+  Q: Which issue appears to be the least common of the listed landlord-related topics, based on the values shown for rent and repairs?
+  A: Dealing with my landlord about rent
+
+====================================================================================================
+CHUNK 952   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+des to housing
+Q15b. More low income working households should be allocated
+social housing rather than always allocating to very vulnerable
+groups, like homeless people and others in the greatest need?
+Combined July August
+% % %
+Base: All respondents (3,34
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What contrast is being made between two possible priorities for social housing allocation?
+  A: Between helping low-income working households and prioritizing people in the greatest need, such as homeless people.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and contains only a survey question fragment plus column labels/base text, without any actual response data or substantive fact that can support three grounded question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 958   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 24 24
+Strongly disagree 6 7 5
+Don’t know 5 4 5
+Agree 48 47 49
+Disagree 30 31 29
+Net agree +18 +16 +20
+Q15e. Social housing tenants should be able to remain in their home
+as long as they want even if they now earn enough that they
+could afford to rent priv
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: If the number of people agreeing with the statement is 48 and the number disagreeing is 30, what is the overall balance of opinion?
+  A: More people agree than disagree.
+
+NEW inference question (v3 prompt):
+  Q: For Q15e on social housing tenants remaining in their home as long as they want, which response category is the largest and what does that suggest overall?
+  A: Agree; it is the largest category, so views are mainly in favor.
+
+====================================================================================================
+CHUNK 987   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+cult to get a job 3 4 3
+because of postcode
+Problems getting repairs done 17 22 14
+Not being able to get involved in 6 5 –
+decisions about my home
+Difficult to move to other types of 3 4 –
+property when needs change
+Not owning my own home/lack of 6 5 –
+sec
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which issue appears to be the most commonly reported in the figures shown?
+  A: Problems getting repairs done
+
+NEW inference question (v3 prompt):
+  Q: Which issue appears to be the least common among the listed housing-related problems, based on the smallest numbers shown in the chunk?
+  A: Difficult to move to other types of property when needs change, and not owning my own home/lack of security, both at 3 in the first numeric column.
+
+====================================================================================================
+CHUNK 1002   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+mbined July August
+% % %
+Base: All respondents who social rent (680) (314) (366)
+Very satisfied 35 36 35
+Fairly satisfied 46 44 48
+Neither satisfied nor dissatisfied 9 10 8
+Fairly dissatisfied 4 4 4
+Very dissatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What share of social renters gave a positive rating overall, based on the combined figures?
+  A: 82%
+
+NEW inference question (v3 prompt):
+  Q: For people who social rent, did satisfaction or dissatisfaction dominate overall in the combined July/August results?
+  A: Satisfaction dominated; 82% were satisfied, compared with 8% dissatisfied.
+
+====================================================================================================
+CHUNK 484   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+he upkeep of the
+property. These perceptions were strongly supported by social renters themselves,
+who, as we have seen earlier, identified these same three factors as the best
+things about living in social housing. Reliability of the landlord was also per
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What does the passage suggest about how renters' own views relate to the earlier perceptions mentioned?
+  A: They reinforced them.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The excerpt is too truncated to support three grounded question/answer pairs. It says social renters identified three factors as the best things about living in social housing, but the factors are not fully listed, and the statement about reliability of the landlord is cut off.>
+  A: 
+
+====================================================================================================
+CHUNK 1003   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ssatisfied 4 3 4
+Don’t know 2 2 2
+Satisfied 82 81 83
+Dissatisfied 8 8 8
+Net satisfaction +74 +73 +75
+Q27a. To what extent do you agree or disagree with each of the
+following statements that having a lower rent by living in
+social housing has helped you… to
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: If net satisfaction is calculated as satisfied minus dissatisfied, what does the table indicate about the overall balance of opinion in each column?
+  A: Positive by 74, 73, and 75 points
+
+NEW inference question (v3 prompt):
+  Q: For Q27a on whether having a lower rent by living in social housing has helped, is the net satisfaction closer to 70 or 80?
+  A: Closer to 70, at +74.
+
+====================================================================================================
+CHUNK 211   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ greater depth the views of those currently living in both
+social and private rented accommodation at the time of the survey which are
+considered further in the following chapters.
+Chapter 4 Social renters | 31
+Chapter 4
+Social renters
+In this chapter we l
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group’s views are said to be examined further in the following chapters?
+  A: People living in social and private rented accommodation at the time of the survey.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only a partial chapter transition and heading with no substantive factual content beyond indicating that views of current social and private renters are considered further in later chapters.>
+  A: 
+
+====================================================================================================
+CHUNK 170   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ever lived in social
+rented housing 18%
+56% Previously lived in
+26%
+social rented housing
+but not now
+Base: 3,344 (respondents are general public questioned in-home in England in the
+periods July 24-31 and August 14-21 2008)
+Source: Ipsos MORI
+It was those
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: How many respondents had never lived in social rented housing, based on the figures shown?
+  A: 56%
+
+NEW inference question (v3 prompt):
+  Q: What proportion of respondents had previously lived in social rented housing but did not live in it now, and is that higher or lower than the share who had ever lived in social rented housing?
+  A: 56%, and it is higher.
+
+====================================================================================================
+CHUNK 318   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ extent do you agree or disagree with each of the following
+statements that having a lower rent by living in social housing has
+helped you…to save up a deposit to help buy a home in the future?
+% Disagree % Agree Net agree (±)
+Region
+North (236) 60 15 -45
+
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=7):
+  Q: In the North region, did responses lean more toward agreement or disagreement, and by how much?
+  A: Disagreement by 45 points.
+
+NEW inference question (v3 prompt):
+  Q: In the North region, does agreeing or disagreeing with the statement about lower rent helping to save for a deposit have the larger share, and by how much?
+  A: Disagreeing by 45 points.
+
+====================================================================================================
+CHUNK 336   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+27
+21
+35
+25–44
+26
+54
+£9.5k – £17.4k
+37
+30
+45–64
+14
+21
+£17.5k – £29.9k
+11
+22
+65–74*
+2
+37
+9
+£30k+*
+75+*
+20
+4
+Base: 356 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008)
+* Figures included for comp
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which age group appears to have the highest value in the table?
+  A: People aged 45–64
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk contains only unlabeled numeric fragments and a truncated base note, without enough context to determine the substantive subject or construct reliable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 416   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+6 (respondents are private renters questioned in-home in England in the
+periods July 24–31 and August 14–21 2008).
+Source: Ipsos MORI
+5.7. Potential demand for social housing
+Tenants were asked to indicate whether they would like to move to social
+housing,
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What kind of housing interest were the tenants being asked about in this section?
+  A: Whether they wanted to move into social housing.
+
+NEW inference question (v3 prompt):
+  Q: From the section on potential demand for social housing, what does the question asked of tenants suggest the survey was trying to measure?
+  A: Their potential interest in moving to social housing.
+
+====================================================================================================
+CHUNK 582   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+isagree Agree (±)
+Experience of the social rented (SR) sector
+Currently in SR (680) 42 33 -10
+Previously in SR but not now (901) 41 21 -20
+Never lived in SR (1,763) 25 21 -4
+Knowledge of allocations policies
+A lot/a little (1,884) 41 26 -15
+Nothing/don’t k
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group shows the largest negative difference in the Agree (±) column, and what is that value?
+  A: Previously in SR but not now, -20
+
+NEW inference question (v3 prompt):
+  Q: What pattern do the Agree values suggest for experience of the social rented (SR) sector as people move from currently in SR to never lived in SR?
+  A: Agree falls from 33 to 21 to 21.
+
+====================================================================================================
+CHUNK 705   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ (1,010) 38 43 +4
+Midlands (910) 42 38 -4
+South (936) 42 36 -6
+London (488) 28 39 +12
+Experience of the social rented (SR) sector
+Currently in SR (680) 36 43 +7
+Previously in SR but not now (901) 42 38 -4
+Never lived in SR (1,763) 38 38 0
+Knowledge of allo
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group has the highest first percentage among the regions listed, and what is that percentage?
+  A: Midlands, 42
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is a partial table fragment with no column headings or question text, so the percentages cannot be interpreted confidently enough to write three grounded Q&A pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 938   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+%
+Base: All valid responses (2,664) (1,336) (1,328)
+Yes – on social housing register/ 3 3 3
+waiting list
+No – not on social housing register/ 94 93 95
+waiting list
+Don’t know 3 3 2
+Appendices Appendix 2 | 147
+Q12. Approximately how long have you or your pa
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: If someone answered that they were not on the register or waiting list, would they be in the minority or majority of responses?
+  A: The majority.
+
+NEW inference question (v3 prompt):
+  Q: Based on the responses about the social housing register/waiting list, what does the overall pattern suggest about most respondents' status?
+  A: Most respondents were not on a social housing register or waiting list.
+
+====================================================================================================
+CHUNK 1029   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 30
+Get repairs done for you/less 13 14 11
+responsibility for upkeep
+More freedom to do what I want 6 5 6
+with the property (e.g. decorations/
+alterations)
+Being able to get involved in decisions 1 – 3
+about my home
+Reliable landlord 7 9 6
+Have right to bu
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which option appears to be about having someone else handle maintenance rather than doing it yourself?
+  A: Get repairs done for you/less responsibility for upkeep
+
+NEW inference question (v3 prompt):
+  Q: What does the chunk suggest people value about social housing when they mention both getting repairs done for them and having a reliable landlord?
+  A: Less maintenance responsibility and dependable management.
+
+====================================================================================================
+CHUNK 780   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ee-quarters (73%) of people on incomes of
+£30,000 or more agreeing with regular reviews.
+12 Hills, J (2007) Ends and Means: The future of social housing in England, ESRC
+Chapter 7 Public attitudes to rented housing | 117
+Table 7.15 Variations in the views 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=6):
+  Q: Which income group showed strong support for regular reviews, based on the figure given?
+  A: People earning £30,000 or more
+
+NEW inference question (v3 prompt):
+  Q: What does the 73% figure for people on incomes of £30,000 or more suggest about their view of regular reviews?
+  A: They were broadly in favour of regular reviews.
+
+====================================================================================================
+CHUNK 781   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ housing | 117
+Table 7.15 Variations in the views on regularly reviewing the needs of social
+tenants
+To what extent do you agree or disagree with the following
+statements – Once someone is given a social housing property, their
+need to carry on living ther
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What group of tenants is the table focused on?
+  A: Social tenants
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a table title and the beginning of a survey statement, with no substantive results, figures, or completed statement to base three specific question/answer pairs on.>
+  A: 
+
+====================================================================================================
+CHUNK 444   (run: data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ private renting according to social renters and their
+characteristics
+What do you consider to be the ADVANTAGES of renting from a private
+landlord rather than the council or housing association?
+%
+Better choice Choice of Get repairs done for
+of properties
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=8):
+  Q: What kind of benefit is the text asking social renters to identify about private renting compared with public or association housing?
+  A: Perceived advantages of private renting.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too incomplete and only contains a partial heading and truncated survey question with no substantive answer data or full context to support three distinct question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 29   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+urvey had a 51 per
+cent response rate. The results in this report are based on weighted data in order to be
+representative of firms. The responses were weighted back to the total business
+population of those in the Inter-Departmental Business Registration 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=10):
+  Q: Why were the results adjusted using weights?
+  A: To make them representative of firms.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk contains only boilerplate methodology information (a 51% response rate and a note that results were weighted back to the business population) without enough substantive, uniquely identifiable content to form three specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 63   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 39
+Wider innovator 31 35 31
+Activities 33 38 33
+Product innovator 19 23 19
+of which (share with new-to-market products) 46 50 46
+Process innovator 10 17 10
+of which (share with new-to-industry processes) 27 24 26
+Abandoned activities 4 6 4
+On-going activi
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which category has the smallest value among the listed innovation types, and what is that value?
+  A: Process innovator, 10 17 10
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only a partial list of innovation categories and percentages, ending mid-word, without enough context to identify the population, columns, or what the figures refer to. It does not support three clear, chunk-specific question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 82   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+than that of SMEs in both this and the 2011 surveys (44 per cent and 46 per
+cent, respectively).
+Furthermore, process innovation remained exactly the same. One in ten firms reported
+engaging in process innovations. Whilst the share of SMEs reporting engage
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What does the comparison with the two survey years suggest about the rate of this activity among SMEs?
+  A: It was lower than in both surveys, at 44% and 46%.
+
+NEW inference question (v3 prompt):
+  Q: What does the comparison with SMEs in both this and the 2011 surveys suggest about the firm's figure for the earlier measure mentioned before the process-innovation sentence?
+  A: It was higher than the SME share in both surveys, at 44 per cent and 46 per cent.
+
+====================================================================================================
+CHUNK 114   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ds and services) and process change. There are also non-technological forms of
+8
+http://www.ons.gov.uk/ons/rel/rdit1/bus-ent-res-and-dev/index.html.
+8
+UK Innovation Survey 2013 – First findings report
+innovation, such as new business practices for organisi
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What does the passage suggest innovation can involve in addition to changes in products or processes?
+  A: Changes in how a business is organized or managed.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: This chunk is too fragmentary and mostly contains truncated text plus metadata-like citation/header material; it does not provide enough complete substantive information to form three distinct question/answer pairs grounded only in the chunk.>
+  A: 
+
+====================================================================================================
+CHUNK 119   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+entation of new business practices for organising procedures, compared to 16
+per cent of businesses in the 2011 survey. As in the 2011 survey, a higher share of large
+firms (26 per cent) reported this, compared to SMEs (21 per cent). The least frequently
+r
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: Which group was more likely to report this practice: larger firms or smaller businesses?
+  A: Larger firms
+
+NEW inference question (v3 prompt):
+  Q: Compared with SMEs, were large firms more or less likely to report new business practices for organising procedures, and by how much?
+  A: More likely, by 5 percentage points.
+
+====================================================================================================
+CHUNK 138   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ent) were reported to be
+agreements operating at a national level. This proportion remained broadly the same
+which was 68 per cent in the last survey.
+Figure 4: Co-operation partners (broader innovating businesses, collaborative firms only)
+Clients or cust
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What does the text suggest about how the share of national-level arrangements changed compared with the previous survey?
+  A: It stayed broadly the same.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too truncated to support three substantive question/answer pairs. It only states that a proportion of agreements operating at a national level was 68% in the last survey and then begins a figure caption with no complete substantive data or clearly identifiable subject.>
+  A: 
+
+====================================================================================================
+CHUNK 142   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ 3) New and significantly improved forms of organisation,
+business structures or practices and marketing concepts or strategies; 4) Activities in areas such as internal
+research and development, training, acquisition of external knowledge or machinery and 
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=None):
+  Q: What broad kind of business changes are described as new or substantially better in the first item?
+  A: Organisational, business, or marketing changes.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is only a fragment of a numbered list and does not provide enough standalone substantive context to form three specific question/answer pairs without relying on missing surrounding text.>
+  A: 
+
+====================================================================================================
+CHUNK 241   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+ data, with the notable increases on the shares of innovation active and
+broader innovators.
+Figure 10: UKIS – cross section data 2007, 2009, 2011 and 2013
+70%
+60%
+50%
+40%
+30%
+20%
+10%
+0%
+2007 Survey 2009 Survey 2011 Survey 2013 Survey
+Innovation-active Inn
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=10):
+  Q: Which kinds of firms are said to have seen notable increases in their shares?
+  A: Innovation-active and broader innovators.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk only contains a partial figure caption and truncated chart labels ('data, with the notable increases on the shares of innovation active and broader innovators' and 'Innovation-active Inn'), without enough substantive information to form three distinct, answerable question/answer pairs from the chunk alone.>
+  A: 
+
+====================================================================================================
+CHUNK 19   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+
+which is the second survey using a sample based on the Standard Industrial Classification
+2007 (SIC 2007). This enables a more consistent comparison with the 2011 survey data
+in the time series. The survey is mainly postal but almost two fifths (39 per ce
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=8):
+  Q: Why does this survey allow a more consistent comparison with the 2011 survey data in the time series?
+  A: Because it uses the same SIC 2007 basis.
+
+NEW inference question (v3 prompt):
+  Q: <REJECTED: The chunk is too fragmentary and contains only partial methodological text: it mentions SIC 2007, comparison with 2011 survey data, and that the survey is mainly postal with almost two fifths (39 per ce...), but not enough complete substantive information to form three distinct, answerable question/answer pairs.>
+  A: 
+
+====================================================================================================
+CHUNK 28   (run: data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50)
+----------------------------------------------------------------------------------------------------
+stionnaire and telephone interview for businesses that had not yet completed a postal
+1
+UK Innovation Survey 2013 – First findings report
+response. With over 14,000 enterprises in the achieved sample, the survey had a 51 per
+cent response rate. The results
+----------------------------------------------------------------------------------------------------
+ORIGINAL inference question (gold_rank=10):
+  Q: Roughly how many of the enterprises in the achieved sample did not respond, based on the sample size and response rate given?
+  A: About 6,860 enterprises
+
+NEW inference question (v3 prompt):
+  Q: Given that the survey had over 14,000 enterprises in the achieved sample and a 51 per cent response rate, what does that suggest about the scale of the survey's completed responses?
+  A: It collected responses from a very large sample of enterprises.

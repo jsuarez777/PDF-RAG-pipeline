@@ -24,6 +24,7 @@ import logging
 import random
 import re
 import sys
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from datetime import datetime
 from pathlib import Path
 from typing import Literal, Union
@@ -41,8 +42,9 @@ from openai_client.openai_client import MyOpenAIClient  # noqa: E402
 
 log = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "gpt-5.4-mini"
+DEFAULT_MODEL = "gpt-4.1-mini"
 DEFAULT_NUM_CHUNKS = 20
+DEFAULT_PARALLEL = 20
 PROMPTS_DIR = ROOT / "prompts" / "generate_qa"
 
 QUESTION_TYPES = {
@@ -95,7 +97,7 @@ class InsufficientInformation(BaseModel):
     reason: str = Field(description="Why the chunk cannot support specific, answerable questions")
 
 
-def generate_for_chunk(client, model, temperature, chunk):
+def generate_for_chunk(client, model, temperature, chunk, system_prompt, user_template):
     """Returns ChunkQuestions, or InsufficientInformation if the model rejects the chunk."""
     return client.chat.completions.create(
         model=model,
@@ -103,8 +105,8 @@ def generate_for_chunk(client, model, temperature, chunk):
         max_retries=2,
         response_model=Union[ChunkQuestions, InsufficientInformation],
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": USER_PROMPT_TEMPLATE.format(chunk_text=chunk["text"])},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_template.format(chunk_text=chunk["text"])},
         ],
     )
 
@@ -127,6 +129,10 @@ def main():
     parser.add_argument("--seed", type=int, help="Random seed for reproducible chunk sampling")
     parser.add_argument("--temperature", type=float, default=0.7,
                         help="Sampling temperature (default 0.7)")
+    parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL,
+                        help=f"Max parallel API calls (default: {DEFAULT_PARALLEL}; use 1 for sequential)")
+    parser.add_argument("--prompt-version", help="Prompt version dir to use (e.g. v2, v3). "
+                                                 "Default: highest-numbered version available.")
     parser.add_argument("--chunks", help="Comma-separated chunk indices to use instead of "
                                          "random sampling (e.g. 3,17,42)")
     parser.add_argument("--types", help="Comma-separated subset of question types to keep "
@@ -141,6 +147,16 @@ def main():
 
     if not args.chunks and args.num_chunks <= 0:
         sys.exit("ERROR: --num-chunks must be > 0")
+
+    # Resolve the prompt version to use (default: latest). Loading here rather than
+    # relying only on the module-level constants lets --prompt-version pin an older
+    # prompt (e.g. for controlled v2-vs-v3 comparisons).
+    prompt_version = args.prompt_version or PROMPT_VERSION
+    version_dir = PROMPTS_DIR / prompt_version
+    if not version_dir.is_dir():
+        sys.exit(f"ERROR: prompt version dir not found: {version_dir}")
+    system_prompt = _read_prompt(version_dir, "qa_system.prompt")
+    user_prompt_template = _read_prompt(version_dir, "qa_user.template")
 
     keep_types = list(QUESTION_TYPES)
     if args.types:
@@ -192,34 +208,49 @@ def main():
     items = []
     failures = []
     rejected = []
-    queue = list(sampled)
-    while queue:
-        chunk = queue.pop(0)
-        prefix = f"  [{len(items) + 1}/{num}] chunk {chunk['chunk_index']} ..."
-        try:
-            resp = generate_for_chunk(client, args.model, args.temperature, chunk)
-        except Exception as e:  # noqa: BLE001 - record and continue with other chunks
-            log.info(f"{prefix} FAILED: {e}")
-            failures.append({"chunk_index": chunk["chunk_index"], "error": str(e)})
-            continue
-        if isinstance(resp, InsufficientInformation):
-            log.info(f"{prefix} rejected: {resp.reason}")
-            rejected.append({"chunk_index": chunk["chunk_index"], "reason": resp.reason})
-            # random-sampling mode: draw a replacement so the QA set stays at --num-chunks
-            if rng is not None and pool:
-                replacement = pool.pop(rng.randrange(len(pool)))
-                queue.append(replacement)
-                log.info(f"           resampled chunk {replacement['chunk_index']} as replacement")
-            continue
-        log.info(f"{prefix} ok")
-        items.append({
-            "chunk_index": chunk["chunk_index"],
-            "chunk_text": chunk["text"],
-            **{k: chunk[k] for k in ("start_char", "end_char", "start_page", "end_page")
-               if k in chunk},
-            # the model always produces all three types; keep only the requested ones
-            "qa_pairs": [p for p in qa_pairs_from(resp) if p["question_type"] in keep_types],
-        })
+    workers = max(1, min(args.parallel, len(sampled)))
+    done_count = 0
+    log.info(f"Generating for {num} chunk(s) with up to {workers} parallel worker(s)...")
+
+    def submit(executor, chunk):
+        # instructor/openai clients are thread-safe, so all workers share one client
+        return executor.submit(generate_for_chunk, client, args.model, args.temperature, chunk,
+                               system_prompt, user_prompt_template)
+
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        in_flight = {submit(executor, chunk): chunk for chunk in sampled}
+        while in_flight:
+            finished, _ = wait(in_flight, return_when=FIRST_COMPLETED)
+            for fut in finished:
+                chunk = in_flight.pop(fut)
+                done_count += 1
+                prefix = f"  [{done_count}/{num}] chunk {chunk['chunk_index']} ..."
+                try:
+                    resp = fut.result()
+                except Exception as e:  # noqa: BLE001 - record and continue with other chunks
+                    log.info(f"{prefix} FAILED: {e}")
+                    failures.append({"chunk_index": chunk["chunk_index"], "error": str(e)})
+                    continue
+                if isinstance(resp, InsufficientInformation):
+                    log.info(f"{prefix} rejected: {resp.reason}")
+                    rejected.append({"chunk_index": chunk["chunk_index"], "reason": resp.reason})
+                    # random-sampling mode: draw a replacement so the QA set stays at
+                    # --num-chunks. pool/rng are only touched on the main thread here.
+                    if rng is not None and pool:
+                        replacement = pool.pop(rng.randrange(len(pool)))
+                        in_flight[submit(executor, replacement)] = replacement
+                        done_count -= 1  # replacement will re-count when it finishes
+                        log.info(f"           resampled chunk {replacement['chunk_index']} as replacement")
+                    continue
+                log.info(f"{prefix} ok")
+                items.append({
+                    "chunk_index": chunk["chunk_index"],
+                    "chunk_text": chunk["text"],
+                    **{k: chunk[k] for k in ("start_char", "end_char", "start_page", "end_page")
+                       if k in chunk},
+                    # the model always produces all three types; keep only the requested ones
+                    "qa_pairs": [p for p in qa_pairs_from(resp) if p["question_type"] in keep_types],
+                })
     items.sort(key=lambda it: it["chunk_index"])
 
     if not items:
@@ -271,15 +302,16 @@ def main():
             "chunk_metadata": chunk_meta,
             "model": args.model,
             "temperature": args.temperature,
+            "parallel": args.parallel,
             "seed": args.seed,
             "num_chunks_requested": args.num_chunks,
             "num_chunks_sampled": num,
             "num_chunks_answered": len(items),
             "questions_per_chunk": len(keep_types),
             "question_types": {t: QUESTION_TYPES[t] for t in keep_types},
-            "prompt_version": PROMPT_VERSION,
-            "system_prompt": SYSTEM_PROMPT,
-            "user_prompt_template": USER_PROMPT_TEMPLATE,
+            "prompt_version": prompt_version,
+            "system_prompt": system_prompt,
+            "user_prompt_template": user_prompt_template,
             "rejected": rejected,
             "failures": failures,
         },

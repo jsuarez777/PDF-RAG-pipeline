@@ -1,0 +1,638 @@
+{
+  "metadata": {
+    "datetime": "2026-07-15T22:10:46",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50",
+    "chunk_metadata": {
+      "datetime": "2026-07-15T22:09:53",
+      "dataset": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis",
+      "extractor": "pdfplumber",
+      "chunk_method": "fixed_size",
+      "chunk_size": 256,
+      "overlap": 50,
+      "num_pages": 29,
+      "total_chars": 54136,
+      "num_chunks": 263
+    },
+    "model": "gpt-4.1-mini",
+    "temperature": 0.7,
+    "parallel": 20,
+    "seed": null,
+    "num_chunks_requested": 20,
+    "num_chunks_sampled": 20,
+    "num_chunks_answered": 20,
+    "questions_per_chunk": 3,
+    "question_types": {
+      "direct": "Straightforward question answerable from the chunk, may use the chunk's wording.",
+      "inference": "Requires inference from the chunk's information; avoids the chunk's exact words so retrieval must match meaning, not keywords.",
+      "paraphrased": "Same style as the direct question, but the chunk's keywords are replaced with paraphrases or synonyms."
+    },
+    "prompt_version": "v3",
+    "system_prompt": "You write question/answer pairs to evaluate a retrieval system over a chunked document.\nYou are given one text chunk. Every question you write must be answerable using ONLY the\ninformation in that chunk - no outside knowledge, and nothing that depends on other parts\nof the document. Questions must be specific enough that this chunk is clearly the best\nsource for the answer (avoid generic questions many chunks could answer).\n\nProduce exactly three question/answer pairs of this type:\n1. direct: a straightforward factual question about the substantive content of the chunk;\n   it may reuse the chunk's own wording.\n2. inference: a question whose answer must be inferred or synthesized from information in\n   the chunk. Reword the reasoning and avoid copying whole phrases, but the question must\n   still NAME the specific subject it is about so this chunk remains the obvious source.\n3. paraphrased: ask about the same kind of fact as a direct question would, using synonyms\n   for the general wording, but KEEP at least one distinctive anchor from the chunk (a named\n   entity, a specific figure/percentage, or the actual subject) so retrieval can find it.\n\nAnswers must be short, correct, and grounded in the chunk text and be substantive, not about\npage numbers or chapter numbers unless it is obviously a part of the index or table of\ncontents only.\n\nDIRECT QUESTIONS - anchor to the chunk's own content, never to metadata:\nA direct question must ask about the SUBSTANTIVE information stated in this chunk - a concrete\nfact, figure, finding, statement, or relationship that actually appears in the text - and must\nbe phrased using the chunk's own distinctive subject matter so that this chunk is the obvious\nsource. It must NOT ask about, and must NOT lean on, document metadata: metadata is the\nscaffolding that recurs across many chunks and does not identify this one.\n\nTreat all of the following as metadata and do NOT build a direct question around them:\n- chapter / section titles or headings as such (e.g. \"What is the chapter title?\")\n- table, figure, or exhibit numbers or their titles used only as a label\n- page numbers, running headers, and footers\n- the data source, survey provider, or publisher (e.g. \"Ipsos MORI\")\n- base sizes / sample sizes / \"unweighted base\" figures\n- reference-list or bibliography entries and their numbering\n- captions, source notes, and other boilerplate\n\nNever phrase a direct question around bare pointers like \"the chunk\", \"the text\", \"the data\",\n\"the table\", \"the chart\", \"the source note\", or \"the passage\". If you name a table or figure,\nname it by its actual title AND still make the question about the substantive data it reports.\nDo not use the word \"chunk\" in any question unless the text is literally about chunking.\n\n- Example of BAD direct question: \"What is the chapter title shown in the chunk?\" - chapter\n  title is metadata and appears on many chunks.\n- Example of BAD direct question: \"What is the base sample size reported?\" - base size is\n  metadata; almost every table chunk has one.\n- Example of BAD direct question: \"What source is given for the data?\" - the source note\n  (\"Ipsos MORI\") recurs across the whole document.\n- Example of BAD direct question: \"What is the base size reported for this table?\" - 'this\n  table' is a generic pointer and base size is metadata.\n- Example of GOOD direct question: \"What percentage of people had ever lived in social rented\n  housing?\" - a substantive figure phrased from the chunk's own content.\n- Example of GOOD direct question: \"For the North region, what percentage disagreed that\n  living in social housing gave them a lower rent?\" - names the specific subject in the data.\n- Example of GOOD direct question: \"In Table 7.15 on regularly reviewing the needs of social\n  tenants, what is the Agree value for people currently in the social rented (SR) sector?\" -\n  the table is named by its real title and the question targets its substantive data.\n\nINFERENCE and PARAPHRASED questions - stay retrievable, keep an anchor:\nThese two types rewrite the wording, but rewording must not erase every trace of what the\nchunk is about - if it does, the question could match dozens of chunks and retrieval fails.\n\n- Every question MUST retain at least one distinctive anchor from the chunk: a named entity\n  (a place, organisation, table title, tenure group, survey year), a specific figure or\n  percentage, or the concrete subject being discussed. Paraphrase the framing around that\n  anchor; do not paraphrase the anchor itself into something generic.\n- NEVER refer to the subject with a bare pointer such as \"this activity\", \"this practice\",\n  \"this type\", \"this group\", \"the text\", \"the passage\", \"the survey\", or \"the data\". Name it.\n  Bad: \"Which group was more likely to report this practice?\" (which practice?)\n  Good: \"Which firms more often reported new business-organising practices - large firms or\n  SMEs?\" (the practice is named, so this chunk is the clear source)\n- Do not refer to un-named tables, charts, or anything generic that could be part of any\n  other chunk; keep both questions about the chunk's substantive content.\n- If the only fact in the chunk is generic boilerplate (a response rate, a weighting note,\n  a heading) that appears near-identically elsewhere in the document, prefer to reject the\n  chunk rather than write an inference/paraphrased question that cannot be uniquely located.\n\nIf the chunk does not contain enough substantive information to support such questions -\nfor example it is only a page header/footer, a bare table-of-contents fragment, a list of\nreferences, or boilerplate with no concrete facts, middle table data with no title or header\nsufficient to determine the meaning of data - reject it as containing insufficient information\n(with a brief reason) instead of forcing questions. Only reject when no substantive\nquestion is possible; a borderline chunk with at least one concrete fact should still get\nits three questions.\n",
+    "user_prompt_template": "Generate the three question/answer pairs for this chunk:\n\n<chunk>\n{chunk_text}\n</chunk>\n",
+    "rejected": [
+      {
+        "chunk_index": 168,
+        "reason": "The chunk contains incomplete sentences and lacks substantive content or specific facts to generate meaningful question/answer pairs."
+      },
+      {
+        "chunk_index": 190,
+        "reason": "The chunk is incomplete and lacks substantive information to generate specific questions and answers."
+      },
+      {
+        "chunk_index": 105,
+        "reason": "The chunk contains incomplete sentences and lacks substantive information or concrete facts to generate specific, answerable questions."
+      },
+      {
+        "chunk_index": 33,
+        "reason": "The chunk contains only acknowledgments and general statements about the survey but no substantive facts or data to form specific questions and answers."
+      },
+      {
+        "chunk_index": 18,
+        "reason": "The chunk contains only partial contact information and an incomplete summary without substantive content to form specific questions and answers."
+      },
+      {
+        "chunk_index": 167,
+        "reason": "The chunk is incomplete and lacks substantive content or concrete facts to form specific, answerable questions."
+      },
+      {
+        "chunk_index": 37,
+        "reason": "The chunk contains only partial sentences and lacks substantive content or concrete facts to support specific, answerable questions."
+      },
+      {
+        "chunk_index": 207,
+        "reason": "The chunk contains incomplete sentences and lacks substantive factual content to formulate specific, answerable questions."
+      },
+      {
+        "chunk_index": 59,
+        "reason": "The chunk contains only an incomplete sentence and a partial table heading without substantive data or complete information to form questions and answers."
+      },
+      {
+        "chunk_index": 51,
+        "reason": "The chunk lacks substantive content or complete information to formulate specific, answerable questions."
+      },
+      {
+        "chunk_index": 214,
+        "reason": "The chunk contains only a partial sentence and an incomplete table heading without substantive data or facts to form specific questions and answers."
+      },
+      {
+        "chunk_index": 93,
+        "reason": "The chunk contains only a brief note about survey methodology and does not provide substantive information or data about innovation activities or indicators."
+      },
+      {
+        "chunk_index": 236,
+        "reason": "The chunk contains incomplete and fragmented information with labels and partial data references, but no substantive facts or figures that can support specific question and answer pairs."
+      },
+      {
+        "chunk_index": 44,
+        "reason": "The chunk is incomplete and does not provide enough substantive content or concrete facts to formulate specific, answerable questions."
+      },
+      {
+        "chunk_index": 24,
+        "reason": "The chunk only contains a brief conclusion and reference to future publications without substantive factual content to form specific questions and answers."
+      },
+      {
+        "chunk_index": 258,
+        "reason": "The chunk contains only partial information about response rate and weighting, with no substantive facts or complete data for question generation."
+      },
+      {
+        "chunk_index": 231,
+        "reason": "The chunk is incomplete and provides no substantive information beyond a partial sentence about panel data and the number of businesses, making it impossible to formulate specific, answerable questions."
+      },
+      {
+        "chunk_index": 90,
+        "reason": "The chunk is incomplete and does not contain enough substantive information to generate specific, answerable questions."
+      },
+      {
+        "chunk_index": 8,
+        "reason": "The chunk contains only section titles without substantive information to generate specific question/answer pairs."
+      },
+      {
+        "chunk_index": 135,
+        "reason": "The chunk contains only a partial sentence and lacks substantive content or concrete facts related to business innovation behaviour, making it impossible to generate meaningful question/answer pairs."
+      },
+      {
+        "chunk_index": 79,
+        "reason": "The chunk is incomplete and lacks sufficient substantive content to generate specific, answerable questions and answers."
+      },
+      {
+        "chunk_index": 141,
+        "reason": "The chunk contains only partial data and incomplete text fragments without substantive information or complete facts to form answerable questions."
+      },
+      {
+        "chunk_index": 5,
+        "reason": "The chunk contains only partial text and a heading without substantive content to form specific, answerable questions."
+      },
+      {
+        "chunk_index": 52,
+        "reason": "The chunk contains only a partial introductory fragment about innovation activity and survey comparisons, with no substantive facts, figures, or detailed content to form specific questions and answers."
+      },
+      {
+        "chunk_index": 138,
+        "reason": "The chunk is incomplete and provides insufficient substantive content to generate specific, answerable questions."
+      }
+    ],
+    "failures": []
+  },
+  "items": [
+    {
+      "chunk_index": 20,
+      "chunk_text": " is mainly postal but almost two fifths (39 per cent) of total\nresponses (14,487) were collected by telephone interview. This compares favourably with\nthe UKIS 2011 in which around half of the survey responses were collected by telephone\ninterview. As it m",
+      "start_char": 4120,
+      "end_char": 4376,
+      "start_page": 5,
+      "end_page": 5,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of total responses were collected by telephone interview?",
+          "answer": "39 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "How does the proportion of telephone interview responses in this survey compare with the UKIS 2011?",
+          "answer": "The proportion is lower in this survey (39%) compared to around half in UKIS 2011."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In the survey, what fraction of the total 14,487 responses came from telephone interviews?",
+          "answer": "Almost two fifths (39 per cent)"
+        }
+      ]
+    },
+    {
+      "chunk_index": 27,
+      "chunk_text": " survey is the fourth one on the biennial cycle.\nThe UK Innovation Survey 2013 sampled 28,365 UK enterprises with ten or more\nemployees. The survey was voluntary, and was conducted through both a postal\nquestionnaire and telephone interview for businesses ",
+      "start_char": 5562,
+      "end_char": 5818,
+      "start_page": 5,
+      "end_page": 5,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How many UK enterprises with ten or more employees were sampled in the UK Innovation Survey 2013?",
+          "answer": "28,365 UK enterprises"
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the method of data collection for the UK Innovation Survey 2013?",
+          "answer": "It combined postal questionnaires and telephone interviews to collect data from businesses."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What was the sample size of UK businesses with at least ten employees in the 2013 UK Innovation Survey?",
+          "answer": "28,365 UK enterprises"
+        }
+      ]
+    },
+    {
+      "chunk_index": 49,
+      "chunk_text": ". The consistencies in sampling and survey\nmethodologies, such as the use of SIC 2007 and telephone interviews to boost the postal\nresponses between the two surveys provide us with the ability to make more direct\ncomparisons across surveys.\n1. Innovation a",
+      "start_char": 10094,
+      "end_char": 10350,
+      "start_page": 7,
+      "end_page": 7,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What methodologies were consistently used in the two surveys to allow for direct comparisons?",
+          "answer": "The use of SIC 2007 and telephone interviews to boost postal responses."
+        },
+        {
+          "question_type": "inference",
+          "question": "Why do the consistencies in sampling and survey methodologies, such as SIC 2007 and telephone interviews, matter for the two surveys?",
+          "answer": "Because they enable more direct comparisons across the two surveys."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which survey techniques were maintained between the two surveys to facilitate direct comparison?",
+          "answer": "Using SIC 2007 and telephone interviews to enhance postal response rates."
+        }
+      ]
+    },
+    {
+      "chunk_index": 56,
+      "chunk_text": "lows: Introduction of a new or significantly improved product (goods or service) or process;\nEngagement in innovation projects not yet complete or abandoned; New and significantly improved forms of\norganisation, business structures or practices and marketi",
+      "start_char": 11536,
+      "end_char": 11792,
+      "start_page": 7,
+      "end_page": 7,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What types of innovation are mentioned in the chunk?",
+          "answer": "Introduction of a new or significantly improved product or process; engagement in innovation projects; new and significantly improved forms of organisation, business structures, or marketing."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the scope of innovation activities described in the chunk?",
+          "answer": "The innovation activities cover products, processes, organisational forms, business structures, marketing, and include projects that may be incomplete or abandoned."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which innovation activities are described involving product and organisational changes?",
+          "answer": "Introducing new or improved products or processes, undertaking innovation projects, and implementing new or improved organisational, business, or marketing practices."
+        }
+      ]
+    },
+    {
+      "chunk_index": 63,
+      "chunk_text": " 39\nWider innovator 31 35 31\nActivities 33 38 33\nProduct innovator 19 23 19\nof which (share with new-to-market products) 46 50 46\nProcess innovator 10 17 10\nof which (share with new-to-industry processes) 27 24 26\nAbandoned activities 4 6 4\nOn-going activi",
+      "start_char": 12978,
+      "end_char": 13234,
+      "start_page": 8,
+      "end_page": 8,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of firms were identified as wider innovators in the data?",
+          "answer": "31%"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data, what can be inferred about the proportion of product innovators who introduced new-to-market products?",
+          "answer": "About 46% of product innovators introduced new-to-market products."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the figures, what portion of firms engaged in process innovation?",
+          "answer": "10%"
+        }
+      ]
+    },
+    {
+      "chunk_index": 64,
+      "chunk_text": "7 24 26\nAbandoned activities 4 6 4\nOn-going activities 7 9 7\nBoth product AND process innovator 7 13 8\nEither product OR process innovator 22 28 22\n* = Unweighted base = 14,487\n5 As in the 2011 UKIS, the questions in Section C ‘Context for Innovation’ of t",
+      "start_char": 13184,
+      "end_char": 13440,
+      "start_page": 8,
+      "end_page": 8,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of activities were abandoned according to the data?",
+          "answer": "4%"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data, which type of innovation activity was most commonly reported?",
+          "answer": "Either product OR process innovator, at 22-28%"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the data, what proportion of activities were classified as ongoing?",
+          "answer": "7-9%"
+        }
+      ]
+    },
+    {
+      "chunk_index": 74,
+      "chunk_text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey.",
+      "start_char": 15244,
+      "end_char": 15500,
+      "start_page": 9,
+      "end_page": 9,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of large firms were classified as 'innovation active'?",
+          "answer": "50 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data, which group is more likely to be 'innovation active', large firms or SMEs?",
+          "answer": "Large firms are more likely to be 'innovation active'."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In the survey, what proportion of firms with over 250 employees were considered 'innovation active'?",
+          "answer": "50 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 76,
+      "chunk_text": "nt from 39 per cent in the\n2011 survey. Interestingly, the share of SMEs in this category was higher than that of the\nlarge firms: 46 per cent of SMEs vs 41 per cent of large firms. There was a decline in the\nshare of large firms from 44 per cent in the 20",
+      "start_char": 15656,
+      "end_char": 15912,
+      "start_page": 9,
+      "end_page": 9,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What was the percentage share of SMEs in the category mentioned in the 2011 survey?",
+          "answer": "46 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data, which group had a higher percentage share in the category, SMEs or large firms?",
+          "answer": "SMEs had a higher percentage share than large firms"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the 2011 survey, what proportion of small and medium-sized enterprises (SMEs) fell into the specified category?",
+          "answer": "46 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 78,
+      "chunk_text": " 31 per cent in the 2011 survey to\n37 per cent given above in Table 1. The difference in proportions of SMEs and large\nbusiness was smaller in this survey period than the previous one; 37 per cent of SMEs\nreported in engaging in wider innovations, compared",
+      "start_char": 16068,
+      "end_char": 16324,
+      "start_page": 9,
+      "end_page": 9,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of SMEs reported engaging in wider innovations in the survey period mentioned?",
+          "answer": "37 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the information, how did the difference in proportions of SMEs and large businesses engaging in wider innovations change compared to the previous survey?",
+          "answer": "The difference in proportions was smaller in this survey period than the previous one."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the data, what share of small and medium enterprises indicated participation in broader innovations during the surveyed timeframe?",
+          "answer": "37 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 87,
+      "chunk_text": "oup, 41 per cent of respondents said their ‘goods’ were developed mainly\nby their own business (50 per cent said their ‘services’ were developed mainly within the\nbusiness). These figures were broadly in line with the previous survey’s findings in which\n43",
+      "start_char": 17922,
+      "end_char": 18178,
+      "start_page": 10,
+      "end_page": 10,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of respondents said their 'goods' were developed mainly by their own business?",
+          "answer": "41 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the respondents' views, which was more commonly developed mainly within the business, 'goods' or 'services'?",
+          "answer": "'Services' were more commonly developed mainly within the business, with 50 per cent compared to 41 per cent for 'goods'."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the survey, what portion of participants reported that their company's 'goods' were primarily created internally?",
+          "answer": "41 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 95,
+      "chunk_text": "acquisition of computer\nsoftware and hardware (23 per cent and 20 per cent, respectively) and these proportions\nwent up from 19 per cent of computer software and 16 per cent of hardware in the last\nsurvey. The proportions in other categories reported in Fi",
+      "start_char": 19570,
+      "end_char": 19826,
+      "start_page": 10,
+      "end_page": 10,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What were the reported percentages for acquisition of computer software and hardware in the current survey?",
+          "answer": "23 per cent for software and 20 per cent for hardware"
+        },
+        {
+          "question_type": "inference",
+          "question": "How did the proportions for acquisition of computer software and hardware change compared to the last survey?",
+          "answer": "The proportions increased from 19 per cent to 23 per cent for software and from 16 per cent to 20 per cent for hardware"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What percentages were noted for obtaining computer software and hardware according to the latest data?",
+          "answer": "23 per cent for software and 20 per cent for hardware"
+        }
+      ]
+    },
+    {
+      "chunk_index": 133,
+      "chunk_text": "y.\n4.3 Exports\nOnly 16 per cent of businesses provided an estimate of exports for the year 2012. This\ncompares to 19 per cent in the 2011 survey. Looking back at the survey series,\nproportions reporting estimates of exports have been steadily decreasing: 3",
+      "start_char": 27398,
+      "end_char": 27654,
+      "start_page": 14,
+      "end_page": 14,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of businesses provided an estimate of exports for the year 2012?",
+          "answer": "16 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "How did the proportion of businesses reporting export estimates change from 2011 to 2012?",
+          "answer": "The proportion decreased from 19 per cent in 2011 to 16 per cent in 2012."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What share of companies reported their export figures for 2012?",
+          "answer": "16 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 155,
+      "chunk_text": "ch and development enterprises;\n• institutional: from the public sector such as government research organisations\nand universities or private research institutes; and\n• other sources: from conferences, trade fairs and exhibitions; scientific journals,\ntrad",
+      "start_char": 31930,
+      "end_char": 32186,
+      "start_page": 16,
+      "end_page": 16,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What are the three sources of research mentioned in the chunk?",
+          "answer": "Technology and development enterprises, institutional sources, and other sources like conferences and journals."
+        },
+        {
+          "question_type": "inference",
+          "question": "What types of organisations are included under institutional sources for research?",
+          "answer": "Public sector government research organisations, universities, and private research institutes."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which categories of sources provide research input according to the chunk?",
+          "answer": "Research comes from technology and development enterprises, institutional bodies such as government and universities, and other sources like conferences and scientific journals."
+        }
+      ]
+    },
+    {
+      "chunk_index": 166,
+      "chunk_text": "sector organisations’ or\n‘overseas/non-domestic public sector organisations’. Around 15 per cent of respondents\nreported having procurement contracts to provide good or services for domestic public\nsector organisations. This compared to four per cent havin",
+      "start_char": 34196,
+      "end_char": 34452,
+      "start_page": 17,
+      "end_page": 17,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of respondents reported having procurement contracts to provide goods or services for domestic public sector organisations?",
+          "answer": "Around 15 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the procurement contract data, which type of public sector organisations did more respondents have contracts with: domestic or overseas/non-domestic?",
+          "answer": "More respondents had contracts with domestic public sector organisations (around 15 per cent) compared to overseas/non-domestic public sector organisations (around four per cent)."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What proportion of respondents indicated they held procurement agreements for supplying goods or services to domestic public sector bodies?",
+          "answer": "Around 15 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 178,
+      "chunk_text": "vation\n8.1 Country level differences\nFigure 6 presents the shares of innovation active businesses across the countries and\nshows a comparison with the 2011 data based on the innovation active definition. There\nwere seven percentage points between the least",
+      "start_char": 36668,
+      "end_char": 36924,
+      "start_page": 18,
+      "end_page": 18,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What does Figure 6 present regarding innovation active businesses?",
+          "answer": "Figure 6 presents the shares of innovation active businesses across the countries and compares with 2011 data."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the range of innovation active business shares between countries from the text?",
+          "answer": "There was a seven percentage point difference between the least and other countries."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the text, how do the proportions of businesses engaged in innovation vary among countries as shown in Figure 6?",
+          "answer": "The proportions vary by seven percentage points between the countries with the lowest and others."
+        }
+      ]
+    },
+    {
+      "chunk_index": 189,
+      "chunk_text": "6 per cent) of businesses described as broader innovator.\nThere was a significant increase in the numbers citing ‘replacing outdated products or\nprocesses’ which was the second most frequently mentioned factor driving innovation\n(rated ‘high’ by 31 per cen",
+      "start_char": 38934,
+      "end_char": 39190,
+      "start_page": 20,
+      "end_page": 20,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of businesses were described as broader innovators?",
+          "answer": "6 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "What was the second most frequently mentioned factor driving innovation among businesses?",
+          "answer": "'Replacing outdated products or processes'"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What share of companies were classified as broader innovators?",
+          "answer": "6 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 213,
+      "chunk_text": "novation\nThe skills question, apart from the standard question on the proportion of employees\nholding a degree or above, was first asked in 2011 survey. This was the second time it\nwas included. It asks businesses about whether they had employed or brought",
+      "start_char": 43878,
+      "end_char": 44134,
+      "start_page": 23,
+      "end_page": 23,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "When was the skills question about the proportion of employees holding a degree or above first asked?",
+          "answer": "In the 2011 survey."
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the information about the skills question, how many times had it been included by the time of this survey?",
+          "answer": "It had been included twice."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In which survey year was the question regarding the percentage of employees with a degree or higher initially introduced?",
+          "answer": "The 2011 survey."
+        }
+      ]
+    },
+    {
+      "chunk_index": 223,
+      "chunk_text": "24\nEngineering/ applied sciences 14 29 15\nMathematics/ statistics 9 24 10\n* = Unweighted base = 14,487\nTable 8 compares 2011 and 2013 surveys for all respondents. It also presents the\ndifferences between the shares of broader innovators and non-innovators ",
+      "start_char": 45938,
+      "end_char": 46194,
+      "start_page": 24,
+      "end_page": 24,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What does Table 8 compare regarding the 2011 and 2013 surveys?",
+          "answer": "Table 8 compares the shares of broader innovators and non-innovators for all respondents."
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data in Table 8, what can be inferred about the focus of the survey comparison between 2011 and 2013?",
+          "answer": "The survey comparison focuses on changes in the shares of broader innovators and non-innovators among all respondents."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What differences between broader innovators and non-innovators does Table 8 highlight when comparing the 2011 and 2013 surveys?",
+          "answer": "Table 8 highlights differences in the shares of broader innovators and non-innovators among all respondents between 2011 and 2013."
+        }
+      ]
+    },
+    {
+      "chunk_index": 229,
+      "chunk_text": "14 24 31 29 4 11\nEngineering/ applied sciences 8 15 18 18 2 7\nMathematics/ statistics 5 10 11 11 2 6\n* = Unweighted base for All is 14,487 for 2013; 14,342 for 2011. **= Unweighted base for broader innovators is 6,992\nin 2013; 5,744 in 2011; + = Unweighted",
+      "start_char": 47174,
+      "end_char": 47430,
+      "start_page": 24,
+      "end_page": 24,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What was the unweighted base for all innovators in 2013 according to the chunk?",
+          "answer": "14,487"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the unweighted base figures given, did the number of broader innovators increase or decrease from 2011 to 2013?",
+          "answer": "The number of broader innovators increased from 5,744 in 2011 to 6,992 in 2013."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What is the unweighted sample size for all participants in 2013 as reported in the chunk?",
+          "answer": "14,487"
+        }
+      ]
+    },
+    {
+      "chunk_index": 241,
+      "chunk_text": " data, with the notable increases on the shares of innovation active and\nbroader innovators.\nFigure 10: UKIS – cross section data 2007, 2009, 2011 and 2013\n70%\n60%\n50%\n40%\n30%\n20%\n10%\n0%\n2007 Survey 2009 Survey 2011 Survey 2013 Survey\nInnovation-active Inn",
+      "start_char": 49646,
+      "end_char": 49902,
+      "start_page": 26,
+      "end_page": 26,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What trend is noted in the shares of innovation active and broader innovators according to the UKIS cross section data?",
+          "answer": "There are notable increases in the shares of innovation active and broader innovators."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the changes in innovation activity from the UKIS data between 2007 and 2013?",
+          "answer": "Innovation activity and the share of broader innovators have increased over time."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the UKIS cross section data from 2007 to 2013, how did the proportions of firms engaged in innovation and wider innovation efforts change?",
+          "answer": "The proportions of innovation-active firms and broader innovators increased."
+        }
+      ]
+    }
+  ]
+}

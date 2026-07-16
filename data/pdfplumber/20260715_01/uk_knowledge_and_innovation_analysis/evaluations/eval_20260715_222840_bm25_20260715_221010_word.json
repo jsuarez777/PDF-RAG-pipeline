@@ -1,0 +1,2562 @@
+{
+  "metadata": {
+    "datetime": "2026-07-15T22:28:40",
+    "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50/qa_20260715_222823_gpt-4.1-mini.json",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50",
+    "db": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260715_221010_word.pkl",
+    "db_type": "bm25",
+    "tokenizer": "word",
+    "top_k": 5,
+    "ks": [
+      5
+    ],
+    "num_questions": 57,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "aggregates": {
+    "overall": {
+      "num_questions": 57,
+      "mrr": 0.5005847953216375,
+      "map": 0.5005847953216375,
+      "recall@5": 0.6140350877192983,
+      "precision@5": 0.12280701754385964,
+      "ndcg@5": 0.5287893891946615
+    },
+    "by_question_type": {
+      "direct": {
+        "num_questions": 19,
+        "mrr": 0.7017543859649124,
+        "map": 0.7017543859649124,
+        "recall@5": 0.7368421052631579,
+        "precision@5": 0.14736842105263157,
+        "ndcg@5": 0.7105263157894737
+      },
+      "inference": {
+        "num_questions": 19,
+        "mrr": 0.5719298245614035,
+        "map": 0.5719298245614035,
+        "recall@5": 0.7368421052631579,
+        "precision@5": 0.14736842105263157,
+        "ndcg@5": 0.6130901218093399
+      },
+      "paraphrased": {
+        "num_questions": 19,
+        "mrr": 0.22807017543859648,
+        "map": 0.22807017543859648,
+        "recall@5": 0.3684210526315789,
+        "precision@5": 0.07368421052631578,
+        "ndcg@5": 0.2627517299851707
+      }
+    }
+  },
+  "questions": [
+    {
+      "chunk_index": 20,
+      "question_type": "direct",
+      "question": "What percentage of total responses were collected by telephone interview?",
+      "answer": "39 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 20,
+          "score": 30.040212097716047,
+          "similarity": 30.040212097716047,
+          "text": " is mainly postal but almost two fifths (39 per cent) of total\nresponses (14,487) were collected by telephone interview. This compares favourably with\nthe UKIS 2011 in which around half of the survey responses were collected by telephone\ninterview. As it m"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 21,
+          "score": 17.80598333711453,
+          "similarity": 17.80598333711453,
+          "text": "ses were collected by telephone\ninterview. As it might be expected, most of the telephone interviews came from non-\ninnovative enterprises.\nFollowing an overview of the data collection and methodology, this report goes on to\ndiscuss the key innovation stat"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 254,
+          "score": 10.377827428564943,
+          "similarity": 10.377827428564943,
+          "text": "cises for international comparisons.\nThe UK Innovation Survey 2013 sampled over 28 thousand UK enterprises. The survey\nwas voluntary and conducted by means of both a postal questionnaire and telephone\ninterview for businesses that had not yet completed a p"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 258,
+          "score": 9.294396155226151,
+          "similarity": 9.294396155226151,
+          "text": "sponse rate of 51\nper cent.\nThe results in this report are based on weighted data in order to be representative of the\npopulation of firms. The responses were weighted back to the total business population of\nthose in the IDBR. On average each respondent r"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 29,
+          "score": 9.138233405138386,
+          "similarity": 9.138233405138386,
+          "text": "urvey had a 51 per\ncent response rate. The results in this report are based on weighted data in order to be\nrepresentative of firms. The responses were weighted back to the total business\npopulation of those in the Inter-Departmental Business Registration "
+        }
+      ]
+    },
+    {
+      "chunk_index": 20,
+      "question_type": "inference",
+      "question": "Compared to the UKIS 2011, did this survey collect a higher or lower proportion of responses by telephone?",
+      "answer": "Lower proportion",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 20,
+          "score": 20.793436728867263,
+          "similarity": 20.793436728867263,
+          "text": " is mainly postal but almost two fifths (39 per cent) of total\nresponses (14,487) were collected by telephone interview. This compares favourably with\nthe UKIS 2011 in which around half of the survey responses were collected by telephone\ninterview. As it m"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 209,
+          "score": 13.371526443812291,
+          "similarity": 13.371526443812291,
+          "text": "vantage (five per cent). There was a size effect of\nbusinesses for keeping products complex. Higher proportion of large firms rated\n‘complexity of goods or services’ (eight per cent), compared to six per cent of SMEs.\nSimilarly, compared to SMEs, higher nu"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 119,
+          "score": 13.346408654165673,
+          "similarity": 13.346408654165673,
+          "text": "entation of new business practices for organising procedures, compared to 16\nper cent of businesses in the 2011 survey. As in the 2011 survey, a higher share of large\nfirms (26 per cent) reported this, compared to SMEs (21 per cent). The least frequently\nr"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 81,
+          "score": 12.178308927265514,
+          "similarity": 12.178308927265514,
+          "text": "over this survey\nperiod, as compared to 46 per cent in the previous survey. The share of large firms having\nproducts new to the market stayed exactly the same at 50 per cent. However, this share\nwas higher than that of SMEs in both this and the 2011 survey"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 200,
+          "score": 12.015873214774366,
+          "similarity": 12.015873214774366,
+          "text": "ing much lower proportions\nciting these reasons as compared to the last survey, the pattern of response also differed\nfrom the 2011 survey. The most frequently cited reason in the 2011 data was ‘factors\nconstraining innovation’ (31 per cent) which represen"
+        }
+      ]
+    },
+    {
+      "chunk_index": 20,
+      "question_type": "paraphrased",
+      "question": "What fraction of the total replies were gathered via phone conversation?",
+      "answer": "Almost two fifths",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 258,
+          "score": 8.229493424778166,
+          "similarity": 8.229493424778166,
+          "text": "sponse rate of 51\nper cent.\nThe results in this report are based on weighted data in order to be representative of the\npopulation of firms. The responses were weighted back to the total business population of\nthose in the IDBR. On average each respondent r"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 20,
+          "score": 7.966476123793558,
+          "similarity": 7.966476123793558,
+          "text": " is mainly postal but almost two fifths (39 per cent) of total\nresponses (14,487) were collected by telephone interview. This compares favourably with\nthe UKIS 2011 in which around half of the survey responses were collected by telephone\ninterview. As it m"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 29,
+          "score": 7.882731854611571,
+          "similarity": 7.882731854611571,
+          "text": "urvey had a 51 per\ncent response rate. The results in this report are based on weighted data in order to be\nrepresentative of firms. The responses were weighted back to the total business\npopulation of those in the Inter-Departmental Business Registration "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 46,
+          "score": 7.338899675074806,
+          "similarity": 7.338899675074806,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 33,
+          "score": 7.010607967352598,
+          "similarity": 7.010607967352598,
+          "text": "would like to thank all the\nbusinesses that completed the survey form either over the phone or by post. The UKIS\ncontinues to provide a means to measuring the level, types and trends in innovation\nactivity within the UK. This data source contributes to our"
+        }
+      ]
+    },
+    {
+      "chunk_index": 27,
+      "question_type": "direct",
+      "question": "How many UK enterprises were sampled in the UK Innovation Survey 2013?",
+      "answer": "28,365 UK enterprises",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 27,
+          "score": 15.755386955460201,
+          "similarity": 15.755386955460201,
+          "text": " survey is the fourth one on the biennial cycle.\nThe UK Innovation Survey 2013 sampled 28,365 UK enterprises with ten or more\nemployees. The survey was voluntary, and was conducted through both a postal\nquestionnaire and telephone interview for businesses "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 254,
+          "score": 15.225574986249907,
+          "similarity": 15.225574986249907,
+          "text": "cises for international comparisons.\nThe UK Innovation Survey 2013 sampled over 28 thousand UK enterprises. The survey\nwas voluntary and conducted by means of both a postal questionnaire and telephone\ninterview for businesses that had not yet completed a p"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 40,
+          "score": 11.5272590755008,
+          "similarity": 11.5272590755008,
+          "text": "al to this strategy will be a roadmap of how the government’s long-\nterm commitment on science capital will deliver the research and innovation infrastructure.\nThrough the harmonised questions in CIS, the UK Innovation survey data are also\ncomparable with "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 158,
+          "score": 11.171076630881178,
+          "similarity": 11.171076630881178,
+          "text": "in their enterprise group) were rated as the most important source of information for\n12\nUK Innovation Survey 2013 – First findings report\ninnovation. Again, the least frequently cited sources were institutional sources. The most\nnotable decrease in firms’"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 126,
+          "score": 10.876732566401484,
+          "similarity": 10.876732566401484,
+          "text": "shows, the regional markets were still the most dominant market for UK\nenterprises; 68 per cent of firms reported operating in regional markets, compared to 67\nper cent in the 2011 survey. Almost six in ten (57 per cent) operated at national level,\n9\nUK In"
+        }
+      ]
+    },
+    {
+      "chunk_index": 27,
+      "question_type": "inference",
+      "question": "What methods were used to collect data for the UK Innovation Survey 2013?",
+      "answer": "Postal questionnaire and telephone interview",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 45,
+          "score": 11.919161164349184,
+          "similarity": 11.919161164349184,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 12,
+          "score": 11.364010788146416,
+          "similarity": 11.364010788146416,
+          "text": "ffectiveness of methods used to protect the value of innovations ........................... 18\n12. Skills for innovation ........................................................................................................ 19\n13. Comparisons with the 2"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 202,
+          "score": 11.324115791585058,
+          "similarity": 11.324115791585058,
+          "text": ", knowledge and market factors, were in constraining innovation activities. This question was not\nincluded in the 2013 survey and therefore, it is not possible to explore further what factors would be rated\nhigh as barriers to innovation.\n17\nUK Innovation "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 250,
+          "score": 10.72535289212552,
+          "similarity": 10.72535289212552,
+          "text": "//www.ons.gov.uk/ons/about-\nons/business-transparency/freedom-of-information/what-can-i-request/virtual-microdata-laboratory--vml-\n/index.html and http://www.data-archive.ac.uk/home\n23\nUK Innovation Survey 2013 – First findings report\nANNEX – Methodology\nT"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 244,
+          "score": 10.446776826862976,
+          "similarity": 10.446776826862976,
+          "text": " relative to the 2011 survey. The report also provides some comparisons with earlier\nsurveys making use of both panel and cross-section data.\n22\nUK Innovation Survey 2013 – First findings report\nThe UK Innovation Survey represents a major source of data fo"
+        }
+      ]
+    },
+    {
+      "chunk_index": 27,
+      "question_type": "paraphrased",
+      "question": "What was the size of the business sample in the 2013 UK Innovation Study?",
+      "answer": "28,365 enterprises with ten or more employees",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 46,
+          "score": 18.570063625890214,
+          "similarity": 18.570063625890214,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 256,
+          "score": 16.094277697125488,
+          "similarity": 16.094277697125488,
+          "text": "C) 2007. This was the second time survey data was\ncollected using a sample based on the Standard Industrial Classification 2007 (SIC 2007).\nThe sample was drawn from the ONS Inter-Departmental Business Register (IDBR) in\nJanuary 2013.\nResponse and weightin"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 45,
+          "score": 15.261983734129384,
+          "similarity": 15.261983734129384,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 251,
+          "score": 15.2517182402169,
+          "similarity": 15.2517182402169,
+          "text": "2013 – First findings report\nANNEX – Methodology\nThe UK Innovation Survey is funded by the Department of Business, Innovation and Skills\n(BIS). The survey was conducted on behalf of the BIS by the Office for National Statistics\n(ONS).\nThe UK Innovation Sur"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 35,
+          "score": 14.580163628592947,
+          "similarity": 14.580163628592947,
+          "text": ". It provides the empirical evidence to support\npolicy measures.\nAlthough the sample size of the panel data (respondents also common to the 2011, 2009\nand 2007 surveys) is significantly reduced to just over 1,250 businesses, the panel\nelement in the survey"
+        }
+      ]
+    },
+    {
+      "chunk_index": 49,
+      "question_type": "direct",
+      "question": "What methodologies were used consistently to enable direct comparisons across surveys?",
+      "answer": "Use of SIC 2007 and telephone interviews to boost postal responses.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 49,
+          "score": 19.00225426332904,
+          "similarity": 19.00225426332904,
+          "text": ". The consistencies in sampling and survey\nmethodologies, such as the use of SIC 2007 and telephone interviews to boost the postal\nresponses between the two surveys provide us with the ability to make more direct\ncomparisons across surveys.\n1. Innovation a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 50,
+          "score": 15.125124164458828,
+          "similarity": 15.125124164458828,
+          "text": "direct\ncomparisons across surveys.\n1. Innovation activity\nInnovation takes place through a wide variety of business practices and a range of\nindicators can be used to measure its level within the enterprise or in the economy as a\nwhole. These include the l"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 239,
+          "score": 7.831949291594526,
+          "similarity": 7.831949291594526,
+          "text": "the definition used for ‘innovation active’\nwas the same across the last two surveys. As a result, one would expect to see that the\ndata in this survey are much more comparable to the data in the 2011 survey.\nFigure 10 presents a general comparison of the "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 168,
+          "score": 7.40775295770022,
+          "similarity": 7.40775295770022,
+          "text": "across all industrial and commercial\nsectors are charted in Figure 5. As pointed out before, a more direct comparison with the\n2011 survey results is possible because of having the same sectoral reclassification and a\nmore consistent methodology between th"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 13,
+          "score": 7.4071984783151485,
+          "similarity": 7.4071984783151485,
+          "text": ".................... 19\n13. Comparisons with the 2011, 2009 and 2007 UK Innovation Survey Panel data .......... 21\n14. Comparisons with the 2007, 2009 and 2011 UK Innovation Surveys’ cross-section\ndata ......................................................"
+        }
+      ]
+    },
+    {
+      "chunk_index": 49,
+      "question_type": "inference",
+      "question": "Why is it possible to compare the results from the two surveys more directly?",
+      "answer": "Because the surveys used consistent sampling and survey methodologies.",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 168,
+          "score": 15.178044323043279,
+          "similarity": 15.178044323043279,
+          "text": "across all industrial and commercial\nsectors are charted in Figure 5. As pointed out before, a more direct comparison with the\n2011 survey results is possible because of having the same sectoral reclassification and a\nmore consistent methodology between th"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 197,
+          "score": 14.332908814564306,
+          "similarity": 14.332908814564306,
+          "text": "ovators\nBusinesses that reported having no innovation activity during the survey period were\nasked to indicate why it had not been necessary or possible to innovate. They were\noffered the response categories presented in Figure 810, alongside a response ca"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 49,
+          "score": 12.86566562162449,
+          "similarity": 12.86566562162449,
+          "text": ". The consistencies in sampling and survey\nmethodologies, such as the use of SIC 2007 and telephone interviews to boost the postal\nresponses between the two surveys provide us with the ability to make more direct\ncomparisons across surveys.\n1. Innovation a"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 248,
+          "score": 12.340388744144262,
+          "similarity": 12.340388744144262,
+          "text": "e UKIS 2013 data later in the year.\nAs with previous surveys, it is expected that there would be a substantial body of further\nresearch using the survey results and publications in various forms over the next few\nyears. Data will be available for researche"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 19,
+          "score": 11.850070167349742,
+          "similarity": 11.850070167349742,
+          "text": "\nwhich is the second survey using a sample based on the Standard Industrial Classification\n2007 (SIC 2007). This enables a more consistent comparison with the 2011 survey data\nin the time series. The survey is mainly postal but almost two fifths (39 per ce"
+        }
+      ]
+    },
+    {
+      "chunk_index": 49,
+      "question_type": "paraphrased",
+      "question": "What consistent techniques were applied in the surveys to improve response rates and allow for easier comparison?",
+      "answer": "Standard classification system SIC 2007 and phone interviews to increase postal responses.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 94,
+          "score": 11.83597268585556,
+          "similarity": 11.83597268585556,
+          "text": "inly postal but boosted with\ntelephone interviews). This would mean one can expect a more consistent comparison\nover the two survey periods.\nAs shown in Figure 1, the most commonly reported activities were acquisition of computer\nsoftware and hardware (23 "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 257,
+          "score": 11.327807031484227,
+          "similarity": 11.327807031484227,
+          "text": "ster (IDBR) in\nJanuary 2013.\nResponse and weighting\nThe questionnaires for the survey were dispatched between 25 and 27 February 2013.\nValid responses were received from 14, 487 enterprises which gives a response rate of 51\nper cent.\nThe results in this re"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 168,
+          "score": 11.104301193864302,
+          "similarity": 11.104301193864302,
+          "text": "across all industrial and commercial\nsectors are charted in Figure 5. As pointed out before, a more direct comparison with the\n2011 survey results is possible because of having the same sectoral reclassification and a\nmore consistent methodology between th"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 66,
+          "score": 11.062540504725511,
+          "similarity": 11.062540504725511,
+          "text": "s innovator or abandoned/incomplete innovation) in Section B ‘Innovation Activities’ of the\nquestionnaire. This differs from survey routing used in surveys conducted before the UKIS 2011.\n6 Different survey routing was applied for surveys conducted before "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 169,
+          "score": 10.178540552459074,
+          "similarity": 10.178540552459074,
+          "text": "ation and a\nmore consistent methodology between the two surveys.\n13\nUK Innovation Survey 2013 – First findings report\nAs can be seen in Figure 5, the production sector, particularly manufacturing industry was\nthe most innovation active: 62 per cent of ‘man"
+        }
+      ]
+    },
+    {
+      "chunk_index": 56,
+      "question_type": "direct",
+      "question": "What are the types of innovations mentioned in the text?",
+      "answer": "New or significantly improved products or processes, innovation projects not yet complete or abandoned, and new forms of organisation or marketing.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 118,
+          "score": 13.186083638764032,
+          "similarity": 13.186083638764032,
+          "text": "e summarised in Table 2.\nOver a third (37 per cent) of businesses engaged in one or more types of non-\ntechnological innovation over the latest survey period. Over a fifth (21 per cent) mentioned\nthe implementation of new business practices for organising "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 51,
+          "score": 10.724027243035874,
+          "similarity": 10.724027243035874,
+          "text": " or in the economy as a\nwhole. These include the levels of effort employed (measured through resources allocated\nto innovation) and of achievement (the introduction of new or improved products and\nprocesses). This section reports on the types and levels of"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 52,
+          "score": 10.530218468108995,
+          "similarity": 10.530218468108995,
+          "text": "). This section reports on the types and levels of innovation activity over the\nthree year period, from 2010 to 20123 and makes some comparisons with the results\nobtained from the previous survey conducted in 2011.\nThe definition of innovation activity4 he"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 45,
+          "score": 10.45702619114543,
+          "similarity": 10.45702619114543,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 46,
+          "score": 10.446912386307273,
+          "similarity": 10.446912386307273,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        }
+      ]
+    },
+    {
+      "chunk_index": 56,
+      "question_type": "inference",
+      "question": "What does engagement in innovation projects imply about a company's activities?",
+      "answer": "It implies the company is actively involved in developing new or improved products, processes, or organisational methods, even if the projects are not finished or have been abandoned.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 56,
+          "score": 10.728463278858785,
+          "similarity": 10.728463278858785,
+          "text": "lows: Introduction of a new or significantly improved product (goods or service) or process;\nEngagement in innovation projects not yet complete or abandoned; New and significantly improved forms of\norganisation, business structures or practices and marketi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 54,
+          "score": 10.372762307498189,
+          "similarity": 10.372762307498189,
+          "text": "n of a new or significantly improved product (good or service) or process;\n2. Engagement in innovation projects not yet complete or abandoned;\n3 All results are grossed up to the business population, and all figures quoted relate to UK Innovation Survey\n20"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 45,
+          "score": 10.322352737726424,
+          "similarity": 10.322352737726424,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 141,
+          "score": 9.912335809069148,
+          "similarity": 9.912335809069148,
+          "text": "20% 30% 40% 50% 60% 70%\nUnweighted base = 3,153\n9\n1) Introduction of a new or significantly improved product (good or service) or process; 2) engagement in\ninnovation projects not yet complete or abandoned; 3) New and significantly improved forms of organi"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 202,
+          "score": 8.959587916760146,
+          "similarity": 8.959587916760146,
+          "text": ", knowledge and market factors, were in constraining innovation activities. This question was not\nincluded in the 2013 survey and therefore, it is not possible to explore further what factors would be rated\nhigh as barriers to innovation.\n17\nUK Innovation "
+        }
+      ]
+    },
+    {
+      "chunk_index": 56,
+      "question_type": "paraphrased",
+      "question": "What kinds of advancements or changes are described related to products, processes, and business methods?",
+      "answer": "Introduction of new or greatly enhanced products or processes, participation in ongoing or discontinued innovation efforts, and implementation of new organisational or marketing approaches.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 43,
+          "score": 12.534871691292768,
+          "similarity": 12.534871691292768,
+          "text": "int-copy-final.pdf\n2\nUK Innovation Survey 2013 – First findings report\nThe majority of the survey questions are concerned with innovation through new and\nimproved products and processes (technological innovation) and with the investments that\ndevelop and i"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 189,
+          "score": 12.485174343403424,
+          "similarity": 12.485174343403424,
+          "text": "6 per cent) of businesses described as broader innovator.\nThere was a significant increase in the numbers citing ‘replacing outdated products or\nprocesses’ which was the second most frequently mentioned factor driving innovation\n(rated ‘high’ by 31 per cen"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 124,
+          "score": 12.302473158600257,
+          "similarity": 12.302473158600257,
+          "text": "ew methods of\norganising work responsibilities and changes to marketing concepts or strategies remained\nthe same with 18 and 16 per cent, respectively. There was no difference in the take up of\nchanges to marketing concepts or strategies between SMEs and l"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 51,
+          "score": 12.01018722135505,
+          "similarity": 12.01018722135505,
+          "text": " or in the economy as a\nwhole. These include the levels of effort employed (measured through resources allocated\nto innovation) and of achievement (the introduction of new or improved products and\nprocesses). This section reports on the types and levels of"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 123,
+          "score": 10.469345810335842,
+          "similarity": 10.469345810335842,
+          "text": "8\nNew method of organising external relationships 8 10 8\nChanges to marketing concepts or strategies 16 16 16\n* = Unweighted base = 14,487\nThe proportions of businesses that reported the implementation of new methods of\norganising work responsibilities and"
+        }
+      ]
+    },
+    {
+      "chunk_index": 63,
+      "question_type": "direct",
+      "question": "What percentage of firms are classified as 'Wider innovator' according to the chunk?",
+      "answer": "31%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 70,
+          "score": 12.892474316317289,
+          "similarity": 12.892474316317289,
+          "text": "ader innovator. The businesses\nclassed as a wider innovator are those that have engaged in the activity described in\npoint 3 given above.\nThe results, given in Table 1 show notable improvements on most of the innovation\nactivities that businesses had engag"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 77,
+          "score": 11.261857473109325,
+          "similarity": 11.261857473109325,
+          "text": "he\nshare of large firms from 44 per cent in the 2011 survey.\nThere was also an increase on the wider innovator indicator (firms engaging in wider/non-\ntechnical innovations, described in point 3 above) from 31 per cent in the 2011 survey to\n37 per cent giv"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 74,
+          "score": 11.031672407422729,
+          "similarity": 11.031672407422729,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 4,
+          "chunk_index": 69,
+          "score": 10.053825373391081,
+          "similarity": 10.053825373391081,
+          "text": "ts 1 to 3 given above is defined as being ‘innovation active’.\nFor the purpose of this report, a business that has engaged in any of the activities\ndescribed in points 1 to 4 given above is defined as a broader innovator. The businesses\nclassed as a wider "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 75,
+          "score": 9.74481927724517,
+          "similarity": 9.74481927724517,
+          "text": "d between large firms and SMEs in the 2011 survey.\nIn line with the increase in the proportion of innovation active businesses, the number of\nfirms defined as ‘broader innovator’ also increased to 46 per cent from 39 per cent in the\n2011 survey. Interestin"
+        }
+      ]
+    },
+    {
+      "chunk_index": 63,
+      "question_type": "inference",
+      "question": "Based on the data, which type of innovation is more common: product innovation or process innovation?",
+      "answer": "Product innovation is more common than process innovation.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 113,
+          "score": 16.255816386773308,
+          "similarity": 16.255816386773308,
+          "text": "et introduction of\ninnovations\n14% Unweighted base = 14,487\n3. Non-technological or wider forms of innovation\nInnovation is not just about the development or use of technology or other forms of product\n(goods and services) and process change. There are als"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 252,
+          "score": 15.784629197371403,
+          "similarity": 15.784629197371403,
+          "text": "r National Statistics\n(ONS).\nThe UK Innovation Survey is part of a wider Community Innovation Survey (CIS) covering\nEU countries. The survey is based on a core questionnaire developed by the European\nCommission (Eurostat) and Member States. This is the eig"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 19,
+          "score": 15.387817464781458,
+          "similarity": 15.387817464781458,
+          "text": "\nwhich is the second survey using a sample based on the Standard Industrial Classification\n2007 (SIC 2007). This enables a more consistent comparison with the 2011 survey data\nin the time series. The survey is mainly postal but almost two fifths (39 per ce"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 31,
+          "score": 14.767717258500962,
+          "similarity": 14.767717258500962,
+          "text": "ey also used a sampling format based on SIC 2007\nwhich is an EU legislative requirement regarding the collection of innovation statistics.\nSimilarly, the sample selection was conducted by ONS and it followed the same sampling\nmethodology as the 2011 survey"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 64,
+          "score": 14.746127760181263,
+          "similarity": 14.746127760181263,
+          "text": "7 24 26\nAbandoned activities 4 6 4\nOn-going activities 7 9 7\nBoth product AND process innovator 7 13 8\nEither product OR process innovator 22 28 22\n* = Unweighted base = 14,487\n5 As in the 2011 UKIS, the questions in Section C ‘Context for Innovation’ of t"
+        }
+      ]
+    },
+    {
+      "chunk_index": 63,
+      "question_type": "paraphrased",
+      "question": "What proportion of companies engage in broader innovation activities as shown in the data?",
+      "answer": "31%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 75,
+          "score": 14.48126165112544,
+          "similarity": 14.48126165112544,
+          "text": "d between large firms and SMEs in the 2011 survey.\nIn line with the increase in the proportion of innovation active businesses, the number of\nfirms defined as ‘broader innovator’ also increased to 46 per cent from 39 per cent in the\n2011 survey. Interestin"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 143,
+          "score": 14.342281149192065,
+          "similarity": 14.342281149192065,
+          "text": "cquisition of external knowledge or machinery and equipment linked to\ninnovation activities.\n11\nUK Innovation Survey 2013 – First findings report\nAs shown in Figure 4, the most frequently mentioned partners of businesses with co-\noperation agreements were "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 151,
+          "score": 13.472172371442857,
+          "similarity": 13.472172371442857,
+          "text": "of the extent to which businesses use external resources in\ntheir innovation activities. It is important to know how far enterprises engage with external\nsources and the relative importance of technology and other innovation-related knowledge\nand informati"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 188,
+          "score": 12.920101420256069,
+          "similarity": 12.920101420256069,
+          "text": " Table 4 gives the\nproportion of businesses that had rated ‘high’ in each of the innovation factors presented\nto them. Quality enhancement was again the most motivating factor, rated high by over a\nthird (36 per cent) of businesses described as broader inn"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 69,
+          "score": 12.762753914056717,
+          "similarity": 12.762753914056717,
+          "text": "ts 1 to 3 given above is defined as being ‘innovation active’.\nFor the purpose of this report, a business that has engaged in any of the activities\ndescribed in points 1 to 4 given above is defined as a broader innovator. The businesses\nclassed as a wider "
+        }
+      ]
+    },
+    {
+      "chunk_index": 64,
+      "question_type": "direct",
+      "question": "How many ongoing activities are reported in the chunk?",
+      "answer": "7",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 40,
+          "score": 9.056284111065285,
+          "similarity": 9.056284111065285,
+          "text": "al to this strategy will be a roadmap of how the government’s long-\nterm commitment on science capital will deliver the research and innovation infrastructure.\nThrough the harmonised questions in CIS, the UK Innovation survey data are also\ncomparable with "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 53,
+          "score": 8.360009738229595,
+          "similarity": 8.360009738229595,
+          "text": "in 2011.\nThe definition of innovation activity4 here includes any of the activities described below\nthat enterprises were engaged in during the survey period. These activities are as follows:\n1. Introduction of a new or significantly improved product (good"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 151,
+          "score": 8.245980359466097,
+          "similarity": 8.245980359466097,
+          "text": "of the extent to which businesses use external resources in\ntheir innovation activities. It is important to know how far enterprises engage with external\nsources and the relative importance of technology and other innovation-related knowledge\nand informati"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 70,
+          "score": 7.815810180745914,
+          "similarity": 7.815810180745914,
+          "text": "ader innovator. The businesses\nclassed as a wider innovator are those that have engaged in the activity described in\npoint 3 given above.\nThe results, given in Table 1 show notable improvements on most of the innovation\nactivities that businesses had engag"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 96,
+          "score": 7.674720855424073,
+          "similarity": 7.674720855424073,
+          "text": "The proportions in other categories reported in Figure 1 remained broadly\nunchanged, except for a slight increase in the category of ‘training for innovative activities’\nwhich went up from 12 per cent in the 2011 survey to 14 per cent.\n7 The proportions re"
+        }
+      ]
+    },
+    {
+      "chunk_index": 64,
+      "question_type": "inference",
+      "question": "What is the total number of reported innovators, considering both product and process types?",
+      "answer": "15 (7 both product and process + 8 either product or process)",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 82,
+          "score": 13.08777431108841,
+          "similarity": 13.08777431108841,
+          "text": "than that of SMEs in both this and the 2011 surveys (44 per cent and 46 per\ncent, respectively).\nFurthermore, process innovation remained exactly the same. One in ten firms reported\nengaging in process innovations. Whilst the share of SMEs reporting engage"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 64,
+          "score": 12.546534148029995,
+          "similarity": 12.546534148029995,
+          "text": "7 24 26\nAbandoned activities 4 6 4\nOn-going activities 7 9 7\nBoth product AND process innovator 7 13 8\nEither product OR process innovator 22 28 22\n* = Unweighted base = 14,487\n5 As in the 2011 UKIS, the questions in Section C ‘Context for Innovation’ of t"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 113,
+          "score": 11.718444318718948,
+          "similarity": 11.718444318718948,
+          "text": "et introduction of\ninnovations\n14% Unweighted base = 14,487\n3. Non-technological or wider forms of innovation\nInnovation is not just about the development or use of technology or other forms of product\n(goods and services) and process change. There are als"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 61,
+          "score": 11.577438873464098,
+          "similarity": 11.577438873464098,
+          "text": "3 39\nProduct innovator 18 23 18\nof which (share with new-to-market products) 44 50 44\nProcess innovator 10 15 10\nof which (share with new-to-industry processes) 23 26 23\nAbandoned activities 4 5 4\nOn-going activities 15 19 15\nBoth product AND process innov"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 62,
+          "score": 10.32283045381593,
+          "similarity": 10.32283045381593,
+          "text": "activities 15 19 15\nBoth product AND process innovator 7 10 7\nEither product OR process innovator 21 28 22\n2011\nInnovation active 37 42 37\nInnovation active (old definition) 36 41 36\nBroader innovator 39 44 39\nWider innovator 31 35 31\nActivities 33 38 33\nP"
+        }
+      ]
+    },
+    {
+      "chunk_index": 64,
+      "question_type": "paraphrased",
+      "question": "What count is given for discontinued tasks in the data?",
+      "answer": "4",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 69,
+          "score": 10.9117848128938,
+          "similarity": 10.9117848128938,
+          "text": "ts 1 to 3 given above is defined as being ‘innovation active’.\nFor the purpose of this report, a business that has engaged in any of the activities\ndescribed in points 1 to 4 given above is defined as a broader innovator. The businesses\nclassed as a wider "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 68,
+          "score": 9.302797521703823,
+          "similarity": 9.302797521703823,
+          "text": "013 – First findings report\nFor the purpose of the UK Innovation Survey and in line with the European-wide\nCommunity Innovation Survey, a business that had engaged in any of the activities\ndescribed in points 1 to 3 given above is defined as being ‘innovat"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 230,
+          "score": 9.146107089940301,
+          "similarity": 9.146107089940301,
+          "text": "rs is 6,992\nin 2013; 5,744 in 2011; + = Unweighted base for non-innovators is 7,495 in 201; 8,598 in 2011.\n20\nUK Innovation Survey 2013 – First findings report\n13. Comparisons with the 2011, 2009 and 2007 UKIS Panel\ndata\nThe availability of panel data (bus"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 202,
+          "score": 8.547671615596832,
+          "similarity": 8.547671615596832,
+          "text": ", knowledge and market factors, were in constraining innovation activities. This question was not\nincluded in the 2013 survey and therefore, it is not possible to explore further what factors would be rated\nhigh as barriers to innovation.\n17\nUK Innovation "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 248,
+          "score": 8.360963874499088,
+          "similarity": 8.360963874499088,
+          "text": "e UKIS 2013 data later in the year.\nAs with previous surveys, it is expected that there would be a substantial body of further\nresearch using the survey results and publications in various forms over the next few\nyears. Data will be available for researche"
+        }
+      ]
+    },
+    {
+      "chunk_index": 74,
+      "question_type": "direct",
+      "question": "What percentage of large firms were classified as 'innovation active'?",
+      "answer": "50 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 74,
+          "score": 16.001737806473436,
+          "similarity": 16.001737806473436,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 73,
+          "score": 11.890807674807132,
+          "similarity": 11.890807674807132,
+          "text": "novation active’ (defined above) firms increased over\nthe survey period; 45 per cent of enterprises were found to be ‘innovation active’,\ncompared to 37 per cent of businesses in the 2011 survey. The share of large firms (those\nwith more than 250 employees"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 182,
+          "score": 11.048037923039129,
+          "similarity": 11.048037923039129,
+          "text": "2011\n8.2 Regional level differences\nFigure 7 shows the shares of innovation active businesses across the regions of the UK,\nagain compared with the 2011 data.\nThere were eight percentage points between the least and most ‘innovation active’ region.\nAlthoug"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 178,
+          "score": 10.690691969252688,
+          "similarity": 10.690691969252688,
+          "text": "vation\n8.1 Country level differences\nFigure 6 presents the shares of innovation active businesses across the countries and\nshows a comparison with the 2011 data based on the innovation active definition. There\nwere seven percentage points between the least"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 75,
+          "score": 10.431963412309567,
+          "similarity": 10.431963412309567,
+          "text": "d between large firms and SMEs in the 2011 survey.\nIn line with the increase in the proportion of innovation active businesses, the number of\nfirms defined as ‘broader innovator’ also increased to 46 per cent from 39 per cent in the\n2011 survey. Interestin"
+        }
+      ]
+    },
+    {
+      "chunk_index": 74,
+      "question_type": "inference",
+      "question": "How did the innovation activity of large firms compare to that of small and medium enterprises?",
+      "answer": "Large firms had a higher rate of innovation activity than SMEs.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 74,
+          "score": 23.141029522010488,
+          "similarity": 23.141029522010488,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 160,
+          "score": 18.007830343182775,
+          "similarity": 18.007830343182775,
+          "text": "e per\ncent. The proportion was the same among large and small firms. The 2011 survey showed\nthat this source was much more popular among large firms (15 per cent, compared to\neight per cent of SMEs).\nTable 3: Sources of information (% of all firms with som"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 59,
+          "score": 14.574040426010374,
+          "similarity": 14.574040426010374,
+          "text": "rnal knowledge or machinery and equipment linked to innovation activities5.\nTable 1: Enterprises engaging in innovation activity, by size and type of activity,\n2010-2012*\nPer cent\nType of activity Size of enterprise\n10-250 250+ All\nemployees employees (10+"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 151,
+          "score": 14.17289553896936,
+          "similarity": 14.17289553896936,
+          "text": "of the extent to which businesses use external resources in\ntheir innovation activities. It is important to know how far enterprises engage with external\nsources and the relative importance of technology and other innovation-related knowledge\nand informati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 76,
+          "score": 13.506213371186101,
+          "similarity": 13.506213371186101,
+          "text": "nt from 39 per cent in the\n2011 survey. Interestingly, the share of SMEs in this category was higher than that of the\nlarge firms: 46 per cent of SMEs vs 41 per cent of large firms. There was a decline in the\nshare of large firms from 44 per cent in the 20"
+        }
+      ]
+    },
+    {
+      "chunk_index": 74,
+      "question_type": "paraphrased",
+      "question": "What was the proportion of big companies labeled as engaged in innovation compared to smaller and medium-sized companies?",
+      "answer": "50 per cent of large firms compared to 45 per cent of small and medium enterprises.",
+      "gold_rank": 4,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 78,
+          "score": 14.357599173119176,
+          "similarity": 14.357599173119176,
+          "text": " 31 per cent in the 2011 survey to\n37 per cent given above in Table 1. The difference in proportions of SMEs and large\nbusiness was smaller in this survey period than the previous one; 37 per cent of SMEs\nreported in engaging in wider innovations, compared"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 187,
+          "score": 13.213955761542667,
+          "similarity": 13.213955761542667,
+          "text": "13 and 12,114 in 2011\n9. Factors driving innovation\nBusinesses defined as ‘broader innovators’ were asked to rank a variety of drivers for\ninnovating on a scale from no impact to low, medium or high impact. Table 4 gives the\nproportion of businesses that h"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 45,
+          "score": 13.04559096309015,
+          "similarity": 13.04559096309015,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 74,
+          "score": 12.666316431534137,
+          "similarity": 12.666316431534137,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 5,
+          "chunk_index": 202,
+          "score": 12.31411550759344,
+          "similarity": 12.31411550759344,
+          "text": ", knowledge and market factors, were in constraining innovation activities. This question was not\nincluded in the 2013 survey and therefore, it is not possible to explore further what factors would be rated\nhigh as barriers to innovation.\n17\nUK Innovation "
+        }
+      ]
+    },
+    {
+      "chunk_index": 76,
+      "question_type": "direct",
+      "question": "What percentage of SMEs fell into the category mentioned in the 2011 survey?",
+      "answer": "46 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 76,
+          "score": 15.046998410989856,
+          "similarity": 15.046998410989856,
+          "text": "nt from 39 per cent in the\n2011 survey. Interestingly, the share of SMEs in this category was higher than that of the\nlarge firms: 46 per cent of SMEs vs 41 per cent of large firms. There was a decline in the\nshare of large firms from 44 per cent in the 20"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 225,
+          "score": 13.44736518733846,
+          "similarity": 13.44736518733846,
+          "text": "ere were notable increases in employment of all six of the\nlisted skills. The increase was highest for the ‘graphic artists/advertising’ category which\nwent up from 15 per cent in the 2011 survey to 27 per cent. The skills category of\n‘mathematics/statisti"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 45,
+          "score": 12.637323224748773,
+          "similarity": 12.637323224748773,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 226,
+          "score": 12.567620174919934,
+          "similarity": 12.567620174919934,
+          "text": "cent. The skills category of\n‘mathematics/statistics’ showed an increase of five percentage points, up from five to ten\nper cent. Non-innovators increased their shares in all six skills categories whilst the shares\nfor broader innovators remained broadly t"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 120,
+          "score": 12.526599806465816,
+          "similarity": 12.526599806465816,
+          "text": "ared to SMEs (21 per cent). The least frequently\nreported wider innovation was the implementation of new methods of organising external\nrelationships, which was mentioned by only eight per cent of businesses over both survey\nperiods, with SMEs having a low"
+        }
+      ]
+    },
+    {
+      "chunk_index": 76,
+      "question_type": "inference",
+      "question": "Based on the percentages given, which group had a larger share in the category, SMEs or large firms?",
+      "answer": "SMEs had a larger share",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 76,
+          "score": 21.6667094190986,
+          "similarity": 21.6667094190986,
+          "text": "nt from 39 per cent in the\n2011 survey. Interestingly, the share of SMEs in this category was higher than that of the\nlarge firms: 46 per cent of SMEs vs 41 per cent of large firms. There was a decline in the\nshare of large firms from 44 per cent in the 20"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 30,
+          "score": 18.36906724157596,
+          "similarity": 18.36906724157596,
+          "text": "e in the Inter-Departmental Business Registration (IDBR). They were not\nweighted by factors which would give more weight to larger firms, such as employment or\nturnover.\nAs in the 2011 survey, the 2013 survey also used a sampling format based on SIC 2007\nw"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 125,
+          "score": 16.028404865638127,
+          "similarity": 16.028404865638127,
+          "text": "arketing concepts or strategies between SMEs and large firms.\n4. Markets and exports\n4.1 Geographical markets\nThe businesses surveyed were asked which geographical markets they had operated in.\nAs Figure 3 shows, the regional markets were still the most do"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 83,
+          "score": 15.375678746997387,
+          "similarity": 15.375678746997387,
+          "text": "vations. Whilst the share of SMEs reporting engagement in\nprocess innovations stayed the same over two survey periods, the share of large firms\nshowed a slight fall from 17 per cent in the 2011 survey to 15 per cent.\n5\nUK Innovation Survey 2013 – First fin"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 70,
+          "score": 14.811589073910342,
+          "similarity": 14.811589073910342,
+          "text": "ader innovator. The businesses\nclassed as a wider innovator are those that have engaged in the activity described in\npoint 3 given above.\nThe results, given in Table 1 show notable improvements on most of the innovation\nactivities that businesses had engag"
+        }
+      ]
+    },
+    {
+      "chunk_index": 76,
+      "question_type": "paraphrased",
+      "question": "According to the data, what proportion of small and medium-sized enterprises was recorded in the specified category?",
+      "answer": "46 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 74,
+          "score": 18.503535520236078,
+          "similarity": 18.503535520236078,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 159,
+          "score": 15.940473552315325,
+          "similarity": 15.940473552315325,
+          "text": "ional sources. The most\nnotable decrease in firms’ rating for sources of information was in the category of ‘scientific\njournals and trade/technical publications’, which was down from eight per cent to three per\ncent. The proportion was the same among larg"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 160,
+          "score": 14.837159970291978,
+          "similarity": 14.837159970291978,
+          "text": "e per\ncent. The proportion was the same among large and small firms. The 2011 survey showed\nthat this source was much more popular among large firms (15 per cent, compared to\neight per cent of SMEs).\nTable 3: Sources of information (% of all firms with som"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 259,
+          "score": 13.251177064712184,
+          "similarity": 13.251177064712184,
+          "text": "of\nthose in the IDBR. On average each respondent represents 12 enterprises in the\npopulation.\n24\n© Crown copyright 2014\nYou may re-use this information (not including logos) free of charge in any format or medium, under the terms of the\nOpen Government Lic"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 225,
+          "score": 12.977840771269419,
+          "similarity": 12.977840771269419,
+          "text": "ere were notable increases in employment of all six of the\nlisted skills. The increase was highest for the ‘graphic artists/advertising’ category which\nwent up from 15 per cent in the 2011 survey to 27 per cent. The skills category of\n‘mathematics/statisti"
+        }
+      ]
+    },
+    {
+      "chunk_index": 78,
+      "question_type": "direct",
+      "question": "What percentage of SMEs reported engaging in wider innovations in the survey period mentioned?",
+      "answer": "37 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 78,
+          "score": 24.913905927604922,
+          "similarity": 24.913905927604922,
+          "text": " 31 per cent in the 2011 survey to\n37 per cent given above in Table 1. The difference in proportions of SMEs and large\nbusiness was smaller in this survey period than the previous one; 37 per cent of SMEs\nreported in engaging in wider innovations, compared"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 82,
+          "score": 18.786432561133466,
+          "similarity": 18.786432561133466,
+          "text": "than that of SMEs in both this and the 2011 surveys (44 per cent and 46 per\ncent, respectively).\nFurthermore, process innovation remained exactly the same. One in ten firms reported\nengaging in process innovations. Whilst the share of SMEs reporting engage"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 79,
+          "score": 18.408018527624105,
+          "similarity": 18.408018527624105,
+          "text": "eported in engaging in wider innovations, compared to 39 per cent of large firms. This\ncompares to 31 per cent of SMEs and 35 per cent of large businesses in the 2011 survey.\nProduct innovation remained broadly unchanged, with 18 per cent of firms reportin"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 77,
+          "score": 17.48820310565569,
+          "similarity": 17.48820310565569,
+          "text": "he\nshare of large firms from 44 per cent in the 2011 survey.\nThere was also an increase on the wider innovator indicator (firms engaging in wider/non-\ntechnical innovations, described in point 3 above) from 31 per cent in the 2011 survey to\n37 per cent giv"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 120,
+          "score": 15.831838195402808,
+          "similarity": 15.831838195402808,
+          "text": "ared to SMEs (21 per cent). The least frequently\nreported wider innovation was the implementation of new methods of organising external\nrelationships, which was mentioned by only eight per cent of businesses over both survey\nperiods, with SMEs having a low"
+        }
+      ]
+    },
+    {
+      "chunk_index": 78,
+      "question_type": "inference",
+      "question": "How did the difference in proportions of SMEs and large businesses engaging in innovations change compared to the previous survey?",
+      "answer": "The difference was smaller in this survey period than the previous one.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 78,
+          "score": 34.090716842952986,
+          "similarity": 34.090716842952986,
+          "text": " 31 per cent in the 2011 survey to\n37 per cent given above in Table 1. The difference in proportions of SMEs and large\nbusiness was smaller in this survey period than the previous one; 37 per cent of SMEs\nreported in engaging in wider innovations, compared"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 79,
+          "score": 24.511938195084177,
+          "similarity": 24.511938195084177,
+          "text": "eported in engaging in wider innovations, compared to 39 per cent of large firms. This\ncompares to 31 per cent of SMEs and 35 per cent of large businesses in the 2011 survey.\nProduct innovation remained broadly unchanged, with 18 per cent of firms reportin"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 74,
+          "score": 20.095783322793018,
+          "similarity": 20.095783322793018,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 4,
+          "chunk_index": 190,
+          "score": 20.037830390763915,
+          "similarity": 20.037830390763915,
+          "text": "tor driving innovation\n(rated ‘high’ by 31 per cent). This factor was reported ‘high’ by 17 per cent in the 2011\nsurvey. As in the previous survey, there was a notable difference between the factors\nmotivating large firms and SMEs. For example, ‘reducing c"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 81,
+          "score": 19.93737427446893,
+          "similarity": 19.93737427446893,
+          "text": "over this survey\nperiod, as compared to 46 per cent in the previous survey. The share of large firms having\nproducts new to the market stayed exactly the same at 50 per cent. However, this share\nwas higher than that of SMEs in both this and the 2011 survey"
+        }
+      ]
+    },
+    {
+      "chunk_index": 78,
+      "question_type": "paraphrased",
+      "question": "According to the given data, what fraction of small and medium enterprises indicated participation in broader innovation activities?",
+      "answer": "37 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 74,
+          "score": 16.901760134256712,
+          "similarity": 16.901760134256712,
+          "text": "of large firms (those\nwith more than 250 employees) classified as ‘innovation active’ was higher than small and\nmedium enterprises (SMEs): 50 per cent vs 45 per cent of SMEs. The same difference\nalso existed between large firms and SMEs in the 2011 survey."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 69,
+          "score": 14.060270262957346,
+          "similarity": 14.060270262957346,
+          "text": "ts 1 to 3 given above is defined as being ‘innovation active’.\nFor the purpose of this report, a business that has engaged in any of the activities\ndescribed in points 1 to 4 given above is defined as a broader innovator. The businesses\nclassed as a wider "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 235,
+          "score": 13.133619662866767,
+          "similarity": 13.133619662866767,
+          "text": "anel data results with the 2011 general survey data.\nFigure 9: Key innovation indicators of the UKIS Panel data 2007, 2009, 2011 and\n2013\nBroader Innovator\nInnovation active (OLD\ndefinition)\nActivities\nInnovation active (NEW\ndefinition)\nWider Innovator\n200"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 68,
+          "score": 12.532368194866116,
+          "similarity": 12.532368194866116,
+          "text": "013 – First findings report\nFor the purpose of the UK Innovation Survey and in line with the European-wide\nCommunity Innovation Survey, a business that had engaged in any of the activities\ndescribed in points 1 to 3 given above is defined as being ‘innovat"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 70,
+          "score": 12.178752681379716,
+          "similarity": 12.178752681379716,
+          "text": "ader innovator. The businesses\nclassed as a wider innovator are those that have engaged in the activity described in\npoint 3 given above.\nThe results, given in Table 1 show notable improvements on most of the innovation\nactivities that businesses had engag"
+        }
+      ]
+    },
+    {
+      "chunk_index": 87,
+      "question_type": "direct",
+      "question": "What percentage of respondents said their goods were developed mainly by their own business?",
+      "answer": "41 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 87,
+          "score": 40.708945587543504,
+          "similarity": 40.708945587543504,
+          "text": "oup, 41 per cent of respondents said their ‘goods’ were developed mainly\nby their own business (50 per cent said their ‘services’ were developed mainly within the\nbusiness). These figures were broadly in line with the previous survey’s findings in which\n43"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 86,
+          "score": 40.302316231831036,
+          "similarity": 40.302316231831036,
+          "text": "to the\nindustry.\nIn most businesses7, both goods and services were mainly developed within the business.\nWhen asked whether the goods or services were developed mainly by their own business\nor enterprise group, 41 per cent of respondents said their ‘goods’"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 89,
+          "score": 29.99870696417157,
+          "similarity": 29.99870696417157,
+          "text": "tnership with other\nbusinesses/organisations, 17 per cent said their goods were developed mainly in\npartnership with other businesses. The corresponding figure for services was 14 per cent.\nOne in ten businesses said their goods were developed mainly by ot"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 90,
+          "score": 21.887464012957274,
+          "similarity": 21.887464012957274,
+          "text": "esses said their goods were developed mainly by other businesses or\norganisations. The corresponding figure for services was also ten per cent. These figures\nwere broadly in line with those reported in the 2011 survey.\nAlthough the findings showed a simila"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 88,
+          "score": 20.257216055253878,
+          "similarity": 20.257216055253878,
+          "text": "ne with the previous survey’s findings in which\n43 per cent said ‘goods’ and 49 per cent said ‘service innovations’ were developed within\ntheir business.\nWhen asked about developing goods or services in partnership with other\nbusinesses/organisations, 17 p"
+        }
+      ]
+    },
+    {
+      "chunk_index": 87,
+      "question_type": "inference",
+      "question": "Is it more common for respondents to develop their services internally compared to their goods?",
+      "answer": "Yes, 50 per cent said their services were developed mainly within the business, which is higher than the 41 per cent for goods.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 86,
+          "score": 18.70656836656747,
+          "similarity": 18.70656836656747,
+          "text": "to the\nindustry.\nIn most businesses7, both goods and services were mainly developed within the business.\nWhen asked whether the goods or services were developed mainly by their own business\nor enterprise group, 41 per cent of respondents said their ‘goods’"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 87,
+          "score": 16.48300850779733,
+          "similarity": 16.48300850779733,
+          "text": "oup, 41 per cent of respondents said their ‘goods’ were developed mainly\nby their own business (50 per cent said their ‘services’ were developed mainly within the\nbusiness). These figures were broadly in line with the previous survey’s findings in which\n43"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 89,
+          "score": 13.873410783263823,
+          "similarity": 13.873410783263823,
+          "text": "tnership with other\nbusinesses/organisations, 17 per cent said their goods were developed mainly in\npartnership with other businesses. The corresponding figure for services was 14 per cent.\nOne in ten businesses said their goods were developed mainly by ot"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 35,
+          "score": 13.388705232940362,
+          "similarity": 13.388705232940362,
+          "text": ". It provides the empirical evidence to support\npolicy measures.\nAlthough the sample size of the panel data (respondents also common to the 2011, 2009\nand 2007 surveys) is significantly reduced to just over 1,250 businesses, the panel\nelement in the survey"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 88,
+          "score": 11.083128220330854,
+          "similarity": 11.083128220330854,
+          "text": "ne with the previous survey’s findings in which\n43 per cent said ‘goods’ and 49 per cent said ‘service innovations’ were developed within\ntheir business.\nWhen asked about developing goods or services in partnership with other\nbusinesses/organisations, 17 p"
+        }
+      ]
+    },
+    {
+      "chunk_index": 87,
+      "question_type": "paraphrased",
+      "question": "According to the data, what portion of participants indicated that their products were primarily created inside their company?",
+      "answer": "41 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 87,
+          "score": 12.43044403224301,
+          "similarity": 12.43044403224301,
+          "text": "oup, 41 per cent of respondents said their ‘goods’ were developed mainly\nby their own business (50 per cent said their ‘services’ were developed mainly within the\nbusiness). These figures were broadly in line with the previous survey’s findings in which\n43"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 11.643686946030227,
+          "similarity": 11.643686946030227,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 86,
+          "score": 11.526943678509296,
+          "similarity": 11.526943678509296,
+          "text": "to the\nindustry.\nIn most businesses7, both goods and services were mainly developed within the business.\nWhen asked whether the goods or services were developed mainly by their own business\nor enterprise group, 41 per cent of respondents said their ‘goods’"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 130,
+          "score": 11.203542691624138,
+          "similarity": 11.203542691624138,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 131,
+          "score": 10.465278376130051,
+          "similarity": 10.465278376130051,
+          "text": "l, 90 per cent answered the question about the geographical\nmarkets. Of these valid responses, only 64 per cent went on to provide estimates. Over\nhalf (57 per cent) reported that their largest markets were ‘UK regional’ (within\napproximately 100 miles of "
+        }
+      ]
+    },
+    {
+      "chunk_index": 95,
+      "question_type": "direct",
+      "question": "What percentage of acquisition was for computer software according to the chunk?",
+      "answer": "23 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 95,
+          "score": 16.819832312398283,
+          "similarity": 16.819832312398283,
+          "text": "acquisition of computer\nsoftware and hardware (23 per cent and 20 per cent, respectively) and these proportions\nwent up from 19 per cent of computer software and 16 per cent of hardware in the last\nsurvey. The proportions in other categories reported in Fi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 94,
+          "score": 13.412106944221089,
+          "similarity": 13.412106944221089,
+          "text": "inly postal but boosted with\ntelephone interviews). This would mean one can expect a more consistent comparison\nover the two survey periods.\nAs shown in Figure 1, the most commonly reported activities were acquisition of computer\nsoftware and hardware (23 "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 46,
+          "score": 10.258712165292668,
+          "similarity": 10.258712165292668,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 98,
+          "score": 10.149667587158408,
+          "similarity": 10.149667587158408,
+          "text": "As a result, 41 per cent and 50 per\ncent represent ‘most’ responses.\n6\nUK Innovation Survey 2013 – First findings report\nFigure 1: Innovation activities invested in (all enterprises)\nComputer software\nComputer hardware\nInternal R&D\nTraining for innovative "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 45,
+          "score": 9.483820674635892,
+          "similarity": 9.483820674635892,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        }
+      ]
+    },
+    {
+      "chunk_index": 95,
+      "question_type": "inference",
+      "question": "How did the acquisition rates for computer software and hardware change compared to the last survey?",
+      "answer": "They increased from 19 per cent to 23 per cent for software and from 16 per cent to 20 per cent for hardware.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 95,
+          "score": 27.722351108271276,
+          "similarity": 27.722351108271276,
+          "text": "acquisition of computer\nsoftware and hardware (23 per cent and 20 per cent, respectively) and these proportions\nwent up from 19 per cent of computer software and 16 per cent of hardware in the last\nsurvey. The proportions in other categories reported in Fi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 94,
+          "score": 20.089010233204775,
+          "similarity": 20.089010233204775,
+          "text": "inly postal but boosted with\ntelephone interviews). This would mean one can expect a more consistent comparison\nover the two survey periods.\nAs shown in Figure 1, the most commonly reported activities were acquisition of computer\nsoftware and hardware (23 "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 98,
+          "score": 16.435729240324314,
+          "similarity": 16.435729240324314,
+          "text": "As a result, 41 per cent and 50 per\ncent represent ‘most’ responses.\n6\nUK Innovation Survey 2013 – First findings report\nFigure 1: Innovation activities invested in (all enterprises)\nComputer software\nComputer hardware\nInternal R&D\nTraining for innovative "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 107,
+          "score": 14.82563442919734,
+          "similarity": 14.82563442919734,
+          "text": "\nUK Innovation Survey 2013 – First findings report\nR&D’ (40 per cent, compared to 35 per cent in the 2011 survey), followed by ‘acquisition of\ncapital’ (i.e., advanced machinery, equipment and software with 25 per cent, compared to\n30 per cent in the previ"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 108,
+          "score": 12.977141030771653,
+          "similarity": 12.977141030771653,
+          "text": " 25 per cent, compared to\n30 per cent in the previous survey) and acquisition of external R&D (with 14 per cent,\ncompared to 24 per cent in the 2011 survey). The category for the ‘market introduction of\ninnovations’ went up from four per cent in the 2011 s"
+        }
+      ]
+    },
+    {
+      "chunk_index": 95,
+      "question_type": "paraphrased",
+      "question": "What portion of purchases was made for computer programs and machines as stated in the text?",
+      "answer": "23 per cent for software and 20 per cent for hardware",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 95,
+          "score": 12.885499767216745,
+          "similarity": 12.885499767216745,
+          "text": "acquisition of computer\nsoftware and hardware (23 per cent and 20 per cent, respectively) and these proportions\nwent up from 19 per cent of computer software and 16 per cent of hardware in the last\nsurvey. The proportions in other categories reported in Fi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 12.688668875313065,
+          "similarity": 12.688668875313065,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 46,
+          "score": 11.201592559121934,
+          "similarity": 11.201592559121934,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 202,
+          "score": 10.355819942868626,
+          "similarity": 10.355819942868626,
+          "text": ", knowledge and market factors, were in constraining innovation activities. This question was not\nincluded in the 2013 survey and therefore, it is not possible to explore further what factors would be rated\nhigh as barriers to innovation.\n17\nUK Innovation "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 94,
+          "score": 10.239436732780097,
+          "similarity": 10.239436732780097,
+          "text": "inly postal but boosted with\ntelephone interviews). This would mean one can expect a more consistent comparison\nover the two survey periods.\nAs shown in Figure 1, the most commonly reported activities were acquisition of computer\nsoftware and hardware (23 "
+        }
+      ]
+    },
+    {
+      "chunk_index": 133,
+      "question_type": "direct",
+      "question": "What percentage of businesses provided an estimate of exports for the year 2012?",
+      "answer": "16 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 133,
+          "score": 28.558797529460225,
+          "similarity": 28.558797529460225,
+          "text": "y.\n4.3 Exports\nOnly 16 per cent of businesses provided an estimate of exports for the year 2012. This\ncompares to 19 per cent in the 2011 survey. Looking back at the survey series,\nproportions reporting estimates of exports have been steadily decreasing: 3"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 134,
+          "score": 16.46424142530577,
+          "similarity": 16.46424142530577,
+          "text": "imates of exports have been steadily decreasing: 30 per cent of\nrespondents gave an estimate in the 2005 survey. However, the trends indicate that the\nmajority of exporters engaged in some form of innovation behaviour.\n10\nUK Innovation Survey 2013 – First "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 102,
+          "score": 15.301441163851555,
+          "similarity": 15.301441163851555,
+          "text": "bout businesses’ innovation\nactivities referred to a three-year period (1 January 2010 to 31 December 2012), the\nestimates required for the amount of expenditure were for the year 2012 only. In this\nsurvey, the reference year for estimates was marked clear"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 103,
+          "score": 14.5776292486283,
+          "similarity": 14.5776292486283,
+          "text": " the reference year for estimates was marked clearly and the instruction provided\nemphasised that estimates were asked for ‘2012 only’ in capital letters. The wording of the\nquestions in previous surveys did not make the point about the reference period eq"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 104,
+          "score": 14.105233038803116,
+          "similarity": 14.105233038803116,
+          "text": "d not make the point about the reference period equally\nclear.\nThe results of this survey showed that the overall innovation expenditure provided for the\nyear 2012 was significantly lower than the amount reported in the last survey. It is highly\nlikely tha"
+        }
+      ]
+    },
+    {
+      "chunk_index": 133,
+      "question_type": "inference",
+      "question": "Has the proportion of businesses reporting export estimates increased or decreased over the survey series?",
+      "answer": "Decreased",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 133,
+          "score": 18.523171282024798,
+          "similarity": 18.523171282024798,
+          "text": "y.\n4.3 Exports\nOnly 16 per cent of businesses provided an estimate of exports for the year 2012. This\ncompares to 19 per cent in the 2011 survey. Looking back at the survey series,\nproportions reporting estimates of exports have been steadily decreasing: 3"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 75,
+          "score": 14.394365908966108,
+          "similarity": 14.394365908966108,
+          "text": "d between large firms and SMEs in the 2011 survey.\nIn line with the increase in the proportion of innovation active businesses, the number of\nfirms defined as ‘broader innovator’ also increased to 46 per cent from 39 per cent in the\n2011 survey. Interestin"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 73,
+          "score": 13.658709703174456,
+          "similarity": 13.658709703174456,
+          "text": "novation active’ (defined above) firms increased over\nthe survey period; 45 per cent of enterprises were found to be ‘innovation active’,\ncompared to 37 per cent of businesses in the 2011 survey. The share of large firms (those\nwith more than 250 employees"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 102,
+          "score": 12.470147580203706,
+          "similarity": 12.470147580203706,
+          "text": "bout businesses’ innovation\nactivities referred to a three-year period (1 January 2010 to 31 December 2012), the\nestimates required for the amount of expenditure were for the year 2012 only. In this\nsurvey, the reference year for estimates was marked clear"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 83,
+          "score": 12.469832870269036,
+          "similarity": 12.469832870269036,
+          "text": "vations. Whilst the share of SMEs reporting engagement in\nprocess innovations stayed the same over two survey periods, the share of large firms\nshowed a slight fall from 17 per cent in the 2011 survey to 15 per cent.\n5\nUK Innovation Survey 2013 – First fin"
+        }
+      ]
+    },
+    {
+      "chunk_index": 133,
+      "question_type": "paraphrased",
+      "question": "In the 2012 report, what fraction of companies estimated their export figures?",
+      "answer": "16 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 87,
+          "score": 11.943181798216198,
+          "similarity": 11.943181798216198,
+          "text": "oup, 41 per cent of respondents said their ‘goods’ were developed mainly\nby their own business (50 per cent said their ‘services’ were developed mainly within the\nbusiness). These figures were broadly in line with the previous survey’s findings in which\n43"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 10.656120562208592,
+          "similarity": 10.656120562208592,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 130,
+          "score": 10.648040204285703,
+          "similarity": 10.648040204285703,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 90,
+          "score": 9.72500955730867,
+          "similarity": 9.72500955730867,
+          "text": "esses said their goods were developed mainly by other businesses or\norganisations. The corresponding figure for services was also ten per cent. These figures\nwere broadly in line with those reported in the 2011 survey.\nAlthough the findings showed a simila"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 158,
+          "score": 8.68706025775193,
+          "similarity": 8.68706025775193,
+          "text": "in their enterprise group) were rated as the most important source of information for\n12\nUK Innovation Survey 2013 – First findings report\ninnovation. Again, the least frequently cited sources were institutional sources. The most\nnotable decrease in firms’"
+        }
+      ]
+    },
+    {
+      "chunk_index": 155,
+      "question_type": "direct",
+      "question": "What are the sources of institutional research mentioned?",
+      "answer": "Public sector such as government research organisations and universities or private research institutes",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 155,
+          "score": 13.044150534318446,
+          "similarity": 13.044150534318446,
+          "text": "ch and development enterprises;\n• institutional: from the public sector such as government research organisations\nand universities or private research institutes; and\n• other sources: from conferences, trade fairs and exhibitions; scientific journals,\ntrad"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 158,
+          "score": 11.105675883394488,
+          "similarity": 11.105675883394488,
+          "text": "in their enterprise group) were rated as the most important source of information for\n12\nUK Innovation Survey 2013 – First findings report\ninnovation. Again, the least frequently cited sources were institutional sources. The most\nnotable decrease in firms’"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 157,
+          "score": 10.473492463256989,
+          "similarity": 10.473492463256989,
+          "text": "ces are given in Table 3.\nThe ranking of information sources has been fairly consistent throughout the history of the\nsurvey. Overall, market sources such as clients and customers and internal sources\n(within their enterprise group) were rated as the most "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 163,
+          "score": 9.473324659401507,
+          "similarity": 9.473324659401507,
+          "text": "r industry 11 17 11\nConsultants, commercial labs or private R&D institutes 8 10 8\nInstitutional\nUniversities or other higher education institutes 2 3 2\nGovernment or public research institutes 2 4 2\nOther sources\nTechnical, industry or service standards 9 "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 154,
+          "score": 9.456156306948515,
+          "similarity": 9.456156306948515,
+          "text": "ere:\n• internal: from within the enterprise itself or other enterprises within the enterprise\ngroup;\n• market: from suppliers, customers, clients, consultants, competitors, commercial\nlaboratories or research and development enterprises;\n• institutional: f"
+        }
+      ]
+    },
+    {
+      "chunk_index": 155,
+      "question_type": "inference",
+      "question": "Where might one find scientific knowledge outside of formal research institutions?",
+      "answer": "Conferences, trade fairs and exhibitions; scientific journals",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 155,
+          "score": 8.582535534159732,
+          "similarity": 8.582535534159732,
+          "text": "ch and development enterprises;\n• institutional: from the public sector such as government research organisations\nand universities or private research institutes; and\n• other sources: from conferences, trade fairs and exhibitions; scientific journals,\ntrad"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 140,
+          "score": 7.930587364658915,
+          "similarity": 7.930587364658915,
+          "text": "ublic sector\nCompetitors or other business in your industry\nConsultants, comm labs or priv R&D institutes\nUniversities or other higher education institutions\nGovernment or public research institutes\n0% 10% 20% 30% 40% 50% 60% 70%\nUnweighted base = 3,153\n9\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 58,
+          "score": 7.494614938230725,
+          "similarity": 7.494614938230725,
+          "text": "ficantly improved forms of organisation, business structures or\npractices and marketing concepts or strategies\n4. Activities in areas such as internal research and development, training, acquisition of\nexternal knowledge or machinery and equipment linked t"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 142,
+          "score": 7.494614938230725,
+          "similarity": 7.494614938230725,
+          "text": " 3) New and significantly improved forms of organisation,\nbusiness structures or practices and marketing concepts or strategies; 4) Activities in areas such as internal\nresearch and development, training, acquisition of external knowledge or machinery and "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 99,
+          "score": 7.175033739722404,
+          "similarity": 7.175033739722404,
+          "text": "ter hardware\nInternal R&D\nTraining for innovative activities\nChanges to marketing methods\nAll forms of design\nAdvanced machinery\nChanges to product or service design\nLaunch advertising\nMarket research\nExternal R&D\nAcquisition of external knowledge\n0% 5% 10"
+        }
+      ]
+    },
+    {
+      "chunk_index": 155,
+      "question_type": "paraphrased",
+      "question": "Which entities are identified as institutional providers of research?",
+      "answer": "Government research organisations, universities, or private research institutes",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 155,
+          "score": 10.072348453910074,
+          "similarity": 10.072348453910074,
+          "text": "ch and development enterprises;\n• institutional: from the public sector such as government research organisations\nand universities or private research institutes; and\n• other sources: from conferences, trade fairs and exhibitions; scientific journals,\ntrad"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 154,
+          "score": 7.782492327888561,
+          "similarity": 7.782492327888561,
+          "text": "ere:\n• internal: from within the enterprise itself or other enterprises within the enterprise\ngroup;\n• market: from suppliers, customers, clients, consultants, competitors, commercial\nlaboratories or research and development enterprises;\n• institutional: f"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 163,
+          "score": 6.756443961825554,
+          "similarity": 6.756443961825554,
+          "text": "r industry 11 17 11\nConsultants, commercial labs or private R&D institutes 8 10 8\nInstitutional\nUniversities or other higher education institutes 2 3 2\nGovernment or public research institutes 2 4 2\nOther sources\nTechnical, industry or service standards 9 "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 158,
+          "score": 6.43317192250149,
+          "similarity": 6.43317192250149,
+          "text": "in their enterprise group) were rated as the most important source of information for\n12\nUK Innovation Survey 2013 – First findings report\ninnovation. Again, the least frequently cited sources were institutional sources. The most\nnotable decrease in firms’"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 40,
+          "score": 6.2819502032310535,
+          "similarity": 6.2819502032310535,
+          "text": "al to this strategy will be a roadmap of how the government’s long-\nterm commitment on science capital will deliver the research and innovation infrastructure.\nThrough the harmonised questions in CIS, the UK Innovation survey data are also\ncomparable with "
+        }
+      ]
+    },
+    {
+      "chunk_index": 166,
+      "question_type": "direct",
+      "question": "What percentage of respondents reported having procurement contracts with domestic public sector organisations?",
+      "answer": "Around 15 per cent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 166,
+          "score": 40.4867540719801,
+          "similarity": 40.4867540719801,
+          "text": "sector organisations’ or\n‘overseas/non-domestic public sector organisations’. Around 15 per cent of respondents\nreported having procurement contracts to provide good or services for domestic public\nsector organisations. This compared to four per cent havin"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 165,
+          "score": 28.0148383822114,
+          "similarity": 28.0148383822114,
+          "text": " Unweighted base = 6,992\n6.1 Public sector procurement and innovation\nA new question was added which asked firms whether they had any procurement\ncontracts to provide goods or services for ‘domestic public sector organisations’ or\n‘overseas/non-domestic pu"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 167,
+          "score": 22.335026384159416,
+          "similarity": 22.335026384159416,
+          "text": "rganisations. This compared to four per cent having similar contracts to supply\noverseas/non-domestic public sector organisations.\n7. Innovation in sectors\nThe numbers of the ‘innovation active’ businesses across all industrial and commercial\nsectors are c"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 7,
+          "score": 13.849163384653757,
+          "similarity": 13.849163384653757,
+          "text": "formation ....................................................................................................... 12\n6.1 Public sector procurement and innovation ..................................................................... 13\n7. Innovation in sect"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 155,
+          "score": 9.91687422326713,
+          "similarity": 9.91687422326713,
+          "text": "ch and development enterprises;\n• institutional: from the public sector such as government research organisations\nand universities or private research institutes; and\n• other sources: from conferences, trade fairs and exhibitions; scientific journals,\ntrad"
+        }
+      ]
+    },
+    {
+      "chunk_index": 166,
+      "question_type": "inference",
+      "question": "Is it more common for respondents to have procurement contracts with domestic public sector bodies or with overseas or non-domestic public sector bodies?",
+      "answer": "It is more common with domestic public sector bodies",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 166,
+          "score": 53.37848245149498,
+          "similarity": 53.37848245149498,
+          "text": "sector organisations’ or\n‘overseas/non-domestic public sector organisations’. Around 15 per cent of respondents\nreported having procurement contracts to provide good or services for domestic public\nsector organisations. This compared to four per cent havin"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 165,
+          "score": 48.29679191419299,
+          "similarity": 48.29679191419299,
+          "text": " Unweighted base = 6,992\n6.1 Public sector procurement and innovation\nA new question was added which asked firms whether they had any procurement\ncontracts to provide goods or services for ‘domestic public sector organisations’ or\n‘overseas/non-domestic pu"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 167,
+          "score": 31.635977149159444,
+          "similarity": 31.635977149159444,
+          "text": "rganisations. This compared to four per cent having similar contracts to supply\noverseas/non-domestic public sector organisations.\n7. Innovation in sectors\nThe numbers of the ‘innovation active’ businesses across all industrial and commercial\nsectors are c"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 7,
+          "score": 21.603078363078335,
+          "similarity": 21.603078363078335,
+          "text": "formation ....................................................................................................... 12\n6.1 Public sector procurement and innovation ..................................................................... 13\n7. Innovation in sect"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 144,
+          "score": 17.60781363493379,
+          "similarity": 17.60781363493379,
+          "text": " of businesses with co-\noperation agreements were clients or customers from the private sector (61 per cent).\nThere was also a sizable proportion (31 per cent) of businesses that cited clients or\ncustomers from the public sector. The 2011 survey also repor"
+        }
+      ]
+    },
+    {
+      "chunk_index": 166,
+      "question_type": "paraphrased",
+      "question": "What proportion of participants indicated they hold contracts to supply goods or services to local government entities?",
+      "answer": "Around 15 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 165,
+          "score": 14.297048942534763,
+          "similarity": 14.297048942534763,
+          "text": " Unweighted base = 6,992\n6.1 Public sector procurement and innovation\nA new question was added which asked firms whether they had any procurement\ncontracts to provide goods or services for ‘domestic public sector organisations’ or\n‘overseas/non-domestic pu"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 214,
+          "score": 12.895485266948087,
+          "similarity": 12.895485266948087,
+          "text": "inesses about whether they had employed or brought in certain\nskills over the survey period.\nTable 6: Average proportion (%) of 2012 employees who hold a degree or higher*\nPer cent\nSize of e nterprise\n10-250 employees 250+ employees All (10+ employees)\nAll"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 209,
+          "score": 10.981935320426484,
+          "similarity": 10.981935320426484,
+          "text": "vantage (five per cent). There was a size effect of\nbusinesses for keeping products complex. Higher proportion of large firms rated\n‘complexity of goods or services’ (eight per cent), compared to six per cent of SMEs.\nSimilarly, compared to SMEs, higher nu"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 86,
+          "score": 10.554166242293602,
+          "similarity": 10.554166242293602,
+          "text": "to the\nindustry.\nIn most businesses7, both goods and services were mainly developed within the business.\nWhen asked whether the goods or services were developed mainly by their own business\nor enterprise group, 41 per cent of respondents said their ‘goods’"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 167,
+          "score": 10.115470843176542,
+          "similarity": 10.115470843176542,
+          "text": "rganisations. This compared to four per cent having similar contracts to supply\noverseas/non-domestic public sector organisations.\n7. Innovation in sectors\nThe numbers of the ‘innovation active’ businesses across all industrial and commercial\nsectors are c"
+        }
+      ]
+    },
+    {
+      "chunk_index": 189,
+      "question_type": "direct",
+      "question": "What percentage of businesses were described as broader innovators?",
+      "answer": "6 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 226,
+          "score": 11.768885176818952,
+          "similarity": 11.768885176818952,
+          "text": "cent. The skills category of\n‘mathematics/statistics’ showed an increase of five percentage points, up from five to ten\nper cent. Non-innovators increased their shares in all six skills categories whilst the shares\nfor broader innovators remained broadly t"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 227,
+          "score": 10.741339888565312,
+          "similarity": 10.741339888565312,
+          "text": "e shares\nfor broader innovators remained broadly the same\nTable 8: Share (%) of ‘broader innovators’ and non-innovators across 2011 and 2013\nsurveys\nPer cent\nAll* Broader Non-\ninnovators** innovators+\n2011 2013 2011 2013 2011 2013\nGraphic artists/ layout/ "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 224,
+          "score": 10.269206597859908,
+          "similarity": 10.269206597859908,
+          "text": "e shares of broader innovators and non-innovators for employing\nthe same listed skills as in Table 7. Again, these could be either in-house or brought in\nfrom external sources.\nAs can be seen in Table 8, there were notable increases in employment of all si"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 187,
+          "score": 10.139922332360182,
+          "similarity": 10.139922332360182,
+          "text": "13 and 12,114 in 2011\n9. Factors driving innovation\nBusinesses defined as ‘broader innovators’ were asked to rank a variety of drivers for\ninnovating on a scale from no impact to low, medium or high impact. Table 4 gives the\nproportion of businesses that h"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 188,
+          "score": 10.089107363805066,
+          "similarity": 10.089107363805066,
+          "text": " Table 4 gives the\nproportion of businesses that had rated ‘high’ in each of the innovation factors presented\nto them. Quality enhancement was again the most motivating factor, rated high by over a\nthird (36 per cent) of businesses described as broader inn"
+        }
+      ]
+    },
+    {
+      "chunk_index": 189,
+      "question_type": "inference",
+      "question": "What can be inferred about the trend in businesses updating their products or processes?",
+      "answer": "There was a significant increase in businesses replacing outdated products or processes.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 45,
+          "score": 14.249329187825184,
+          "similarity": 14.249329187825184,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 206,
+          "score": 13.04260323320525,
+          "similarity": 13.04260323320525,
+          "text": "question for this aspect was about\nasking businesses how effective they had found each of the methods given in Table 5 for\nmaintaining or increasing the competitiveness of product or process innovations\nintroduced during 2010 to 2012.\nAs it can be seen in "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 130,
+          "score": 12.650817830473743,
+          "similarity": 12.650817830473743,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 220,
+          "score": 12.462437758477813,
+          "similarity": 12.462437758477813,
+          "text": "results for a range of skills asked about in the survey. These skills can relate\neither to employees or skills brought in. As can be seen, large firms were more likely to\nuse each of the listed skills than SMEs.\nTable 7: Share (%) of individuals employed i"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 205,
+          "score": 12.264924674645792,
+          "similarity": 12.264924674645792,
+          "text": "s often generate intellectual property that businesses will try to\nprotect. This can be done in numerous ways depending upon the knowledge generated\nand the business and market context. In this survey, the question for this aspect was about\nasking business"
+        }
+      ]
+    },
+    {
+      "chunk_index": 189,
+      "question_type": "paraphrased",
+      "question": "What portion of companies were identified as general innovators?",
+      "answer": "6 per cent",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 234,
+          "score": 8.608847847627809,
+          "similarity": 8.608847847627809,
+          "text": "y results. As\ncompared to businesses in the general survey, the firms in the panel data were notably\nmore innovative across all innovation indicators. The same was also true for the\ncomparison of the 2011 panel data results with the 2011 general survey dat"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 224,
+          "score": 7.972181222597289,
+          "similarity": 7.972181222597289,
+          "text": "e shares of broader innovators and non-innovators for employing\nthe same listed skills as in Table 7. Again, these could be either in-house or brought in\nfrom external sources.\nAs can be seen in Table 8, there were notable increases in employment of all si"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 45,
+          "score": 6.591479317682726,
+          "similarity": 6.591479317682726,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 227,
+          "score": 6.588208808053611,
+          "similarity": 6.588208808053611,
+          "text": "e shares\nfor broader innovators remained broadly the same\nTable 8: Share (%) of ‘broader innovators’ and non-innovators across 2011 and 2013\nsurveys\nPer cent\nAll* Broader Non-\ninnovators** innovators+\n2011 2013 2011 2013 2011 2013\nGraphic artists/ layout/ "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 187,
+          "score": 6.333807329059751,
+          "similarity": 6.333807329059751,
+          "text": "13 and 12,114 in 2011\n9. Factors driving innovation\nBusinesses defined as ‘broader innovators’ were asked to rank a variety of drivers for\ninnovating on a scale from no impact to low, medium or high impact. Table 4 gives the\nproportion of businesses that h"
+        }
+      ]
+    },
+    {
+      "chunk_index": 213,
+      "question_type": "direct",
+      "question": "When was the skills question first asked in the survey?",
+      "answer": "2011",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 213,
+          "score": 18.697456986363687,
+          "similarity": 18.697456986363687,
+          "text": "novation\nThe skills question, apart from the standard question on the proportion of employees\nholding a degree or above, was first asked in 2011 survey. This was the second time it\nwas included. It asks businesses about whether they had employed or brought"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 219,
+          "score": 12.98951380656509,
+          "similarity": 12.98951380656509,
+          "text": " ‘other’\nsubjects than for ‘science or engineering’.\n19\nUK Innovation Survey 2013 – First findings report\nThe results from the questions that were recently added are in Tables 7 and 8. Table 7\nsets out the results for a range of skills asked about in the s"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 130,
+          "score": 12.720866942058807,
+          "similarity": 12.720866942058807,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 220,
+          "score": 12.642229016036143,
+          "similarity": 12.642229016036143,
+          "text": "results for a range of skills asked about in the survey. These skills can relate\neither to employees or skills brought in. As can be seen, large firms were more likely to\nuse each of the listed skills than SMEs.\nTable 7: Share (%) of individuals employed i"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 88,
+          "score": 12.01027456474456,
+          "similarity": 12.01027456474456,
+          "text": "ne with the previous survey’s findings in which\n43 per cent said ‘goods’ and 49 per cent said ‘service innovations’ were developed within\ntheir business.\nWhen asked about developing goods or services in partnership with other\nbusinesses/organisations, 17 p"
+        }
+      ]
+    },
+    {
+      "chunk_index": 213,
+      "question_type": "inference",
+      "question": "What can be deduced about the frequency of the skills question in the survey up to the point of this text?",
+      "answer": "It had been included twice by the time of this text.",
+      "gold_rank": 5,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 220,
+          "score": 25.336806848618497,
+          "similarity": 25.336806848618497,
+          "text": "results for a range of skills asked about in the survey. These skills can relate\neither to employees or skills brought in. As can be seen, large firms were more likely to\nuse each of the listed skills than SMEs.\nTable 7: Share (%) of individuals employed i"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 23.622962286229125,
+          "similarity": 23.622962286229125,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 205,
+          "score": 22.237435341407405,
+          "similarity": 22.237435341407405,
+          "text": "s often generate intellectual property that businesses will try to\nprotect. This can be done in numerous ways depending upon the knowledge generated\nand the business and market context. In this survey, the question for this aspect was about\nasking business"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 206,
+          "score": 22.059508886723382,
+          "similarity": 22.059508886723382,
+          "text": "question for this aspect was about\nasking businesses how effective they had found each of the methods given in Table 5 for\nmaintaining or increasing the competitiveness of product or process innovations\nintroduced during 2010 to 2012.\nAs it can be seen in "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 213,
+          "score": 21.923664714628632,
+          "similarity": 21.923664714628632,
+          "text": "novation\nThe skills question, apart from the standard question on the proportion of employees\nholding a degree or above, was first asked in 2011 survey. This was the second time it\nwas included. It asks businesses about whether they had employed or brought"
+        }
+      ]
+    },
+    {
+      "chunk_index": 213,
+      "question_type": "paraphrased",
+      "question": "In which year was the query regarding employee qualifications initially included in the survey?",
+      "answer": "2011",
+      "gold_rank": 4,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 201,
+          "score": 13.32407360985586,
+          "similarity": 13.32407360985586,
+          "text": "straining innovation’ (31 per cent) which represented the least frequently reason in this\nsurvey.\n10 The 2011survey included a question asking businesses to rate how important certain factors, such as\ncosts, knowledge and market factors, were in constraini"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 102,
+          "score": 13.2958313101859,
+          "similarity": 13.2958313101859,
+          "text": "bout businesses’ innovation\nactivities referred to a three-year period (1 January 2010 to 31 December 2012), the\nestimates required for the amount of expenditure were for the year 2012 only. In this\nsurvey, the reference year for estimates was marked clear"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 237,
+          "score": 13.232713698423517,
+          "similarity": 13.232713698423517,
+          "text": "on Survey 2013 – First findings report\n14. Comparisons with the 2007, 2009 and 2011 UKIS cross-\nsection data\nAs in the 2011 survey, the 2013 survey used a sampling format based on SIC 2007, which\nis an EU legislative requirement regarding the collection of"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 213,
+          "score": 12.864840960461171,
+          "similarity": 12.864840960461171,
+          "text": "novation\nThe skills question, apart from the standard question on the proportion of employees\nholding a degree or above, was first asked in 2011 survey. This was the second time it\nwas included. It asks businesses about whether they had employed or brought"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 104,
+          "score": 12.126451798817378,
+          "similarity": 12.126451798817378,
+          "text": "d not make the point about the reference period equally\nclear.\nThe results of this survey showed that the overall innovation expenditure provided for the\nyear 2012 was significantly lower than the amount reported in the last survey. It is highly\nlikely tha"
+        }
+      ]
+    },
+    {
+      "chunk_index": 223,
+      "question_type": "direct",
+      "question": "What fields are listed in the chunk with associated numbers?",
+      "answer": "Engineering/applied sciences and Mathematics/statistics",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 167,
+          "score": 9.668861541388216,
+          "similarity": 9.668861541388216,
+          "text": "rganisations. This compared to four per cent having similar contracts to supply\noverseas/non-domestic public sector organisations.\n7. Innovation in sectors\nThe numbers of the ‘innovation active’ businesses across all industrial and commercial\nsectors are c"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 97,
+          "score": 8.883046726288695,
+          "similarity": 8.883046726288695,
+          "text": "e 2011 survey to 14 per cent.\n7 The proportions reported following this statement are based on valid responses only. There were high\nnumbers providing ‘not applicable’ responses that were kept in the base. As a result, 41 per cent and 50 per\ncent represent"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 221,
+          "score": 8.503992631617026,
+          "similarity": 8.503992631617026,
+          "text": "SMEs.\nTable 7: Share (%) of individuals employed in-house or bought in from external\nsources with listed skills by firm size*\nPer cent\nSize of enterprise\nListed skills for employees in-house or brought in 10-250 250+ employees All (10+ employees)\nGraphic a"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 46,
+          "score": 7.86672282729219,
+          "similarity": 7.86672282729219,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 225,
+          "score": 7.4128273088552925,
+          "similarity": 7.4128273088552925,
+          "text": "ere were notable increases in employment of all six of the\nlisted skills. The increase was highest for the ‘graphic artists/advertising’ category which\nwent up from 15 per cent in the 2011 survey to 27 per cent. The skills category of\n‘mathematics/statisti"
+        }
+      ]
+    },
+    {
+      "chunk_index": 223,
+      "question_type": "inference",
+      "question": "What does the table mentioned in the chunk compare?",
+      "answer": "It compares 2011 and 2013 surveys for all respondents and the differences between broader innovators and non-innovators.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 118,
+          "score": 9.818407126786987,
+          "similarity": 9.818407126786987,
+          "text": "e summarised in Table 2.\nOver a third (37 per cent) of businesses engaged in one or more types of non-\ntechnological innovation over the latest survey period. Over a fifth (21 per cent) mentioned\nthe implementation of new business practices for organising "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 9.425421419225668,
+          "similarity": 9.425421419225668,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 46,
+          "score": 8.93180287437565,
+          "similarity": 8.93180287437565,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 130,
+          "score": 8.351201958978246,
+          "similarity": 8.351201958978246,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 37,
+          "score": 8.287196467361216,
+          "similarity": 8.287196467361216,
+          "text": "llection methodology from the 2011 survey onwards would mean any\ncomparisons made with the 2009 and 2007 provide a broad indication of changes over the\nmentioned time period only.\nIn December 2011, the Department published its ‘Innovation and Research Stra"
+        }
+      ]
+    },
+    {
+      "chunk_index": 223,
+      "question_type": "paraphrased",
+      "question": "Which academic disciplines are mentioned with numerical data in the text?",
+      "answer": "Engineering/applied sciences and Mathematics/statistics",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 36,
+          "score": 8.884598401470008,
+          "similarity": 8.884598401470008,
+          "text": " 1,250 businesses, the panel\nelement in the survey series remains a valuable resource for both government and\nacademic users alike. However, one needs to bear in mind that the changes in the\nsampling and collection methodology from the 2011 survey onwards "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 239,
+          "score": 8.439277158611594,
+          "similarity": 8.439277158611594,
+          "text": "the definition used for ‘innovation active’\nwas the same across the last two surveys. As a result, one would expect to see that the\ndata in this survey are much more comparable to the data in the 2011 survey.\nFigure 10 presents a general comparison of the "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 40,
+          "score": 8.289363909061215,
+          "similarity": 8.289363909061215,
+          "text": "al to this strategy will be a roadmap of how the government’s long-\nterm commitment on science capital will deliver the research and innovation infrastructure.\nThrough the harmonised questions in CIS, the UK Innovation survey data are also\ncomparable with "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 32,
+          "score": 8.103820990612254,
+          "similarity": 8.103820990612254,
+          "text": "d the same sampling\nmethodology as the 2011 survey. As a result, the data in this survey are much more\ncomparable to the data from the 2011 survey.\nThe Department for Business, Innovation, and Skills (BIS) would like to thank all the\nbusinesses that comple"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 29,
+          "score": 7.8738925910062925,
+          "similarity": 7.8738925910062925,
+          "text": "urvey had a 51 per\ncent response rate. The results in this report are based on weighted data in order to be\nrepresentative of firms. The responses were weighted back to the total business\npopulation of those in the Inter-Departmental Business Registration "
+        }
+      ]
+    },
+    {
+      "chunk_index": 229,
+      "question_type": "direct",
+      "question": "What is the unweighted base for all in 2013 according to the data?",
+      "answer": "14,487",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 230,
+          "score": 16.116005564440155,
+          "similarity": 16.116005564440155,
+          "text": "rs is 6,992\nin 2013; 5,744 in 2011; + = Unweighted base for non-innovators is 7,495 in 201; 8,598 in 2011.\n20\nUK Innovation Survey 2013 – First findings report\n13. Comparisons with the 2011, 2009 and 2007 UKIS Panel\ndata\nThe availability of panel data (bus"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 130,
+          "score": 14.986538156381602,
+          "similarity": 14.986538156381602,
+          "text": " Other Europe All other countries\nUnweighted base = 13,055\n4.2 Largest market in terms of turnover\nA new question was added which asked businesses what their ‘largest market’ was in\nterms of turnover. In all, 90 per cent answered the question about the geo"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 229,
+          "score": 14.596003939562262,
+          "similarity": 14.596003939562262,
+          "text": "14 24 31 29 4 11\nEngineering/ applied sciences 8 15 18 18 2 7\nMathematics/ statistics 5 10 11 11 2 6\n* = Unweighted base for All is 14,487 for 2013; 14,342 for 2011. **= Unweighted base for broader innovators is 6,992\nin 2013; 5,744 in 2011; + = Unweighted"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 248,
+          "score": 11.05941302973239,
+          "similarity": 11.05941302973239,
+          "text": "e UKIS 2013 data later in the year.\nAs with previous surveys, it is expected that there would be a substantial body of further\nresearch using the survey results and publications in various forms over the next few\nyears. Data will be available for researche"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 223,
+          "score": 10.955196947237056,
+          "similarity": 10.955196947237056,
+          "text": "24\nEngineering/ applied sciences 14 29 15\nMathematics/ statistics 9 24 10\n* = Unweighted base = 14,487\nTable 8 compares 2011 and 2013 surveys for all respondents. It also presents the\ndifferences between the shares of broader innovators and non-innovators "
+        }
+      ]
+    },
+    {
+      "chunk_index": 229,
+      "question_type": "inference",
+      "question": "Based on the data, which year had a larger unweighted base for broader innovators, 2011 or 2013?",
+      "answer": "2013",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 30,
+          "score": 15.081401077988088,
+          "similarity": 15.081401077988088,
+          "text": "e in the Inter-Departmental Business Registration (IDBR). They were not\nweighted by factors which would give more weight to larger firms, such as employment or\nturnover.\nAs in the 2011 survey, the 2013 survey also used a sampling format based on SIC 2007\nw"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 223,
+          "score": 15.028426108948551,
+          "similarity": 15.028426108948551,
+          "text": "24\nEngineering/ applied sciences 14 29 15\nMathematics/ statistics 9 24 10\n* = Unweighted base = 14,487\nTable 8 compares 2011 and 2013 surveys for all respondents. It also presents the\ndifferences between the shares of broader innovators and non-innovators "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 229,
+          "score": 14.671583565200573,
+          "similarity": 14.671583565200573,
+          "text": "14 24 31 29 4 11\nEngineering/ applied sciences 8 15 18 18 2 7\nMathematics/ statistics 5 10 11 11 2 6\n* = Unweighted base for All is 14,487 for 2013; 14,342 for 2011. **= Unweighted base for broader innovators is 6,992\nin 2013; 5,744 in 2011; + = Unweighted"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 227,
+          "score": 14.5102118939926,
+          "similarity": 14.5102118939926,
+          "text": "e shares\nfor broader innovators remained broadly the same\nTable 8: Share (%) of ‘broader innovators’ and non-innovators across 2011 and 2013\nsurveys\nPer cent\nAll* Broader Non-\ninnovators** innovators+\n2011 2013 2011 2013 2011 2013\nGraphic artists/ layout/ "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 230,
+          "score": 13.765376977168154,
+          "similarity": 13.765376977168154,
+          "text": "rs is 6,992\nin 2013; 5,744 in 2011; + = Unweighted base for non-innovators is 7,495 in 201; 8,598 in 2011.\n20\nUK Innovation Survey 2013 – First findings report\n13. Comparisons with the 2011, 2009 and 2007 UKIS Panel\ndata\nThe availability of panel data (bus"
+        }
+      ]
+    },
+    {
+      "chunk_index": 229,
+      "question_type": "paraphrased",
+      "question": "What is the raw count for the total sample in 2013 as per the given figures?",
+      "answer": "14,487",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 69,
+          "score": 16.15880763953833,
+          "similarity": 16.15880763953833,
+          "text": "ts 1 to 3 given above is defined as being ‘innovation active’.\nFor the purpose of this report, a business that has engaged in any of the activities\ndescribed in points 1 to 4 given above is defined as a broader innovator. The businesses\nclassed as a wider "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 46,
+          "score": 15.93737129878882,
+          "similarity": 15.93737129878882,
+          "text": "t what the ‘largest market’ was for businesses in\nterms of turnover. There was also an additional question concerning the most valuable co-\noperation partner for businesses.\nThe composition of the 2013 achieved sample was similar to the last survey, with 2"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 106,
+          "score": 15.206617841322986,
+          "similarity": 15.206617841322986,
+          "text": "imates for total\nexpenditure.\nHowever, the ranking of the top three highest expenditure categories, given in Figure 2,\nremained unchanged. The largest share of innovation expenditure belonged to ‘internal\n7\nUK Innovation Survey 2013 – First findings report"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 105,
+          "score": 14.497035428436003,
+          "similarity": 14.497035428436003,
+          "text": "ported in the last survey. It is highly\nlikely that tightening of the instructions for the expenditure question had an impact on\namounts provided. This could in fact explain the notable reduction in the estimates for total\nexpenditure.\nHowever, the ranking"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 45,
+          "score": 14.251019368385553,
+          "similarity": 14.251019368385553,
+          "text": "about the drivers to innovate as well as their perception of barriers to innovation.\nThe questionnaire used for the survey remained mostly the same as in the 2011 survey.\nThere was a new question added about what the ‘largest market’ was for businesses in\n"
+        }
+      ]
+    },
+    {
+      "chunk_index": 241,
+      "question_type": "direct",
+      "question": "What trend is noted in the shares of innovation active and broader innovators according to the data?",
+      "answer": "Notable increases.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 241,
+          "score": 20.543719428217976,
+          "similarity": 20.543719428217976,
+          "text": " data, with the notable increases on the shares of innovation active and\nbroader innovators.\nFigure 10: UKIS – cross section data 2007, 2009, 2011 and 2013\n70%\n60%\n50%\n40%\n30%\n20%\n10%\n0%\n2007 Survey 2009 Survey 2011 Survey 2013 Survey\nInnovation-active Inn"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 180,
+          "score": 17.53576647518201,
+          "similarity": 17.53576647518201,
+          "text": "2013 – First findings report\nThe same pattern was also found in the 2011 data in terms of highest and lowest shares.\nHowever, the shares for all four countries were notably higher in this survey.\nFigure 6. Shares of innovation active businesses by country "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 227,
+          "score": 17.35469327780408,
+          "similarity": 17.35469327780408,
+          "text": "e shares\nfor broader innovators remained broadly the same\nTable 8: Share (%) of ‘broader innovators’ and non-innovators across 2011 and 2013\nsurveys\nPer cent\nAll* Broader Non-\ninnovators** innovators+\n2011 2013 2011 2013 2011 2013\nGraphic artists/ layout/ "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 226,
+          "score": 16.42415276090651,
+          "similarity": 16.42415276090651,
+          "text": "cent. The skills category of\n‘mathematics/statistics’ showed an increase of five percentage points, up from five to ten\nper cent. Non-innovators increased their shares in all six skills categories whilst the shares\nfor broader innovators remained broadly t"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 235,
+          "score": 16.136370767782115,
+          "similarity": 16.136370767782115,
+          "text": "anel data results with the 2011 general survey data.\nFigure 9: Key innovation indicators of the UKIS Panel data 2007, 2009, 2011 and\n2013\nBroader Innovator\nInnovation active (OLD\ndefinition)\nActivities\nInnovation active (NEW\ndefinition)\nWider Innovator\n200"
+        }
+      ]
+    },
+    {
+      "chunk_index": 241,
+      "question_type": "inference",
+      "question": "How did the proportion of entities involved in innovation change over the surveys from 2007 to 2013?",
+      "answer": "It increased.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 231,
+          "score": 15.921782380425391,
+          "similarity": 15.921782380425391,
+          "text": "KIS Panel\ndata\nThe availability of panel data (businesses responding to the 2013, 2011, 2009 and 2007\nsurveys) enables some comparison of businesses’ innovation activities over time. Of the\n1,275 businesses in the four survey panel, around two thirds (66 p"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 91,
+          "score": 15.449070480200582,
+          "similarity": 15.449070480200582,
+          "text": "2011 survey.\nAlthough the findings showed a similar proportion of abandoned innovation projects to the\nlast period (four per cent in both surveys), the proportion of on-going innovation activities\nwent up significantly from seven per cent to 15 per cent. T"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 35,
+          "score": 13.634276778927081,
+          "similarity": 13.634276778927081,
+          "text": ". It provides the empirical evidence to support\npolicy measures.\nAlthough the sample size of the panel data (respondents also common to the 2011, 2009\nand 2007 surveys) is significantly reduced to just over 1,250 businesses, the panel\nelement in the survey"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 103,
+          "score": 13.60267973589593,
+          "similarity": 13.60267973589593,
+          "text": " the reference year for estimates was marked clearly and the instruction provided\nemphasised that estimates were asked for ‘2012 only’ in capital letters. The wording of the\nquestions in previous surveys did not make the point about the reference period eq"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 49,
+          "score": 13.55444761208288,
+          "similarity": 13.55444761208288,
+          "text": ". The consistencies in sampling and survey\nmethodologies, such as the use of SIC 2007 and telephone interviews to boost the postal\nresponses between the two surveys provide us with the ability to make more direct\ncomparisons across surveys.\n1. Innovation a"
+        }
+      ]
+    },
+    {
+      "chunk_index": 241,
+      "question_type": "paraphrased",
+      "question": "According to the data across the years 2007, 2009, 2011, and 2013, what happened to the percentage of participants engaged in creating new products or processes?",
+      "answer": "The percentage increased.",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 51,
+          "score": 21.01397485674684,
+          "similarity": 21.01397485674684,
+          "text": " or in the economy as a\nwhole. These include the levels of effort employed (measured through resources allocated\nto innovation) and of achievement (the introduction of new or improved products and\nprocesses). This section reports on the types and levels of"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 235,
+          "score": 20.037150732428646,
+          "similarity": 20.037150732428646,
+          "text": "anel data results with the 2011 general survey data.\nFigure 9: Key innovation indicators of the UKIS Panel data 2007, 2009, 2011 and\n2013\nBroader Innovator\nInnovation active (OLD\ndefinition)\nActivities\nInnovation active (NEW\ndefinition)\nWider Innovator\n200"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 241,
+          "score": 19.878793048836272,
+          "similarity": 19.878793048836272,
+          "text": " data, with the notable increases on the shares of innovation active and\nbroader innovators.\nFigure 10: UKIS – cross section data 2007, 2009, 2011 and 2013\n70%\n60%\n50%\n40%\n30%\n20%\n10%\n0%\n2007 Survey 2009 Survey 2011 Survey 2013 Survey\nInnovation-active Inn"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 231,
+          "score": 19.837096059355233,
+          "similarity": 19.837096059355233,
+          "text": "KIS Panel\ndata\nThe availability of panel data (businesses responding to the 2013, 2011, 2009 and 2007\nsurveys) enables some comparison of businesses’ innovation activities over time. Of the\n1,275 businesses in the four survey panel, around two thirds (66 p"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 13,
+          "score": 19.750987300302622,
+          "similarity": 19.750987300302622,
+          "text": ".................... 19\n13. Comparisons with the 2011, 2009 and 2007 UK Innovation Survey Panel data .......... 21\n14. Comparisons with the 2007, 2009 and 2011 UK Innovation Surveys’ cross-section\ndata ......................................................"
+        }
+      ]
+    }
+  ]
+}
