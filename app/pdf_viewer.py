@@ -447,6 +447,9 @@ def qa_generate_all(dtype: str, run: str, name: str):
     if not (isinstance(types, list)
             and all(t in ("direct", "inference", "paraphrased") for t in types)):
         abort(400, "invalid question types")
+    num = payload.get("num")
+    if num is not None and not (isinstance(num, int) and num > 0):
+        abort(400, "num must be a positive integer")
 
     chunk_run = latest_chunk_run(doc_dir)
     if chunk_run is None:
@@ -454,11 +457,14 @@ def qa_generate_all(dtype: str, run: str, name: str):
 
     project_root = Path(__file__).resolve().parent.parent
     script = Path(__file__).resolve().parent / "generate_qa.py"
-    code = run_and_stream([
+    cmd = [
         sys.executable, str(script),
         "--dataset", chunk_run.relative_to(project_root).as_posix(),
         "--types", ",".join(types),
-    ])
+    ]
+    if num is not None:
+        cmd += ["--num-chunks", str(num)]
+    code = run_and_stream(cmd)
     if code != 0:
         abort(500, f"generate_qa.py failed with exit code {code}")
 
@@ -646,6 +652,8 @@ def run_eval(dtype: str, run: str, name: str):
     ks = str(payload.get("ks", "1,3,5,10")).replace(" ", "")
     if not re.fullmatch(r"\d+(,\d+)*", ks):
         abort(400, "ks must be comma-separated integers")
+    if any(int(k) > topk for k in ks.split(",")):
+        abort(400, f"each cutoff (ks) must be ≤ top-k ({topk})")
 
     cmd = [sys.executable, str(SCRIPT_DIR / "eval_retrieval.py"),
            "--qa", qa_path.relative_to(PROJECT_ROOT).as_posix(),
@@ -685,6 +693,35 @@ CHUNK_SPEC = re.compile(
 )
 
 
+def chunk_spec_errors(spec: str) -> list[str]:
+    """Numeric-rule violations for one chunk spec, mirroring the Run Pipeline
+    popup: fixed_size is character-based (size >= 20), sentence methods count
+    sentences (size >= 1), and overlap is always >= 0 and below the size."""
+    errs = []
+    parts = spec.split(":")
+    method = parts[0]
+    if method == "fixed_size":
+        size = int(parts[1])
+        if size < 20:
+            errs.append(f"{spec}: chunk size must be at least 20 characters")
+        ov = parts[2]
+        if ov.endswith("%"):
+            if not 0 <= float(ov[:-1]) <= 90:
+                errs.append(f"{spec}: overlap percent must be between 0% and 90%")
+        elif int(ov) > 0.9 * size:
+            errs.append(f"{spec}: overlap ({ov}) must be between 0 and 90% of the "
+                        f"chunk size ({int(0.9 * size)})")
+    elif method in ("sentence", "sentence-dynamic-min"):
+        size = int(parts[1])
+        if size < 1:
+            errs.append(f"{spec}: sentences per chunk must be at least 1")
+        if len(parts) == 3 and int(parts[2]) >= size:
+            errs.append(f"{spec}: overlap ({parts[2]}) must be less than sentences per chunk ({size})")
+    elif method == "plumber-struct" and len(parts) == 2 and int(parts[1]) < 1:
+        errs.append(f"{spec}: sentences per text chunk must be at least 1")
+    return errs
+
+
 @app.post("/api/documents/<dtype>/<run>/<name>/pipeline")
 def run_full_pipeline(dtype: str, run: str, name: str):
     """Run the full grid pipeline (run_pipeline.py) on this document and
@@ -696,6 +733,9 @@ def run_full_pipeline(dtype: str, run: str, name: str):
     if not (isinstance(chunk_types, list) and chunk_types
             and all(isinstance(c, str) and CHUNK_SPEC.fullmatch(c) for c in chunk_types)):
         abort(400, "chunk_types must be a non-empty list of chunk specs like fixed_size:256:50")
+    spec_errors = [e for c in chunk_types for e in chunk_spec_errors(c)]
+    if spec_errors:
+        abort(400, "; ".join(spec_errors))
 
     def csv_of(key, valid, default):
         vals = payload.get(key) or default
@@ -703,19 +743,32 @@ def run_full_pipeline(dtype: str, run: str, name: str):
             abort(400, f"{key} must be a non-empty list from: {', '.join(valid)}")
         return ",".join(dict.fromkeys(vals))
 
-    embeddings = csv_of("embeddings", ("small", "large"), ["small"])
     tokenizers = csv_of("tokenizers", ("simple", "word", "porter"), ["word"])
     retrievals = csv_of("retrievals", ("bm25", "vector", "hybrid"),
                         ["bm25", "vector", "hybrid"])
     qa_types = csv_of("qa_types", ("direct", "inference", "paraphrased"),
                       ["direct", "inference", "paraphrased"])
 
-    vector_db = payload.get("vector_db", "milvus")
-    if vector_db not in ("milvus", "chromadb"):
-        abort(400, "vector_db must be milvus or chromadb")
-    alpha = payload.get("alpha", 0.7)
-    if not (isinstance(alpha, (int, float)) and 0 <= alpha <= 1):
-        abort(400, "alpha must be between 0 and 1")
+    # vector_configs: model:db pairs (e.g. "small:milvus"), one per checked
+    # embedding model x its checked DBs. Only required when a vector-using
+    # retrieval method (vector/hybrid) is selected.
+    vc = payload.get("vector_configs") or []
+    needs_vector = "vector" in retrievals.split(",") or "hybrid" in retrievals.split(",")
+    if not (isinstance(vc, list) and all(isinstance(v, str) for v in vc)):
+        abort(400, "vector_configs must be a list of model:db strings")
+    if not all(re.fullmatch(r"(?:small|large):(?:milvus|chromadb)", v) for v in vc):
+        abort(400, "each vector_config must look like small:milvus")
+    vector_configs = ",".join(dict.fromkeys(vc))
+    if needs_vector and not vector_configs:
+        abort(400, "pick at least one embedding model and vector DB")
+    # alphas: one or more hybrid vector weights to sweep (each 0..1)
+    alphas = payload.get("alphas")
+    if alphas is None:
+        alphas = [payload.get("alpha", 0.7)]
+    if not (isinstance(alphas, list) and alphas
+            and all(isinstance(a, (int, float)) and 0 <= a <= 1 for a in alphas)):
+        abort(400, "alphas must be a non-empty list of numbers between 0 and 1")
+    alphas = list(dict.fromkeys(alphas))
     qa_num = payload.get("qa_num", 20)
     if not (isinstance(qa_num, int) and qa_num > 0):
         abort(400, "qa_num must be a positive integer")
@@ -725,14 +778,18 @@ def run_full_pipeline(dtype: str, run: str, name: str):
     ks = str(payload.get("ks", "1,3,5,10")).replace(" ", "")
     if not re.fullmatch(r"\d+(,\d+)*", ks):
         abort(400, "ks must be comma-separated integers")
+    if any(int(k) > topk for k in ks.split(",")):
+        abort(400, f"each cutoff (ks) must be ≤ top-k ({topk})")
 
     cmd = [sys.executable, str(SCRIPT_DIR / "run_pipeline.py"),
            "--dataset", doc_dir.relative_to(PROJECT_ROOT).as_posix(),
            "--chunk-types", ",".join(dict.fromkeys(chunk_types)),
-           "--embeddings", embeddings, "--vector-db", vector_db,
            "--tokenizers", tokenizers, "--retrievals", retrievals,
-           "--alpha", str(alpha), "--qa-num", str(qa_num), "--qa-types", qa_types,
+           "--alpha", ",".join(f"{a:g}" for a in alphas),
+           "--qa-num", str(qa_num), "--qa-types", qa_types,
            "--topk", str(topk), "--ks", ks]
+    if vector_configs:
+        cmd += ["--vector-configs", vector_configs]
     if payload.get("seed") is not None:
         if not isinstance(payload["seed"], int):
             abort(400, "seed must be an integer")

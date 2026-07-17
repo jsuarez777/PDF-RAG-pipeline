@@ -72,6 +72,31 @@ def parse_csv(arg, valid, what, aliases=None):
     return out
 
 
+def parse_vector_configs(arg):
+    """Parse 'small:milvus,small:chromadb,large:milvus' into {model: [db, ...]},
+    preserving order, so each embedding model gets its own set of vector DBs."""
+    embed_dbs = {}
+    for token in arg.split(","):
+        token = token.strip()
+        if not token:
+            continue
+        if token.count(":") != 1:
+            sys.exit(f"ERROR: --vector-configs entry must be model:db, got '{token}'")
+        raw_model, db = token.split(":")
+        model = EMBEDDING_ALIASES.get(raw_model, raw_model)
+        if model not in EMBEDDING_MODELS:
+            sys.exit(f"ERROR: unknown embedding model '{raw_model}'. "
+                     f"Valid: {', '.join(EMBEDDING_ALIASES)}")
+        if db not in VECTOR_DBS:
+            sys.exit(f"ERROR: unknown vector db '{db}'. Valid: {', '.join(VECTOR_DBS)}")
+        dbs = embed_dbs.setdefault(model, [])
+        if db not in dbs:
+            dbs.append(db)
+    if not embed_dbs:
+        sys.exit("ERROR: --vector-configs needs at least one model:db pair")
+    return embed_dbs
+
+
 def parse_chunk_specs(arg):
     """Validate a comma-separated list of chunk_text.py --type specs."""
     specs = []
@@ -92,11 +117,12 @@ def chunk_label(spec):
     return spec.replace(":", "_").replace("%", "pct")
 
 
-def enumerate_experiments(chunk_specs, embeddings, tokenizers, retrievals, alpha):
+def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas):
     """One descriptor per (chunk config, retrieval variant) cell of the grid.
 
-    bm25 contributes one experiment per tokenizer, vector one per embedding
-    model, hybrid one per embedding x tokenizer pair."""
+    embed_dbs maps each embedding model to the vector DBs chosen for it, so
+    bm25 contributes one experiment per tokenizer, vector one per (model, db),
+    and hybrid one per (model, db) x tokenizer x alpha combination."""
     experiments = []
     for spec in chunk_specs:
         label = chunk_label(spec)
@@ -107,19 +133,24 @@ def enumerate_experiments(chunk_specs, embeddings, tokenizers, retrievals, alpha
                     "chunk_type": spec, "retrieval": "bm25", "tokenizer": tok,
                 })
         if "vector" in retrievals:
-            for model in embeddings:
-                experiments.append({
-                    "experiment_id": f"{model}_{label}_vector",
-                    "chunk_type": spec, "retrieval": "vector", "embedding_model": model,
-                })
-        if "hybrid" in retrievals:
-            for model in embeddings:
-                for tok in tokenizers:
+            for model, dbs in embed_dbs.items():
+                for db in dbs:
                     experiments.append({
-                        "experiment_id": f"{model}+{tok}_a{alpha}_{label}_hybrid",
-                        "chunk_type": spec, "retrieval": "hybrid",
-                        "embedding_model": model, "tokenizer": tok, "alpha": alpha,
+                        "experiment_id": f"{model}_{db}_{label}_vector",
+                        "chunk_type": spec, "retrieval": "vector",
+                        "embedding_model": model, "db": db,
                     })
+        if "hybrid" in retrievals:
+            for model, dbs in embed_dbs.items():
+                for db in dbs:
+                    for tok in tokenizers:
+                        for alpha in alphas:
+                            experiments.append({
+                                "experiment_id": f"{model}+{db}+{tok}_a{alpha:g}_{label}_hybrid",
+                                "chunk_type": spec, "retrieval": "hybrid",
+                                "embedding_model": model, "db": db, "tokenizer": tok,
+                                "alpha": alpha,
+                            })
     return experiments
 
 
@@ -202,10 +233,12 @@ def match_experiment(experiments, chunk_spec, meta):
             continue
         if retrieval == "bm25" and exp["tokenizer"] == meta.get("tokenizer"):
             return exp
-        if retrieval == "vector" and exp["embedding_model"] == meta.get("embedding_model"):
+        if (retrieval == "vector" and exp["embedding_model"] == meta.get("embedding_model")
+                and exp["db"] == db_type):
             return exp
         if (retrieval == "hybrid" and exp["embedding_model"] == meta.get("embedding_model")
-                and exp["tokenizer"] == meta.get("tokenizer")):
+                and exp["db"] == db_type and exp["tokenizer"] == meta.get("tokenizer")
+                and abs(exp["alpha"] - (meta.get("alpha") or 0)) < 1e-9):
             return exp
     return None
 
@@ -254,15 +287,21 @@ def main():
                         help="Embedding models, comma-separated: small, large, or full names "
                              "(default small,large)")
     parser.add_argument("--vector-db", default="milvus", choices=VECTOR_DBS,
-                        help="Vector store for embeddings (default milvus)")
+                        help="Vector store for every embedding model, unless "
+                             "--vector-configs is given (default milvus)")
+    parser.add_argument("--vector-configs",
+                        help="Per-model vector DBs as model:db pairs, e.g. "
+                             "'small:milvus,small:chromadb,large:milvus'. Overrides "
+                             "--embeddings/--vector-db when given.")
     parser.add_argument("--tokenizers", default="word",
                         help=f"BM25 tokenizers, comma-separated: {', '.join(TOKENIZERS)} "
                              "(default word)")
     parser.add_argument("--retrievals", default="bm25,vector,hybrid",
                         help="Retrieval methods to evaluate, comma-separated: "
                              f"{', '.join(RETRIEVALS)} (default all)")
-    parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
-                        help=f"Hybrid vector weight (default {DEFAULT_ALPHA})")
+    parser.add_argument("--alpha", default=str(DEFAULT_ALPHA),
+                        help="Hybrid vector weight; comma-separated to sweep several "
+                             f"weights (default {DEFAULT_ALPHA})")
     parser.add_argument("--qa-num", type=int, default=20,
                         help="Chunks to sample per chunk config for QA generation (default 20)")
     parser.add_argument("--qa-types", default=",".join(QA_TYPES),
@@ -280,18 +319,28 @@ def main():
     setup_logging("run_pipeline")
 
     chunk_specs = parse_chunk_specs(args.chunk_types)
-    embeddings = parse_csv(args.embeddings, EMBEDDING_MODELS, "embedding model",
-                           aliases=EMBEDDING_ALIASES)
+    if args.vector_configs:
+        embed_dbs = parse_vector_configs(args.vector_configs)
+    else:
+        embeddings = parse_csv(args.embeddings, EMBEDDING_MODELS, "embedding model",
+                               aliases=EMBEDDING_ALIASES)
+        embed_dbs = {model: [args.vector_db] for model in embeddings}
+    embeddings = list(embed_dbs)
     tokenizers = parse_csv(args.tokenizers, TOKENIZERS, "tokenizer")
     retrievals = parse_csv(args.retrievals, RETRIEVALS, "retrieval method")
     qa_types = parse_csv(args.qa_types, QA_TYPES, "question type")
-    if not 0 <= args.alpha <= 1:
+    try:
+        alphas = [float(a) for a in args.alpha.split(",") if a.strip() != ""]
+    except ValueError:
+        sys.exit("ERROR: --alpha must be a number or comma-separated numbers")
+    if not alphas or any(not 0 <= a <= 1 for a in alphas):
         sys.exit("ERROR: --alpha must be between 0 and 1")
+    alphas = list(dict.fromkeys(alphas))
     if args.qa_num <= 0:
         sys.exit("ERROR: --qa-num must be > 0")
 
-    experiments = enumerate_experiments(chunk_specs, embeddings, tokenizers,
-                                        retrievals, args.alpha)
+    experiments = enumerate_experiments(chunk_specs, embed_dbs, tokenizers,
+                                        retrievals, alphas)
     log.info(f"Pipeline grid: {len(chunk_specs)} chunk config(s) -> "
              f"{len(experiments)} experiment(s)")
     for exp in experiments:
@@ -350,9 +399,16 @@ def main():
         if needs_vector:
             edb = title_dir / "embedding_databases"
             before = snapshot(edb)
-            run_step([sys.executable, str(SCRIPT_DIR / "embed_chunks.py"),
-                      "--embedding", ",".join(embeddings), "--db", args.vector_db,
-                      "--dataset", rel(chunk_dir)])
+            # group models by db so each db is built only for the models that
+            # asked for it (one embed_chunks.py call per db, over its models)
+            models_per_db = {}
+            for model, dbs in embed_dbs.items():
+                for db in dbs:
+                    models_per_db.setdefault(db, []).append(model)
+            for db, models in models_per_db.items():
+                run_step([sys.executable, str(SCRIPT_DIR / "embed_chunks.py"),
+                          "--embedding", ",".join(models), "--db", db,
+                          "--dataset", rel(chunk_dir)])
             vector_files = [p for p in new_entries(edb, before)
                             if (p.name.startswith("milvus_") and p.suffix == ".db")
                             or (p.name.startswith("chromadb_") and p.suffix == ".chroma")]
@@ -369,7 +425,8 @@ def main():
             eval_cmd += ["--db", ",".join(eval_dbs)]
         if "hybrid" in retrievals:
             pairs = [f"{rel(v)}+{rel(b)}" for v in vector_files for b in bm25_files]
-            eval_cmd += ["--hybrid", ",".join(pairs), "--alpha", str(args.alpha)]
+            eval_cmd += ["--hybrid", ",".join(pairs),
+                         "--alpha", ",".join(f"{a:g}" for a in alphas)]
         eval_dir = title_dir / "evaluations"
         before = snapshot(eval_dir, "eval_*.json")
         run_step(eval_cmd)
@@ -388,6 +445,7 @@ def main():
                 "eval_file": rel(ef),
                 "retrieval": (exp or {}).get("retrieval", meta.get("db_type")),
                 "embedding_model": meta.get("embedding_model"),
+                "db": meta.get("db_type"),
                 "tokenizer": meta.get("tokenizer"),
                 "alpha": meta.get("alpha"),
                 "metrics": overall,
@@ -416,10 +474,11 @@ def main():
             "dataset": rel(title_dir),
             "chunk_types": chunk_specs,
             "embeddings": embeddings,
-            "vector_db": args.vector_db,
+            "embed_dbs": embed_dbs,
             "tokenizers": tokenizers,
             "retrievals": retrievals,
-            "alpha": args.alpha,
+            "alpha": alphas[0] if len(alphas) == 1 else alphas,
+            "alphas": alphas,
             "qa_num": args.qa_num,
             "qa_types": qa_types,
             "qa_model": args.qa_model,

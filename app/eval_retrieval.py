@@ -230,8 +230,9 @@ def find_db(dbs, token):
     sys.exit(f"ERROR: '{token}' is not a valid index choice")
 
 
-def resolve_hybrids(dbs, arg, qa_chunk_run, alpha, force=False):
-    """Turn --hybrid into a list of synthetic hybrid 'db' entries.
+def resolve_hybrids(dbs, arg, qa_chunk_run, alphas, force=False):
+    """Turn --hybrid into a list of synthetic hybrid 'db' entries, one per
+    (pair, alpha) so several vector weights can be evaluated in one run.
 
     arg is 'auto' (pair every matching vector index with every matching bm25
     index) or comma-separated 'VECTOR_PATH+BM25_PATH' pairs."""
@@ -262,14 +263,16 @@ def resolve_hybrids(dbs, arg, qa_chunk_run, alpha, force=False):
 
     hybrids = []
     for vec, bm in pairs:
-        hybrids.append({
-            "type": "hybrid",
-            "vec": vec,
-            "bm25": bm,
-            "rel": f"hybrid(alpha={alpha}) {vec['rel']} + {bm['rel']}",
-            "stem": f"hybrid_{vec['path'].stem}__{bm['path'].stem}",
-            "chunk_run": vec["chunk_run"],
-        })
+        for alpha in alphas:
+            hybrids.append({
+                "type": "hybrid",
+                "vec": vec,
+                "bm25": bm,
+                "alpha": alpha,
+                "rel": f"hybrid(alpha={alpha:g}) {vec['rel']} + {bm['rel']}",
+                "stem": f"hybrid_a{alpha:g}_{vec['path'].stem}__{bm['path'].stem}",
+                "chunk_run": vec["chunk_run"],
+            })
     return hybrids
 
 
@@ -386,8 +389,9 @@ def main():
     parser.add_argument("--hybrid", help="Hybrid retrieval: comma-separated VECTOR_PATH+BM25_PATH "
                                          "pairs, or 'auto' to pair every matching vector index "
                                          "with every matching bm25 index")
-    parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
-                        help="Hybrid weight of the vector score; bm25 gets 1-alpha "
+    parser.add_argument("--alpha", default=str(DEFAULT_ALPHA),
+                        help="Hybrid weight of the vector score; bm25 gets 1-alpha. "
+                             "Comma-separated to evaluate several weights at once "
                              f"(default {DEFAULT_ALPHA})")
     parser.add_argument("--topk", type=int, default=DEFAULT_TOPK,
                         help=f"Results to retrieve per question (default {DEFAULT_TOPK})")
@@ -402,8 +406,13 @@ def main():
 
     if args.topk <= 0:
         sys.exit("ERROR: --topk must be > 0")
-    if not 0 <= args.alpha <= 1:
+    try:
+        alphas = [float(a) for a in args.alpha.split(",") if a.strip() != ""]
+    except ValueError:
+        sys.exit("ERROR: --alpha must be a number or comma-separated numbers")
+    if not alphas or any(not 0 <= a <= 1 for a in alphas):
         sys.exit("ERROR: --alpha must be between 0 and 1")
+    alphas = list(dict.fromkeys(alphas))
     ks = parse_ks(args.ks, args.topk)
 
     qa = choose_qa(scan_qa_files(), preselect=args.qa)
@@ -421,14 +430,14 @@ def main():
     if args.db or not args.hybrid:
         selected = choose_eval_dbs(dbs, qa_chunk_run, preselect=args.db, force=args.force)
     if args.hybrid:
-        selected += resolve_hybrids(dbs, args.hybrid, qa_chunk_run, args.alpha, force=args.force)
+        selected += resolve_hybrids(dbs, args.hybrid, qa_chunk_run, alphas, force=args.force)
 
     # Build every searcher first so questions can be embedded once per model.
     searchers = []
     for db in selected:
         if db["type"] == "hybrid":
             (method, tokenizer), run_search = search_hybrid(db["vec"], db["bm25"],
-                                                            args.topk, args.alpha)
+                                                            args.topk, db["alpha"])
             db["tokenizer"] = tokenizer
         else:
             method, run_search = SEARCHERS[db["type"]](db, args.topk)
@@ -456,7 +465,7 @@ def main():
         elif db["type"] == "hybrid":
             vectors = vectors_by_model[method]
             method_meta = {"embedding_model": method, "tokenizer": db["tokenizer"],
-                           "alpha": args.alpha, "vector_db": db["vec"]["rel"],
+                           "alpha": db["alpha"], "vector_db": db["vec"]["rel"],
                            "bm25_db": db["bm25"]["rel"]}
         else:
             vectors = vectors_by_model[method]

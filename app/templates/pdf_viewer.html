@@ -45,11 +45,41 @@
   .menu-form .opt-group { display: flex; flex-direction: column; gap: 5px;
                           border-top: 1px solid #eee; padding-top: 8px; }
   .menu-form .opt-group[hidden] { display: none; }
-  #pipe-menu { max-height: 75vh; overflow-y: auto; min-width: 300px; }
+  #pipe-menu { max-height: 75vh; overflow-y: auto; min-width: 340px; }
   #pipe-menu .pc-size, #pipe-menu .pc-ov { width: 62px; padding: 2px 5px;
     border: 1px solid #ccc; border-radius: 5px; }
-  #pipe-menu #pipe-alpha { width: 62px; }
+  #pipe-menu .ph-alpha { width: 4ch; padding: 2px 3px; border: 1px solid #ccc;
+    border-radius: 5px; text-align: center; box-sizing: content-box; }
+  #pipe-menu .alpha-w { color: #888; font-variant-numeric: tabular-nums; }
+  #pipe-menu .ph-weights { margin: -2px 0 0 22px; font-size: 12px;
+    display: flex; align-items: center; gap: 8px; }
+  #pipe-menu .ph-slider { flex: 1; min-width: 0; }
+  #pipe-menu .ph-weights[hidden] { display: none; }
+  #pipe-chunks .pc-add, #pipe-chunks .pc-del,
+  #pipe-retrieval .ph-add, #pipe-retrieval .ph-del { margin-left: auto; width: 22px;
+    height: 22px; line-height: 1; padding: 0; border: 1px solid #ccc;
+    border-radius: 5px; background: #f5f5f7; cursor: pointer; }
+  #pipe-retrieval .hyb-row label { display: flex; align-items: center; gap: 6px; }
+  #pipe-embeds .emb-dbs { display: flex; gap: 14px; margin: -1px 0 3px 22px; }
+  #pipe-embeds .emb-dbs.disabled { opacity: .4; pointer-events: none; }
+  .menu-error { color: #c0392b; font-size: 12px; font-weight: 600; }
+  .menu-error div + div { margin-top: 3px; }
+  /* inline validation errors sit directly under the control they belong to */
+  .field-error { margin: 3px 0; }
+  #pipe-chunks .field-error { margin: 2px 0 4px 22px; }
+  #pipe-embeds + .menu-error, .emb-dbs + .menu-error { margin: -2px 0 2px 22px; }
   #pipe-count { font-weight: 600; padding: 2px 0; }
+
+  /* Section headers with an info button, and the info popover body */
+  .sec-head { display: flex; align-items: center; gap: 5px; }
+  .info-btn { width: 15px; height: 15px; min-width: 15px; padding: 0; border-radius: 50%;
+              border: 1px solid #bbb; background: #fff; color: #6e6e73; cursor: pointer;
+              font: italic 700 10px/1 Georgia, serif; flex-shrink: 0; }
+  .info-btn:hover { border-color: #0071e3; color: #0071e3; }
+  .info-body h4 { font-size: 12px; margin: 8px 0 3px; color: #1d1d1f; }
+  .info-body h4:first-child { margin-top: 0; }
+  .info-body p { margin: 0 0 6px; }
+  .info-body code { background: #f0f0f2; border-radius: 3px; padding: 0 3px; }
 
   /* Modal dialog (eval results) */
   #modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.4);
@@ -249,9 +279,10 @@
           <option value="fixed_size" selected>fixed_size</option>
           <option value="sentence">sentence</option>
           <option value="sentence-dynamic-min">sentence-dynamic-min</option>
-          <option value="plumber-struct">plumber-struct (text/tables/images)</option>
+          <option value="plumber-struct">pdfplumber-sections (text/tables/images)</option>
           <option value="semantic">semantic</option>
         </select>
+        <button type="button" class="info-btn" data-info="chunk-method" title="About chunking methods">i</button>
       </label>
       <div id="chunk-fixed" class="opt-group">
         <label>Chunk size <input id="chunk-size" type="number" min="1" value="256"></label>
@@ -274,34 +305,58 @@
   <div class="menu-wrap">
     <button id="index-btn" style="display:none">Index / Embed&hellip;</button>
     <div id="index-menu" class="dropdown menu-form" hidden>
+      <div class="sec-head"><small>Index type</small>
+        <button type="button" class="info-btn" data-info="index-kind" title="About index types">i</button></div>
       <label><input type="radio" name="index-kind" value="bm25" checked> BM-25 index</label>
       <label><input type="radio" name="index-kind" value="embed"> Embeddings</label>
       <div id="index-bm25" class="opt-group">
-        <small>Tokenizers</small>
+        <div class="sec-head"><small>Tokenizers</small>
+          <button type="button" class="info-btn" data-info="tokenizers" title="About BM25 tokenizers">i</button></div>
         <label><input type="checkbox" class="tok" value="simple" checked> simple</label>
         <label><input type="checkbox" class="tok" value="word"> word</label>
         <label><input type="checkbox" class="tok" value="porter"> porter</label>
       </div>
       <div id="index-embed" class="opt-group" hidden>
-        <small>Embedding models</small>
-        <label><input type="checkbox" class="emb" value="small" checked> small (text-embedding-3-small)</label>
-        <label><input type="checkbox" class="emb" value="large"> large (text-embedding-3-large)</label>
-        <small>Vector DBs</small>
-        <label><input type="checkbox" class="vdb" value="chromadb" checked> chromadb</label>
-        <label><input type="checkbox" class="vdb" value="milvus"> milvus</label>
+        <div class="sec-head"><small>Embedding models</small>
+          <button type="button" class="info-btn" data-info="embeddings" title="About embeddings and vector DBs">i</button></div>
+        <div id="index-emb-models">
+          <label><input type="checkbox" class="emb" value="small" checked> small (text-embedding-3-small)</label>
+          <label><input type="checkbox" class="emb" value="large"> large (text-embedding-3-large)</label>
+        </div>
+        <div class="sec-head"><small>Vector DBs</small>
+          <button type="button" class="info-btn" data-info="embeddings" title="About embeddings and vector DBs">i</button></div>
+        <div id="index-emb-dbs">
+          <label><input type="checkbox" class="vdb" value="chromadb" checked> chromadb</label>
+          <label><input type="checkbox" class="vdb" value="milvus"> milvus</label>
+        </div>
       </div>
       <button id="index-go" class="primary">Build Index</button>
     </div>
   </div>
-  <button id="gen-all-btn" style="display:none" disabled>Generate QA Pairs</button>
+  <div class="menu-wrap">
+    <button id="gen-all-btn" style="display:none" disabled>Generate QA Pairs&hellip;</button>
+    <div id="gen-all-menu" class="dropdown menu-form" hidden>
+      <div class="sec-head"><small>Generate a QA dataset for this document</small>
+        <button type="button" class="info-btn" data-info="qa" title="About QA generation">i</button></div>
+      <label>Chunks to sample <input id="genall-num" type="number" min="1" value="20"></label>
+      <label><input type="checkbox" class="genall-type" value="direct" checked> direct</label>
+      <label><input type="checkbox" class="genall-type" value="inference" checked> inference</label>
+      <label><input type="checkbox" class="genall-type" value="paraphrased" checked> paraphrased</label>
+      <button id="genall-go" class="primary">Generate</button>
+    </div>
+  </div>
   <button id="qa-btn" style="display:none" disabled>View QA Pairs</button>
   <div class="menu-wrap">
     <button id="eval-btn" style="display:none" disabled>Evaluate Top-k&hellip;</button>
     <div id="eval-menu" class="dropdown menu-form" hidden>
+      <div class="sec-head"><small>Indexes to evaluate</small>
+        <button type="button" class="info-btn" data-info="eval" title="About evaluation">i</button></div>
       <label><input type="checkbox" id="eval-all" checked> All indexes matching the QA chunk run</label>
       <div id="eval-indexes" class="opt-group"></div>
-      <label>Top-K <input id="eval-topk" type="number" min="1" value="10"></label>
-      <label>Cutoffs <input id="eval-ks" type="text" value="1,3,5,10"></label>
+      <label>Top-K <input id="eval-topk" type="number" min="1" value="10">
+        <button type="button" class="info-btn" data-info="topk" title="About Top-K">i</button></label>
+      <label>Cutoffs <input id="eval-ks" type="text" value="1,3,5,10">
+        <button type="button" class="info-btn" data-info="cutoffs" title="About cutoffs">i</button></label>
       <label><input type="checkbox" id="eval-force"> Force (ignore chunk-run mismatch)</label>
       <button id="eval-go" class="primary">Evaluate</button>
     </div>
@@ -310,56 +365,77 @@
   <div class="menu-wrap">
     <button id="pipe-btn" style="display:none" disabled>Run Pipeline&hellip;</button>
     <div id="pipe-menu" class="dropdown menu-form" hidden>
-      <small>Chunking strategies (size / overlap)</small>
+      <div class="sec-head"><small>Chunking strategies (size / overlap)</small>
+        <button type="button" class="info-btn" data-info="chunking" title="About chunking strategies">i</button></div>
       <div class="opt-group" id="pipe-chunks">
         <label><input type="checkbox" class="pchunk" data-kind="fixed_size" checked> fixed_size
-          <input class="pc-size" type="number" min="1" value="256">
-          <input class="pc-ov" type="text" value="50"></label>
+          <input class="pc-size" type="number" min="20" value="256">
+          <input class="pc-ov" type="text" value="50">
+          <button type="button" class="pc-add" title="Add another row of this type">＋</button></label>
         <label><input type="checkbox" class="pchunk" data-kind="fixed_size"> fixed_size
-          <input class="pc-size" type="number" min="1" value="512">
-          <input class="pc-ov" type="text" value="100"></label>
+          <input class="pc-size" type="number" min="20" value="512">
+          <input class="pc-ov" type="text" value="100">
+          <button type="button" class="pc-add" title="Add another row of this type">＋</button></label>
         <label><input type="checkbox" class="pchunk" data-kind="sentence"> sentence
           <input class="pc-size" type="number" min="1" value="5">
-          <input class="pc-ov" type="number" min="0" value="1"></label>
-        <label><input type="checkbox" class="pchunk" data-kind="sentence-dynamic-min"> sent-dyn-min
+          <input class="pc-ov" type="number" min="0" value="1">
+          <button type="button" class="pc-add" title="Add another row of this type">＋</button></label>
+        <label><input type="checkbox" class="pchunk" data-kind="sentence-dynamic-min"> sentence-dynamic-min
           <input class="pc-size" type="number" min="1" value="5">
-          <input class="pc-ov" type="number" min="0" value="1"></label>
-        <label><input type="checkbox" class="pchunk" data-kind="plumber-struct"> plumber-struct
-          <input class="pc-size" type="number" min="1" value="5"></label>
+          <input class="pc-ov" type="number" min="0" value="1">
+          <button type="button" class="pc-add" title="Add another row of this type">＋</button></label>
+        <label><input type="checkbox" class="pchunk" data-kind="plumber-struct"> pdfplumber-sections
+          <input class="pc-size" type="number" min="1" value="5">
+          <button type="button" class="pc-add" title="Add another row of this type">＋</button></label>
       </div>
-      <small>Embedding models</small>
-      <div class="opt-group">
+      <div class="sec-head"><small>Embedding models &amp; vector DBs</small>
+        <button type="button" class="info-btn" data-info="embeddings" title="About embeddings and vector DBs">i</button></div>
+      <div class="opt-group" id="pipe-embeds">
         <label><input type="checkbox" class="pemb" value="small" checked> small (text-embedding-3-small)</label>
+        <div class="emb-dbs">
+          <label><input type="checkbox" class="pedb" data-model="small" value="milvus" checked> Milvus</label>
+          <label><input type="checkbox" class="pedb" data-model="small" value="chromadb"> Chroma</label>
+        </div>
         <label><input type="checkbox" class="pemb" value="large"> large (text-embedding-3-large)</label>
-        <label>Vector DB
-          <select id="pipe-vdb">
-            <option value="milvus" selected>milvus</option>
-            <option value="chromadb">chromadb</option>
-          </select>
-        </label>
+        <div class="emb-dbs">
+          <label><input type="checkbox" class="pedb" data-model="large" value="milvus" checked> Milvus</label>
+          <label><input type="checkbox" class="pedb" data-model="large" value="chromadb"> Chroma</label>
+        </div>
       </div>
-      <small>BM25 tokenizers</small>
-      <div class="opt-group">
+      <div class="sec-head"><small>BM25 tokenizers</small>
+        <button type="button" class="info-btn" data-info="tokenizers" title="About BM25 tokenizers">i</button></div>
+      <div class="opt-group" id="pipe-tokenizers">
         <label><input type="checkbox" class="ptok" value="simple"> simple</label>
         <label><input type="checkbox" class="ptok" value="word" checked> word</label>
         <label><input type="checkbox" class="ptok" value="porter"> porter</label>
       </div>
-      <small>Retrieval methods</small>
-      <div class="opt-group">
+      <div class="sec-head"><small>Retrieval methods</small>
+        <button type="button" class="info-btn" data-info="retrieval" title="About retrieval methods">i</button></div>
+      <div class="opt-group" id="pipe-retrieval">
         <label><input type="checkbox" class="pret" value="bm25" checked> bm25 (lexical)</label>
         <label><input type="checkbox" class="pret" value="vector" checked> vector (semantic)</label>
-        <label><input type="checkbox" class="pret" value="hybrid" checked> hybrid
-          &alpha; <input id="pipe-alpha" type="number" min="0" max="1" step="0.05" value="0.7"></label>
+        <div class="hyb-row">
+          <label><input type="checkbox" class="pret phyb" value="hybrid" checked> hybrid
+            &alpha; <input class="ph-alpha" type="text" inputmode="decimal" value="0.70">
+            <button type="button" class="ph-add" title="Add another hybrid weight">＋</button></label>
+          <div class="alpha-w ph-weights">
+            bm25 (1&minus;&alpha;) = <span class="ph-bm25-w"></span>
+            <input class="ph-slider" type="range" min="0" max="1" step="0.05" value="0.7">
+            vector (&alpha;) = <span class="ph-vec-w"></span></div>
+        </div>
       </div>
-      <small>QA generation</small>
-      <div class="opt-group">
+      <div class="sec-head"><small>QA generation</small>
+        <button type="button" class="info-btn" data-info="qa" title="About QA generation">i</button></div>
+      <div class="opt-group" id="pipe-qa">
         <label>Chunks to sample <input id="pipe-qanum" type="number" min="1" value="20"></label>
         <label><input type="checkbox" class="pqat" value="direct" checked> direct</label>
         <label><input type="checkbox" class="pqat" value="inference" checked> inference</label>
         <label><input type="checkbox" class="pqat" value="paraphrased" checked> paraphrased</label>
       </div>
-      <label>Top-K <input id="pipe-topk" type="number" min="1" value="10"></label>
-      <label>Cutoffs <input id="pipe-ks" type="text" value="1,3,5,10"></label>
+      <label>Top-K <input id="pipe-topk" type="number" min="1" value="10">
+        <button type="button" class="info-btn" data-info="topk" title="About Top-K">i</button></label>
+      <label>Cutoffs <input id="pipe-ks" type="text" value="1,3,5,10">
+        <button type="button" class="info-btn" data-info="cutoffs" title="About cutoffs">i</button></label>
       <div id="pipe-count"></div>
       <button id="pipe-go" class="primary">Run Pipeline</button>
     </div>
@@ -1060,9 +1136,12 @@ function closePopovers(level = 0) {
     if (+p.dataset.level >= level) p.remove();
   });
 }
+// Capture phase so a click inside a menu (whose own handler stopPropagations,
+// see setupMenu) still closes any popover stacked above it; a click inside the
+// popover itself is spared so it never closes the popover or its parent menu.
 document.addEventListener('click', ev => {
   if (!ev.target.closest('.popover')) closePopovers();
-});
+}, true);
 // popovers are viewport-fixed: close them when their anchors scroll away
 $('qa-pane').addEventListener('scroll', () => closePopovers());
 
@@ -1183,18 +1262,37 @@ async function deleteQaPair(button, item, itemIndex, pair, pairIndex) {
   }
 }
 
-$('gen-all-btn').onclick = async () => {
+/* Generate QA Pairs: popup to choose how many chunks to sample and which
+   question types, then generate a fresh QA dataset via generate-all. */
+setupMenu('gen-all-btn', 'gen-all-menu');
+function collectGenAllErrors() {
+  const boxes = new Map();
+  const report = (a, m) => { let arr = boxes.get(a); if (!arr) boxes.set(a, arr = []); arr.push(m); };
+  if (!(parseInt($('genall-num').value, 10) >= 1))
+    report($('genall-num').closest('label'), 'Chunks to sample must be at least 1');
+  if (!document.querySelector('.genall-type:checked'))
+    report(document.querySelector('.genall-type[value="paraphrased"]').closest('label'),
+           'Pick at least one question type');
+  return boxes;
+}
+bindMenuValidation('gen-all-menu', collectGenAllErrors);
+$('genall-go').onclick = async () => {
   if (generating || !current) return;
+  if (!submitIfValid('gen-all-menu', collectGenAllErrors)) return;
   const doc = current;
+  const body = {
+    num: parseInt($('genall-num').value, 10),
+    types: [...document.querySelectorAll('.genall-type:checked')].map(c => c.value),
+  };
+  closeMenus();
   generating = true;
-  $('gen-all-btn').disabled = true;
   refreshGenButton();
   $('status').textContent = 'Generating QA pairs for the document… (see logs)';
   try {
     const resp = await fetch(
       `/api/documents/${doc.type}/${doc.run}/${doc.name}/qa/generate-all`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ types: ['direct', 'inference', 'paraphrased'] }) });
+        body: JSON.stringify(body) });
     if (!resp.ok) throw new Error(await resp.text());
     const data = await resp.json();
     generating = false;
@@ -1208,7 +1306,6 @@ $('gen-all-btn').onclick = async () => {
     generating = false;
     if (current === doc) $('status').textContent = 'QA generation failed: ' + err.message;
   } finally {
-    if (current === doc) $('gen-all-btn').disabled = false;
     refreshGenButton();
   }
 };
@@ -1297,7 +1394,11 @@ function setupMenu(btnId, menuId, onOpen) {
   });
   $(menuId).addEventListener('click', ev => ev.stopPropagation());
 }
-document.addEventListener('click', closeMenus);
+// A popover (e.g. a pipeline info bubble) lives outside its menu in the DOM, so
+// guard against its clicks bubbling up here and closing the parent menu.
+document.addEventListener('click', ev => {
+  if (!ev.target.closest('.popover')) closeMenus();
+});
 
 /* Upload: button opens a method menu; picking one opens the file dialog */
 let uploadMethod = 'pdf2image';
@@ -1344,28 +1445,35 @@ $('chunk-method').onchange = () => {
   $('chunk-sent').hidden = method !== 'sentence' && method !== 'sentence-dynamic-min';
   $('chunk-plumber').hidden = method !== 'plumber-struct';
 };
+/* Errors for the active method render under that method's option group. */
+function collectChunkErrors() {
+  const boxes = new Map();
+  const report = (a, m) => { let arr = boxes.get(a); if (!arr) boxes.set(a, arr = []); arr.push(m); };
+  const method = $('chunk-method').value;
+  if (method === 'fixed_size')
+    for (const msg of chunkRuleErrors('fixed_size', $('chunk-size').value, $('chunk-overlap').value))
+      report($('chunk-fixed'), msg);
+  else if (method === 'sentence' || method === 'sentence-dynamic-min')
+    for (const msg of chunkRuleErrors(method, $('chunk-sent-n').value, $('chunk-sent-ov').value))
+      report($('chunk-sent'), msg);
+  else if (method === 'plumber-struct')
+    for (const msg of chunkRuleErrors('plumber-struct', $('chunk-plumber-n').value, null))
+      report($('chunk-plumber'), msg);
+  return boxes;
+}
+bindMenuValidation('chunk-menu', collectChunkErrors);
 $('chunk-go').onclick = async () => {
-  const body = { type: $('chunk-method').value };
-  if (body.type === 'fixed_size') {
+  if (!submitIfValid('chunk-menu', collectChunkErrors)) return;
+  const method = $('chunk-method').value;
+  const body = { type: method };
+  if (method === 'fixed_size') {
     body.size = parseInt($('chunk-size').value, 10);
     body.overlap = $('chunk-overlap').value.trim();
-    if (!(body.size > 0)) {
-      $('status').textContent = 'Chunk size must be a positive integer';
-      return;
-    }
-  } else if (body.type === 'sentence' || body.type === 'sentence-dynamic-min') {
+  } else if (method === 'sentence' || method === 'sentence-dynamic-min') {
     body.size = parseInt($('chunk-sent-n').value, 10);
     body.overlap = parseInt($('chunk-sent-ov').value, 10) || 0;
-    if (!(body.size > 0) || !(body.overlap >= 0 && body.overlap < body.size)) {
-      $('status').textContent = 'Sentences/chunk must be positive and overlap below it';
-      return;
-    }
-  } else if (body.type === 'plumber-struct') {
+  } else if (method === 'plumber-struct') {
     body.size = parseInt($('chunk-plumber-n').value, 10);
-    if (!(body.size > 0)) {
-      $('status').textContent = 'Sentences/text chunk must be a positive integer';
-      return;
-    }
   }
   closeMenus();
   const data = await runPipeline('chunk', body, 'Chunking text');
@@ -1380,25 +1488,33 @@ document.querySelectorAll('input[name="index-kind"]').forEach(radio => {
     $('index-embed').hidden = radio.value !== 'embed';
   };
 });
+/* Errors render under the tokenizer list, or under the embedding-model / vector
+   DB lists, depending on the selected index type. */
+function collectIndexErrors() {
+  const boxes = new Map();
+  const report = (a, m) => { let arr = boxes.get(a); if (!arr) boxes.set(a, arr = []); arr.push(m); };
+  const kind = document.querySelector('input[name="index-kind"]:checked').value;
+  if (kind === 'bm25') {
+    if (!document.querySelector('#index-bm25 .tok:checked'))
+      report($('index-bm25'), 'Pick at least one tokenizer');
+  } else {
+    if (!document.querySelector('#index-embed .emb:checked'))
+      report($('index-emb-models'), 'Pick at least one embedding model');
+    if (!document.querySelector('#index-embed .vdb:checked'))
+      report($('index-emb-dbs'), 'Pick at least one vector DB');
+  }
+  return boxes;
+}
+bindMenuValidation('index-menu', collectIndexErrors);
 $('index-go').onclick = async () => {
+  if (!submitIfValid('index-menu', collectIndexErrors)) return;
   const kind = document.querySelector('input[name="index-kind"]:checked').value;
   const body = { kind };
   if (kind === 'bm25') {
-    body.tokenizers = [...document.querySelectorAll('#index-bm25 .tok:checked')]
-      .map(c => c.value);
-    if (!body.tokenizers.length) {
-      $('status').textContent = 'Pick at least one tokenizer';
-      return;
-    }
+    body.tokenizers = [...document.querySelectorAll('#index-bm25 .tok:checked')].map(c => c.value);
   } else {
-    body.embeddings = [...document.querySelectorAll('#index-embed .emb:checked')]
-      .map(c => c.value);
-    body.dbs = [...document.querySelectorAll('#index-embed .vdb:checked')]
-      .map(c => c.value);
-    if (!body.embeddings.length || !body.dbs.length) {
-      $('status').textContent = 'Pick at least one embedding model and one vector DB';
-      return;
-    }
+    body.embeddings = [...document.querySelectorAll('#index-embed .emb:checked')].map(c => c.value);
+    body.dbs = [...document.querySelectorAll('#index-embed .vdb:checked')].map(c => c.value);
   }
   closeMenus();
   const data = await runPipeline('index', body, 'Building index');
@@ -1442,7 +1558,22 @@ $('eval-all').onchange = () => {
     c.disabled = $('eval-all').checked;
   });
 };
+/* Errors render under the index list / Top-K / Cutoffs. Cutoffs also can't
+   exceed Top-K (shared rule with Run Pipeline). */
+function collectEvalErrors() {
+  const boxes = new Map();
+  const report = (a, m) => { let arr = boxes.get(a); if (!arr) boxes.set(a, arr = []); arr.push(m); };
+  if (!$('eval-all').checked && !document.querySelector('.eval-idx:checked'))
+    report($('eval-indexes'), 'Pick at least one index');
+  const topk = parseInt($('eval-topk').value, 10);
+  if (!(topk >= 1)) report($('eval-topk').closest('label'), 'Top-K must be at least 1');
+  for (const msg of cutoffErrors($('eval-ks').value, topk))
+    report($('eval-ks').closest('label'), msg);
+  return boxes;
+}
+bindMenuValidation('eval-menu', collectEvalErrors);
 $('eval-go').onclick = async () => {
+  if (!submitIfValid('eval-menu', collectEvalErrors)) return;
   const body = {
     db: $('eval-all').checked ? 'all'
       : [...document.querySelectorAll('.eval-idx:checked')].map(c => c.value),
@@ -1450,14 +1581,6 @@ $('eval-go').onclick = async () => {
     ks: $('eval-ks').value.trim(),
     force: $('eval-force').checked,
   };
-  if (body.db !== 'all' && !body.db.length) {
-    $('status').textContent = 'Pick at least one index';
-    return;
-  }
-  if (!(body.topk > 0)) {
-    $('status').textContent = 'Top-K must be a positive integer';
-    return;
-  }
   closeMenus();
   const doc = current;
   const results = await runPipeline('eval', body, 'Evaluating retrieval');
@@ -1475,6 +1598,191 @@ $('eval-view-btn').onclick = () => openEvalModal();
 /* Run Pipeline: full grid config (chunking x embeddings x retrieval), with a
    live count of how many experiments the current selection will run. */
 setupMenu('pipe-btn', 'pipe-menu', updatePipeCount);
+
+/* Per-section "i" buttons across every header menu: each opens an anchored
+   popover explaining that section. Content reflects how the stage scripts
+   actually behave (see chunk_text.py / embed_chunks.py / index_bm25.py). */
+const INFO = {
+  chunking: {
+    title: 'Chunking strategies',
+    html: `
+      <p>Each strategy cuts the document's extracted text into the chunks that
+         are indexed and retrieved. Pages are joined with newlines first.</p>
+      <h4>fixed_size &nbsp;(size / overlap)</h4>
+      <p><b>Size</b> is a raw character count: a window of exactly that many
+         characters slides across the whole document, so a chunk can begin or
+         end in the middle of a word — there is no word-boundary trimming. Only
+         the final chunk is shorter. <b>Overlap</b> is how much each chunk
+         repeats from the end of the previous one; give a character count
+         (e.g. <code>50</code>) or a percent of the size (e.g. <code>10%</code>).
+         Overlap must be between 0 and 90% of the size.</p>
+      <h4>sentence &nbsp;(sentences / overlap)</h4>
+      <p>Groups a fixed number of sentences per chunk (pysbd sentence
+         splitting). <b>Overlap</b> is a number of sentences carried into the
+         next chunk. A single "sentence" longer than a char cap derived from the
+         count (almost always a flattened table) is hard-split so it can't
+         inflate a chunk.</p>
+      <h4>sentence-dynamic-min</h4>
+      <p>Like sentence, but a chunk keeps absorbing sentences <i>past</i> the
+         target count until it reaches a minimum character floor, so short
+         fragments (e.g. shredded table rows) get packed together instead of
+         left as tiny chunks.</p>
+      <h4>pdfplumber-sections</h4>
+      <p>pdfplumber datasets only. Splits by document structure: prose becomes
+         sentence chunks (the number field sets sentences per text chunk),
+         tables become header-labeled row chunks, and images become descriptor
+         chunks. Each chunk records which kind it came from.</p>`,
+  },
+  embeddings: {
+    title: 'Embedding models & vector DBs',
+    html: `
+      <p>An <b>embedding</b> turns each chunk into a numeric vector so chunks
+         with similar meaning sit close together; a query is embedded the same
+         way and the nearest chunks are retrieved. This powers vector and hybrid
+         retrieval.</p>
+      <h4>Models</h4>
+      <p><b>small</b> = OpenAI <code>text-embedding-3-small</code>: cheaper and
+         faster, 1536 dimensions. <b>large</b> = <code>text-embedding-3-large</code>:
+         higher quality, 3072 dimensions, slower and more costly.</p>
+      <h4>Vector DBs</h4>
+      <p><b>Milvus</b> — stored via <code>milvus-lite</code>, the embedded
+         (no-server) build of the open-source Milvus vector database, as a
+         single local <code>.db</code> file. <b>Chroma</b> — the open-source
+         ChromaDB vector store, kept as a local <code>.chroma</code> collection
+         directory. Both hold the same vectors; pick either or both to compare
+         them. Tick the DBs you want built for each checked model.</p>`,
+  },
+  tokenizers: {
+    title: 'BM25 tokenizers',
+    html: `
+      <p>BM25 is a classic lexical (keyword) ranking function. The tokenizer
+         decides how text is broken into terms before indexing, which changes
+         what counts as a match.</p>
+      <h4>simple</h4>
+      <p>Lowercases and splits on non-alphanumeric characters — fast, no
+         language processing. Words must match nearly verbatim.</p>
+      <h4>word</h4>
+      <p>Word-aware tokenization that also drops common English stop words, so
+         ranking leans on the informative terms.</p>
+      <h4>porter</h4>
+      <p>Adds Porter stemming on top, so word variants collapse to a common root
+         (<code>running</code>, <code>ran</code> → <code>run</code>), matching
+         across inflections at some cost to precision.</p>`,
+  },
+  retrieval: {
+    title: 'Retrieval methods',
+    html: `
+      <h4>bm25 (lexical)</h4>
+      <p>Ranks chunks by keyword overlap with the query using the BM25 index.
+         Strong on exact terms; blind to synonyms.</p>
+      <h4>vector (semantic)</h4>
+      <p>Ranks chunks by embedding similarity, matching on meaning rather than
+         exact words. Needs at least one embedding model + DB above.</p>
+      <h4>hybrid</h4>
+      <p>Fuses BM25 and vector scores (min-max normalized) into one ranking.
+         <b>&alpha;</b> is the vector weight from 0 to 1: 1.0 is pure vector,
+         0.0 is pure BM25, 0.7 leans semantic while keeping keyword signal.</p>`,
+  },
+  qa: {
+    title: 'QA generation',
+    html: `
+      <p>For each chunk config the pipeline generates a question/answer set from
+         sampled chunks, then measures whether retrieval finds the source chunk
+         for each question.</p>
+      <h4>Chunks to sample</h4>
+      <p>How many chunks are randomly drawn per chunk config to generate
+         questions from. More chunks = a larger, more stable evaluation but more
+         model calls.</p>
+      <h4>Question types</h4>
+      <p><b>direct</b> — answer stated verbatim in the chunk. <b>inference</b> —
+         requires reasoning over the chunk's content. <b>paraphrased</b> — the
+         question reworded away from the chunk's wording, stressing semantic
+         matching.</p>`,
+  },
+  topk: {
+    title: 'Top-K',
+    html: `<p>How many chunks each retrieval method returns per query. Metrics
+         are computed over these results, so Top-K must be at least the largest
+         cutoff you evaluate at.</p>`,
+  },
+  cutoffs: {
+    title: 'Cutoffs (k)',
+    html: `<p>Comma-separated ranks at which recall / NDCG are reported —
+         e.g. <code>1,3,5,10</code> gives Recall@1, @3, @5, @10. Each must be a
+         positive integer and cannot exceed Top-K.</p>`,
+  },
+  'chunk-method': {
+    title: 'Chunking methods',
+    html: `
+      <p>How the document's extracted text is cut into the chunks that get
+         indexed and retrieved. Pages are joined with newlines first.</p>
+      <h4>fixed_size</h4>
+      <p>A window of exactly <b>size</b> characters slides across the text, so a
+         chunk can begin or end mid-word (no word-boundary trimming); only the
+         last chunk is shorter. <b>Overlap</b> (characters, or a percent of the
+         size like <code>10%</code>) repeats from the previous chunk and must be
+         between 0 and 90% of the size.</p>
+      <h4>sentence / sentence-dynamic-min</h4>
+      <p><b>sentence</b> groups a fixed number of sentences per chunk (overlap in
+         sentences, below the count). <b>sentence-dynamic-min</b> keeps absorbing
+         sentences past that count until a minimum character floor is met, so
+         short fragments (shredded tables) aren't left tiny.</p>
+      <h4>pdfplumber-sections</h4>
+      <p>pdfplumber datasets only: prose becomes sentence chunks (the number sets
+         sentences per text chunk), tables become header-labeled row chunks, and
+         images become descriptor chunks.</p>
+      <h4>semantic</h4>
+      <p>Reserved for embedding-similarity-based splitting; not yet
+         implemented.</p>`,
+  },
+  'index-kind': {
+    title: 'Index type',
+    html: `
+      <p>Build one retrieval index from the document's latest chunk run.</p>
+      <h4>BM-25 index</h4>
+      <p>A lexical (keyword) index built with <code>index_bm25.py</code>, one per
+         chosen tokenizer. Fast to build; powers bm25 and the lexical half of
+         hybrid retrieval.</p>
+      <h4>Embeddings</h4>
+      <p>Vector stores built with <code>embed_chunks.py</code>: each chunk is
+         embedded by the chosen model(s) and written to the chosen vector DB(s).
+         Powers vector and the semantic half of hybrid retrieval, and calls the
+         OpenAI embeddings API.</p>`,
+  },
+  eval: {
+    title: 'Evaluation',
+    html: `
+      <p>Runs the document's latest QA questions against the selected indexes
+         (<code>eval_retrieval.py</code>) and reports how well each retrieves the
+         chunk a question came from (Recall / MRR / NDCG at the cutoffs).</p>
+      <p>Leave <b>All indexes matching the QA chunk run</b> ticked to score every
+         index built from the same chunks the QA was generated from; untick it to
+         pick specific indexes. <b>Force</b> lets you evaluate indexes built from
+         a different chunk run (results may be meaningless).</p>`,
+  },
+};
+function showInfo(anchor, key) {
+  const info = INFO[key];
+  if (!info) return;
+  openPopover(anchor, 0, info.title, body => {
+    body.classList.add('info-body');
+    body.innerHTML = info.html;
+  });
+}
+// One handler per header menu: click an "i" button to open its popover (kept
+// from closing the menu / toggling inputs), and close popovers if the menu
+// scrolls (popovers are viewport-fixed).
+document.querySelectorAll('.dropdown').forEach(menu => {
+  menu.addEventListener('click', ev => {
+    const btn = ev.target.closest('.info-btn');
+    if (!btn) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    showInfo(btn, btn.dataset.info);
+  });
+  menu.addEventListener('scroll', () => closePopovers());
+});
+
 function pipeConfig() {
   const vals = sel => [...document.querySelectorAll(sel + ':checked')].map(c => c.value);
   const chunk_types = [];
@@ -1486,13 +1794,25 @@ function pipeConfig() {
     chunk_types.push(ov ? `${check.dataset.kind}:${size}:${ov.value.trim()}`
                         : `${check.dataset.kind}:${size}`);
   });
+  // each checked embedding model contributes its checked DBs as model:db pairs
+  const vector_configs = [];
+  document.querySelectorAll('#pipe-embeds .pemb:checked').forEach(emb => {
+    document.querySelectorAll(`.pedb[data-model="${emb.value}"]:checked`)
+      .forEach(db => vector_configs.push(`${emb.value}:${db.value}`));
+  });
+  // one alpha per checked hybrid row (several rows sweep several weights)
+  const alphas = [];
+  document.querySelectorAll('#pipe-retrieval .hyb-row').forEach(row => {
+    if (row.querySelector('.phyb').checked)
+      alphas.push(parseFloat(row.querySelector('.ph-alpha').value));
+  });
   return {
     chunk_types,
     embeddings: vals('.pemb'),
-    vector_db: $('pipe-vdb').value,
+    vector_configs,
     tokenizers: vals('.ptok'),
-    retrievals: vals('.pret'),
-    alpha: parseFloat($('pipe-alpha').value),
+    retrievals: [...new Set(vals('.pret'))],
+    alphas,
     qa_num: parseInt($('pipe-qanum').value, 10),
     qa_types: vals('.pqat'),
     topk: parseInt($('pipe-topk').value, 10),
@@ -1504,9 +1824,9 @@ function pipeConfig() {
 function pipePermutations(cfg) {
   let perChunk = 0;
   if (cfg.retrievals.includes('bm25')) perChunk += cfg.tokenizers.length;
-  if (cfg.retrievals.includes('vector')) perChunk += cfg.embeddings.length;
+  if (cfg.retrievals.includes('vector')) perChunk += cfg.vector_configs.length;
   if (cfg.retrievals.includes('hybrid'))
-    perChunk += cfg.embeddings.length * cfg.tokenizers.length;
+    perChunk += cfg.vector_configs.length * cfg.tokenizers.length * cfg.alphas.length;
   return cfg.chunk_types.length * perChunk;
 }
 function updatePipeCount() {
@@ -1515,27 +1835,253 @@ function updatePipeCount() {
 }
 $('pipe-menu').addEventListener('change', updatePipeCount);
 $('pipe-menu').addEventListener('input', updatePipeCount);
+/* Each hybrid row carries its own alpha (the vector weight; bm25 gets 1-alpha).
+   The text field allows 2-decimal precision while the slider snaps to the
+   nearest 0.05, and the two stay in sync. Several rows sweep several weights. */
+function renderHybridRow(row) {
+  const a = parseFloat(row.querySelector('.ph-alpha').value);
+  row.querySelector('.ph-weights').hidden = !row.querySelector('.phyb').checked;
+  const ok = Number.isFinite(a) && a >= 0 && a <= 1;
+  row.querySelector('.ph-bm25-w').textContent = ok ? (1 - a).toFixed(2) : '';
+  row.querySelector('.ph-vec-w').textContent = ok ? a.toFixed(2) : '';
+}
+$('pipe-retrieval').addEventListener('input', e => {
+  const row = e.target.closest('.hyb-row');
+  if (!row) return;
+  if (e.target.classList.contains('ph-alpha')) {
+    const a = parseFloat(e.target.value);
+    if (Number.isFinite(a) && a >= 0 && a <= 1) row.querySelector('.ph-slider').value = a;
+    renderHybridRow(row);
+  } else if (e.target.classList.contains('ph-slider')) {
+    const a = Math.round(parseFloat(e.target.value) / 0.05) * 0.05;
+    row.querySelector('.ph-alpha').value = a.toFixed(2);
+    renderHybridRow(row);
+  }
+});
+$('pipe-retrieval').addEventListener('change', e => {
+  if (e.target.classList.contains('phyb')) renderHybridRow(e.target.closest('.hyb-row'));
+});
+/* ＋ clones a hybrid row (checked, with a − to remove it) so the grid can sweep
+   several vector weights; dedup happens server-side. */
+$('pipe-retrieval').addEventListener('click', e => {
+  const add = e.target.closest('.ph-add');
+  const del = e.target.closest('.ph-del');
+  if (!add && !del) return;
+  e.preventDefault();
+  if (del) { del.closest('.hyb-row').remove(); }
+  else {
+    const row = add.closest('.hyb-row');
+    const clone = row.cloneNode(true);
+    clone.querySelector('.phyb').checked = true;
+    clone.querySelector('.ph-alpha').value = row.querySelector('.ph-alpha').value;
+    clone.querySelector('.ph-slider').value = row.querySelector('.ph-slider').value;
+    const btn = clone.querySelector('.ph-add');
+    btn.className = 'ph-del';
+    btn.textContent = '−';
+    btn.title = 'Remove this hybrid weight';
+    row.after(clone);
+    renderHybridRow(clone);
+  }
+  updatePipeCount();
+  refreshPipeErrors();
+});
+document.querySelectorAll('#pipe-retrieval .hyb-row').forEach(renderHybridRow);
+/* Inline validation: each problem is rendered in a small red block inserted
+   directly beneath the control it belongs to (a bad chunk row, a model missing
+   a DB, an out-of-range field), so the user sees every fix in context and can
+   resolve them all in one pass. Editing anything clears the blocks. */
+/* Inline validation shared by every header menu. A collect() returns a Map of
+   anchor element -> [messages]; each message renders in a small red block right
+   beneath its control. Validation runs live on every edit, so correcting a
+   field clears just its error and a newly invalid value shows a new one. */
+function clearFieldErrors(menu) {
+  menu.querySelectorAll('.field-error').forEach(e => e.remove());
+}
+function renderFieldErrors(boxes) {  // returns the first block, to scroll to
+  let first = null;
+  for (const [anchor, msgs] of boxes) {
+    const box = document.createElement('div');
+    box.className = 'menu-error field-error';
+    for (const m of msgs) {
+      const line = document.createElement('div');
+      line.textContent = m;
+      box.appendChild(line);
+    }
+    anchor.after(box);
+    if (!first) first = box;
+  }
+  return first;
+}
+/* Wire a menu for live inline validation; returns a refresh() its own handlers
+   (row add/remove, submit) can call too. */
+function bindMenuValidation(menuId, collect) {
+  const menu = $(menuId);
+  const refresh = () => { clearFieldErrors(menu); renderFieldErrors(collect()); };
+  menu.addEventListener('change', refresh);
+  menu.addEventListener('input', refresh);
+  return refresh;
+}
+/* Validate on submit: render any errors, scroll to the first, and return false
+   so the caller aborts; return true when the selection is clean. */
+function submitIfValid(menuId, collect) {
+  const menu = $(menuId);
+  const boxes = collect();
+  clearFieldErrors(menu);
+  if (boxes.size) {
+    const first = renderFieldErrors(boxes);
+    if (first) first.scrollIntoView({ block: 'nearest' });
+    return false;
+  }
+  return true;
+}
+const refreshPipeErrors = bindMenuValidation('pipe-menu', () => collectPipeErrors());
+/* Grey out a model's DB checkboxes while the model itself is unchecked. */
+function syncEmbedDbs() {
+  document.querySelectorAll('#pipe-embeds .pemb').forEach(emb => {
+    const dbs = emb.parentElement.nextElementSibling;  // the .emb-dbs row
+    if (dbs) dbs.classList.toggle('disabled', !emb.checked);
+  });
+}
+document.querySelectorAll('#pipe-embeds .pemb').forEach(
+  emb => emb.addEventListener('change', syncEmbedDbs));
+syncEmbedDbs();
+/* ＋ clones a chunk row (checked, with a − to remove it) so any method can run
+   several size/overlap configs in one grid; dedup happens server-side. */
+$('pipe-chunks').addEventListener('click', e => {
+  const add = e.target.closest('.pc-add');
+  const del = e.target.closest('.pc-del');
+  if (!add && !del) return;
+  e.preventDefault();
+  if (del) { del.closest('label').remove(); }
+  else {
+    const label = add.closest('label');
+    const clone = label.cloneNode(true);
+    clone.querySelector('.pchunk').checked = true;
+    label.querySelectorAll('.pc-size, .pc-ov').forEach((inp, i) => {
+      clone.querySelectorAll('.pc-size, .pc-ov')[i].value = inp.value;  // carry live values
+    });
+    const btn = clone.querySelector('.pc-add');
+    btn.className = 'pc-del';
+    btn.textContent = '−';
+    btn.title = 'Remove this row';
+    label.after(clone);
+  }
+  updatePipeCount();
+  refreshPipeErrors();  // drop a removed row's orphaned error / re-check the grid
+});
 
-$('pipe-go').onclick = async () => {
+/* Size/overlap rules for one chunk config, returned as [messages]. Shared by
+   the Chunk Text menu and every Run Pipeline row. fixed_size is character-based
+   (size >= 20, overlap 0..90% of size, as chars or a percent); sentence methods
+   count sentences (size >= 1, overlap 0..size-1). ovStr is null when the method
+   has no overlap field (pdfplumber-sections). */
+function chunkRuleErrors(kind, sizeStr, ovStr) {
+  const errs = [];
+  const size = parseInt(sizeStr, 10);
+  if (kind === 'fixed_size') {
+    if (!(size >= 20)) errs.push('Chunk size must be at least 20 characters');
+    const raw = (ovStr || '').trim();
+    const pct = raw.match(/^(\d+(?:\.\d+)?)%$/);
+    if (pct) {
+      if (!(parseFloat(pct[1]) >= 0 && parseFloat(pct[1]) <= 90))
+        errs.push('Overlap percent must be between 0% and 90%');
+    } else if (/^\d+$/.test(raw)) {
+      const ov = parseInt(raw, 10);
+      if (Number.isFinite(size) && ov > 0.9 * size)
+        errs.push(`Overlap (${ov}) must be between 0 and 90% of the chunk size (max ${Math.floor(0.9 * size)})`);
+    } else {
+      errs.push('Overlap must be a number of characters or a percent like 10%');
+    }
+  } else {
+    const unit = kind === 'plumber-struct' ? 'sentences per text chunk' : 'sentences per chunk';
+    if (!(size >= 1)) errs.push(`The ${unit} must be at least 1`);
+    if (ovStr != null) {
+      const ov = parseInt(ovStr, 10);
+      if (!(ov >= 0)) errs.push('Overlap must be 0 or more');
+      else if (Number.isFinite(size) && ov >= size)
+        errs.push(`Overlap (${ov}) must be less than the ${unit} (${size})`);
+    }
+  }
+  return errs;
+}
+
+/* Cutoff (k) rules as [messages]: comma-separated positive integers, none above
+   Top-K. Shared by Run Pipeline and Evaluate. */
+function cutoffErrors(ksStr, topk) {
+  const ks = (ksStr || '').replace(/\s+/g, '');
+  if (!/^\d+(,\d+)*$/.test(ks) || ks.split(',').some(k => parseInt(k, 10) < 1))
+    return ['Cutoffs must be comma-separated positive integers, e.g. 1,3,5,10'];
+  if (Number.isFinite(topk) && topk >= 1 && ks.split(',').some(k => parseInt(k, 10) > topk))
+    return [`Each cutoff must be ≤ Top-K (${topk})`];
+  return [];
+}
+
+/* Report each checked pipeline chunk row's problems under that row (its
+   <label>). */
+function validateChunkRows(report) {
+  document.querySelectorAll('#pipe-chunks label').forEach(l => {
+    const check = l.querySelector('.pchunk');
+    if (!check.checked) return;
+    const ovEl = l.querySelector('.pc-ov');  // pdfplumber-sections has no overlap
+    for (const msg of chunkRuleErrors(check.dataset.kind,
+        l.querySelector('.pc-size').value, ovEl ? ovEl.value : null))
+      report(l, msg);
+  });
+}
+
+/* Validate the whole popup, returning a Map of anchor element -> [messages] so
+   each problem can be rendered beneath its own control. Pure (no DOM writes) so
+   it can run both on submit and live on every edit. */
+function collectPipeErrors() {
   const cfg = pipeConfig();
   const needVec = cfg.retrievals.includes('vector') || cfg.retrievals.includes('hybrid');
   const needTok = cfg.retrievals.includes('bm25') || cfg.retrievals.includes('hybrid');
-  let error = null;
-  if (!cfg.chunk_types.length) error = 'Pick at least one chunking strategy';
-  else if (!cfg.retrievals.length) error = 'Pick at least one retrieval method';
-  else if (needVec && !cfg.embeddings.length) error = 'Pick at least one embedding model';
-  else if (needTok && !cfg.tokenizers.length) error = 'Pick at least one tokenizer';
-  else if (!cfg.qa_types.length) error = 'Pick at least one QA question type';
-  else if (!(cfg.qa_num > 0)) error = 'QA chunks to sample must be a positive integer';
-  else if (!(cfg.topk > 0)) error = 'Top-K must be a positive integer';
-  else if (!(cfg.alpha >= 0 && cfg.alpha <= 1)) error = 'Alpha must be between 0 and 1';
-  if (error) {
-    $('status').textContent = error;
-    return;
+  const anyChunkChecked = !!document.querySelector('#pipe-chunks .pchunk:checked');
+
+  const boxes = new Map();  // anchor element -> [message, ...]
+  const report = (anchor, msg) => {
+    let arr = boxes.get(anchor);
+    if (!arr) boxes.set(anchor, arr = []);
+    arr.push(msg);
+  };
+
+  if (!anyChunkChecked) report($('pipe-chunks'), 'Pick at least one chunking strategy');
+  else validateChunkRows(report);
+
+  if (!cfg.retrievals.length) report($('pipe-retrieval'), 'Pick at least one retrieval method');
+  if (needVec) {
+    if (!cfg.embeddings.length) report($('pipe-embeds'), 'Pick at least one embedding model');
+    // each checked model with no vector DB ticked gets an error under its DB row
+    document.querySelectorAll('#pipe-embeds .pemb:checked').forEach(emb => {
+      if (!document.querySelector(`.pedb[data-model="${emb.value}"]:checked`))
+        report(emb.parentElement.nextElementSibling,  // that model's .emb-dbs row
+               `Pick at least one vector DB for the "${emb.value}" embedding`);
+    });
   }
+  if (needTok && !cfg.tokenizers.length)
+    report($('pipe-tokenizers'), 'Pick at least one BM25 tokenizer');
+  if (cfg.retrievals.includes('hybrid')) {
+    document.querySelectorAll('#pipe-retrieval .hyb-row').forEach(row => {
+      const chk = row.querySelector('.phyb');
+      const a = parseFloat(row.querySelector('.ph-alpha').value);
+      if (chk.checked && !(a >= 0 && a <= 1))
+        report(row, 'Hybrid α must be between 0 and 1');
+    });
+  }
+  if (!cfg.qa_types.length) report($('pipe-qa'), 'Pick at least one QA question type');
+  if (!(cfg.qa_num >= 1))
+    report($('pipe-qanum').closest('label'), 'Chunks to sample must be at least 1');
+  if (!(cfg.topk >= 1)) report($('pipe-topk').closest('label'), 'Top-K must be at least 1');
+  for (const msg of cutoffErrors(cfg.ks, cfg.topk))
+    report($('pipe-ks').closest('label'), msg);
+  return boxes;
+}
+
+$('pipe-go').onclick = async () => {
+  if (!submitIfValid('pipe-menu', collectPipeErrors)) return;
   closeMenus();
   const doc = current;
-  const data = await runPipeline('pipeline', cfg, 'Running pipeline');
+  const data = await runPipeline('pipeline', pipeConfig(), 'Running pipeline');
   if (data && current === doc) {
     renderPipelineModal([data], 0);
     if (qaData) loadEvalList(doc);  // pipeline evals belong in the QA pane too
@@ -1600,7 +2146,7 @@ function renderPipelineModal(runs, index) {
   info.className = 'eval-db-head';
   info.textContent = `${meta.datetime || ''} — chunk types: ` +
     `${(meta.chunk_types || []).join(', ')} · QA ${meta.qa_num} chunks · ` +
-    `top_k ${meta.topk} · alpha ${meta.alpha}`;
+    `top_k ${meta.topk} · alpha ${(meta.alphas || [meta.alpha]).join(', ')}`;
   body.appendChild(info);
 
   const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
