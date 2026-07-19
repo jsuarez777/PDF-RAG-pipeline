@@ -295,7 +295,7 @@
       <div id="chunk-fixed" class="opt-group">
         <label>Chunk size <input id="chunk-size" type="number" min="1" value="256"></label>
         <label>Overlap <input id="chunk-overlap" type="text" value="50"></label>
-        <small>Overlap in characters, or a percent of size like 10%</small>
+        <small>Size and overlap in tokens; overlap may be a percent of size like 10%</small>
       </div>
       <div id="chunk-sent" class="opt-group" hidden>
         <label>Sentences/chunk <input id="chunk-sent-n" type="number" min="1" value="5"></label>
@@ -851,9 +851,9 @@ function renderChunkHighlights() {
   }
 
   // small chunks: repeat the seam text inside each box; large chunks: render
-  // the seam once, shaded, with the next box's border pulled up over it
-  const meta = (qaData && qaData.chunk_metadata) || {};
-  const size = meta.chunk_size ||
+  // the seam once, shaded, with the next box's border pulled up over it.
+  // Sized from the chunks' char spans (chunk metadata sizes are in tokens).
+  const size =
     Math.max(0, ...(qaData && qaData.chunks || []).map(c => (c.end_char ?? 0) - (c.start_char ?? 0)));
   const dupMode = size > 0 && size < 100;
 
@@ -1658,22 +1658,24 @@ const INFO = {
       <p>Each strategy cuts the document's extracted text into the chunks that
          are indexed and retrieved. Pages are joined with newlines first.</p>
       <h4>fixed_size &nbsp;(size / overlap)</h4>
-      <p><b>Size</b> is a raw character count: a window of exactly that many
-         characters slides across the whole document, so a chunk can begin or
-         end in the middle of a word — there is no word-boundary trimming. Only
-         the final chunk is shorter. <b>Overlap</b> is how much each chunk
-         repeats from the end of the previous one; give a character count
-         (e.g. <code>50</code>) or a percent of the size (e.g. <code>10%</code>).
-         Overlap must be between 0 and 90% of the size.</p>
+      <p><b>Size</b> is a token count (tiktoken <code>cl100k_base</code>, the
+         encoding of the embedding models used for retrieval): a window of
+         exactly that many tokens slides across the whole document, so a chunk
+         can begin or end in the middle of a sentence — there is no
+         sentence-boundary trimming. Only the final chunk is shorter.
+         <b>Overlap</b> is how much each chunk repeats from the end of the
+         previous one; give a token count (e.g. <code>50</code>) or a percent
+         of the size (e.g. <code>10%</code>). Overlap must be between 0 and
+         90% of the size.</p>
       <h4>sentence &nbsp;(sentences / overlap)</h4>
       <p>Groups a fixed number of sentences per chunk (pysbd sentence
          splitting). <b>Overlap</b> is a number of sentences carried into the
-         next chunk. A single "sentence" longer than a char cap derived from the
-         count (almost always a flattened table) is hard-split so it can't
+         next chunk. A single "sentence" longer than a token cap derived from
+         the count (almost always a flattened table) is hard-split so it can't
          inflate a chunk.</p>
       <h4>sentence-dynamic-min</h4>
       <p>Like sentence, but a chunk keeps absorbing sentences <i>past</i> the
-         target count until it reaches a minimum character floor, so short
+         target count until it reaches a minimum token floor, so short
          fragments (e.g. shredded table rows) get packed together instead of
          left as tiny chunks.</p>
       <h4>pdfplumber-sections</h4>
@@ -1771,15 +1773,16 @@ const INFO = {
       <p>How the document's extracted text is cut into the chunks that get
          indexed and retrieved. Pages are joined with newlines first.</p>
       <h4>fixed_size</h4>
-      <p>A window of exactly <b>size</b> characters slides across the text, so a
-         chunk can begin or end mid-word (no word-boundary trimming); only the
-         last chunk is shorter. <b>Overlap</b> (characters, or a percent of the
-         size like <code>10%</code>) repeats from the previous chunk and must be
+      <p>A window of exactly <b>size</b> tokens (tiktoken
+         <code>cl100k_base</code>) slides across the text, so a chunk can begin
+         or end mid-sentence (no sentence-boundary trimming); only the last
+         chunk is shorter. <b>Overlap</b> (tokens, or a percent of the size
+         like <code>10%</code>) repeats from the previous chunk and must be
          between 0 and 90% of the size.</p>
       <h4>sentence / sentence-dynamic-min</h4>
       <p><b>sentence</b> groups a fixed number of sentences per chunk (overlap in
          sentences, below the count). <b>sentence-dynamic-min</b> keeps absorbing
-         sentences past that count until a minimum character floor is met, so
+         sentences past that count until a minimum token floor is met, so
          short fragments (shredded tables) aren't left tiny.</p>
       <h4>pdfplumber-sections</h4>
       <p>pdfplumber datasets only: prose becomes sentence chunks (the number sets
@@ -2025,15 +2028,15 @@ $('pipe-chunks').addEventListener('click', e => {
 });
 
 /* Size/overlap rules for one chunk config, returned as [messages]. Shared by
-   the Chunk Text menu and every Run Pipeline row. fixed_size is character-based
-   (size >= 20, overlap 0..90% of size, as chars or a percent); sentence methods
+   the Chunk Text menu and every Run Pipeline row. fixed_size is token-based
+   (size >= 20, overlap 0..90% of size, as tokens or a percent); sentence methods
    count sentences (size >= 1, overlap 0..size-1). ovStr is null when the method
    has no overlap field (pdfplumber-sections). */
 function chunkRuleErrors(kind, sizeStr, ovStr) {
   const errs = [];
   const size = parseInt(sizeStr, 10);
   if (kind === 'fixed_size') {
-    if (!(size >= 20)) errs.push('Chunk size must be at least 20 characters');
+    if (!(size >= 20)) errs.push('Chunk size must be at least 20 tokens');
     const raw = (ovStr || '').trim();
     const pct = raw.match(/^(\d+(?:\.\d+)?)%$/);
     if (pct) {
@@ -2044,7 +2047,7 @@ function chunkRuleErrors(kind, sizeStr, ovStr) {
       if (Number.isFinite(size) && ov > 0.9 * size)
         errs.push(`Overlap (${ov}) must be between 0 and 90% of the chunk size (max ${Math.floor(0.9 * size)})`);
     } else {
-      errs.push('Overlap must be a number of characters or a percent like 10%');
+      errs.push('Overlap must be a number of tokens or a percent like 10%');
     }
   } else {
     const unit = kind === 'plumber-struct' ? 'sentences per text chunk' : 'sentences per chunk';

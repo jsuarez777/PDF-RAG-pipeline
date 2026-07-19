@@ -7,12 +7,17 @@ Datasets live under data/{pdf2image,pdfplumber}/<date>/<title>/.
 
 Chunk types: fixed_size, sentence, sentence-dynamic-min, plumber-struct,
 semantic (semantic not yet implemented).
-  fixed_size:<size>:<overlap>       overlap chars, or a percent of size ("10%").
+  fixed_size:<size>:<overlap>       size/overlap in tokens (tiktoken cl100k_base,
+                                    the encoding of the OpenAI embedding models
+                                    used downstream); overlap may also be a
+                                    percent of size ("10%"). Token windows are
+                                    mapped back to char offsets so chunk
+                                    boundaries stay addressable in the text.
   sentence:<n>[:<overlap>]          exactly n sentences/chunk (optional sentence
                                     overlap); oversized "sentences" (flattened
-                                    tables) hard-split at a char cap from n.
+                                    tables) hard-split at a token cap from n.
   sentence-dynamic-min:<n>[:<ov>]   like sentence, but keeps packing past n
-                                    until a min-chars floor is met, so short
+                                    until a min-tokens floor is met, so short
                                     fragments (shredded tables) aren't left tiny.
   plumber-struct[:<n>]              pdfplumber only: prose (table-filtered
                                     'text') as sentence chunks, tables as
@@ -55,30 +60,78 @@ PLUMBER_STRUCT_DEFAULT_SENTENCES = 5
 PAGE_RE = re.compile(r"^page_(\d+)")
 
 # Sentence-chunk sizing, calibrated against the pdfplumber corpus
-# (mean 34.5 words/sentence, 5.82 chars/word incl. spaces). A "sentence" that
-# exceeds the derived cap is almost always a flattened table/chart with no real
-# boundary, so it is hard-split; see chunk-strategy eval notes.
+# (mean 34.5 words/sentence, ~1.3 cl100k tokens/word for English prose).
+# A "sentence" that exceeds the derived cap is almost always a flattened
+# table/chart with no real boundary, so it is hard-split; see chunk-strategy
+# eval notes.
 SENT_AVG_WORDS = 35
 SENT_MIN_WORDS = 15
-SENT_CHARS_PER_WORD = 6
+SENT_TOKENS_PER_WORD = 1.3
 SENT_CAP_BUFFER = 0.20
 
+# All token counting uses the encoding of the OpenAI text-embedding-3-* models
+# that embed_chunks.py feeds these chunks to.
+TOKEN_ENCODING = "cl100k_base"
 
-def sentence_cap_chars(n_per_chunk):
-    """Max chars a sentence chunk may reach before it is force-split."""
-    return int(n_per_chunk * SENT_AVG_WORDS * SENT_CHARS_PER_WORD * (1 + SENT_CAP_BUFFER))
+_encoder = None
 
 
-def sentence_min_chars(n_per_chunk):
-    """Floor (chars) a sentence-dynamic-min chunk must reach; it keeps absorbing
+def get_encoder():
+    global _encoder
+    if _encoder is None:
+        import tiktoken  # local import: pulled in only when chunking runs
+        _encoder = tiktoken.get_encoding(TOKEN_ENCODING)
+    return _encoder
+
+
+def count_tokens(text):
+    return len(get_encoder().encode(text, disallowed_special=()))
+
+
+def token_starts(text):
+    """Encode text; return (tokens, starts) where starts[i] is the char offset
+    at which token i begins and starts[len(tokens)] == len(text).
+
+    Token byte sequences concatenate exactly to the utf-8 encoding of the text,
+    so cumulative token-byte lengths give byte offsets, which are then mapped
+    to char offsets. A token that begins mid-character (a multi-byte char split
+    across tokens) maps to that character's offset, so slicing the text at
+    starts[] never cuts a character in half.
+    """
+    enc = get_encoder()
+    tokens = enc.encode(text, disallowed_special=())
+    byte_ends = []  # byte offset just past char i
+    b = 0
+    for ch in text:
+        b += len(ch.encode("utf-8"))
+        byte_ends.append(b)
+    starts = []
+    ci = 0
+    pos = 0
+    for tok in tokens:
+        while ci < len(byte_ends) and byte_ends[ci] <= pos:
+            ci += 1
+        starts.append(ci)
+        pos += len(enc.decode_single_token_bytes(tok))
+    starts.append(len(text))
+    return tokens, starts
+
+
+def sentence_cap_tokens(n_per_chunk):
+    """Max tokens a sentence chunk may reach before it is force-split."""
+    return int(n_per_chunk * SENT_AVG_WORDS * SENT_TOKENS_PER_WORD * (1 + SENT_CAP_BUFFER))
+
+
+def sentence_min_tokens(n_per_chunk):
+    """Floor (tokens) a sentence-dynamic-min chunk must reach; it keeps absorbing
     sentences past n_per_chunk until met, so short fragments get packed together."""
-    return int(n_per_chunk * SENT_MIN_WORDS * SENT_CHARS_PER_WORD)
+    return int(n_per_chunk * SENT_MIN_WORDS * SENT_TOKENS_PER_WORD)
 
 
 def parse_type(type_str):
     """Return (method, size, overlap).
 
-    fixed_size:            size=chars/chunk, overlap=chars.
+    fixed_size:            size=tokens/chunk, overlap=tokens.
     sentence:              size=sentences/chunk, overlap=sentences (default 0).
     sentence-dynamic-min:  same params; packs past size until a min-chars floor.
     semantic:              size/overlap None.
@@ -155,7 +208,7 @@ def parse_overlap(overlap_str, size):
         try:
             overlap = int(overlap_str)
         except ValueError:
-            sys.exit(f"ERROR: invalid overlap '{overlap_str}' (must be an integer or percent like 10%)")
+            sys.exit(f"ERROR: invalid overlap '{overlap_str}' (must be an integer number of tokens or percent like 10%)")
         if overlap < 0:
             sys.exit("ERROR: overlap must be >= 0")
 
@@ -302,36 +355,44 @@ def build_full_text(pages):
 
 
 def fixed_size_chunks(pages, size, overlap):
-    """Concatenate page texts (newline-joined) and cut fixed-size overlapping chunks."""
+    """Concatenate page texts (newline-joined) and cut fixed-size overlapping
+    token windows, mapped back to char offsets so every chunk records exactly
+    where its boundaries fall in the text."""
     full_text, page_at = build_full_text(pages)
+    tokens, starts = token_starts(full_text)
 
     chunks = []
     step = size - overlap
-    start = 0
-    while start < len(full_text):
-        text = full_text[start:start + size]
-        end = start + len(text)
+    t = 0
+    while t < len(tokens):
+        t_end = min(t + size, len(tokens))
+        start = starts[t]
+        end = starts[t_end]
+        text = full_text[start:end]
         chunks.append({
             "chunk_index": len(chunks),
             "text": text,
             "start_char": start,
             "end_char": end,
             "num_chars": len(text),
+            "num_tokens": t_end - t,
             "start_page": page_at(start),
-            "end_page": page_at(end - 1),
+            "end_page": page_at(max(end - 1, start)),
         })
-        if end >= len(full_text):
+        if t_end >= len(tokens):
             break
-        start += step
+        t += step
     return chunks, len(full_text)
 
 
 def segment_sentences(full_text, cap):
-    """Split full_text into (sentence_text, start_char) pairs using pysbd.
+    """Split full_text into (sentence_text, start_char, num_tokens) triples
+    using pysbd.
 
-    Any single sentence longer than `cap` chars (almost always a flattened
-    table/chart with no real boundary) is hard-split into cap-sized pieces so
-    no downstream chunk can be oversized.
+    Any single sentence longer than `cap` tokens (almost always a flattened
+    table/chart with no real boundary) is hard-split into cap-sized token
+    windows, mapped back to char offsets, so no downstream chunk can be
+    oversized.
     """
     import pysbd  # local import: only needed for the sentence method
 
@@ -346,45 +407,49 @@ def segment_sentences(full_text, cap):
         if idx == -1:  # defensive: fall back to current cursor
             idx = cursor
         cursor = idx + len(sent)
-        if len(sent) <= cap:
-            out.append((sent, idx))
+        tokens, starts = token_starts(sent)
+        if len(tokens) <= cap:
+            out.append((sent, idx, len(tokens)))
         else:
-            for off in range(0, len(sent), cap):
-                out.append((sent[off:off + cap], idx + off))
+            for t in range(0, len(tokens), cap):
+                t_end = min(t + cap, len(tokens))
+                piece = sent[starts[t]:starts[t_end]]
+                if piece:
+                    out.append((piece, idx + starts[t], t_end - t))
     return out
 
 
-def sentence_chunks(pages, n_per_chunk, overlap, min_chars=None):
+def sentence_chunks(pages, n_per_chunk, overlap, min_tokens=None):
     """Group sentences into chunks of n_per_chunk (with sentence overlap).
 
-    A chunk closes early if adding the next sentence would exceed the char cap
-    derived from n_per_chunk, so table blobs can't inflate a chunk. If min_chars
-    is set (sentence-dynamic-min), a chunk instead keeps absorbing sentences
-    *past* n_per_chunk until it reaches the floor, so short pysbd fragments
-    (shredded tables) get packed together rather than left as tiny chunks.
+    A chunk closes early if adding the next sentence would exceed the token cap
+    derived from n_per_chunk, so table blobs can't inflate a chunk. If
+    min_tokens is set (sentence-dynamic-min), a chunk instead keeps absorbing
+    sentences *past* n_per_chunk until it reaches the floor, so short pysbd
+    fragments (shredded tables) get packed together rather than left as tiny
+    chunks.
     """
     full_text, page_at = build_full_text(pages)
-    cap = sentence_cap_chars(n_per_chunk)
+    cap = sentence_cap_tokens(n_per_chunk)
     sentences = segment_sentences(full_text, cap)
 
     chunks = []
     i = 0
     while i < len(sentences):
         group = []
-        chars = 0
+        toks = 0
         j = i
         while j < len(sentences):
-            sent, sstart = sentences[j]
-            addition = len(sent) + (1 if group else 0)  # +1 for joining space
+            sent, sstart, ntok = sentences[j]
             if group:
-                if chars + addition > cap:
+                if toks + ntok > cap:
                     break  # cap always wins: this sentence starts the next chunk
-                # Stop once we have enough sentences AND (if a floor is set) enough chars.
-                reached_floor = min_chars is None or chars >= min_chars
+                # Stop once we have enough sentences AND (if a floor is set) enough tokens.
+                reached_floor = min_tokens is None or toks >= min_tokens
                 if len(group) >= n_per_chunk and reached_floor:
                     break
             group.append((sent, sstart))
-            chars += addition
+            toks += ntok
             j += 1
 
         start_char = group[0][1]
@@ -397,6 +462,7 @@ def sentence_chunks(pages, n_per_chunk, overlap, min_chars=None):
             "start_char": start_char,
             "end_char": end_char,
             "num_chars": len(text),
+            "num_tokens": count_tokens(text),
             "num_sentences": len(group),
             "start_page": page_at(start_char),
             "end_page": page_at(end_char - 1),
@@ -461,18 +527,18 @@ def table_row_lines(table):
 
 
 def pack_lines(lines, cap):
-    """Group lines into newline-joined blocks of at most cap chars each."""
+    """Group lines into newline-joined blocks of at most cap tokens each
+    (joining newlines are not counted against the cap)."""
     blocks = []
     group = []
-    chars = 0
+    toks = 0
     for line in lines:
-        addition = len(line) + (1 if group else 0)
-        if group and chars + addition > cap:
+        ntok = count_tokens(line)
+        if group and toks + ntok > cap:
             blocks.append("\n".join(group))
-            group, chars = [], 0
-            addition = len(line)
+            group, toks = [], 0
         group.append(line)
-        chars += addition
+        toks += ntok
     if group:
         blocks.append("\n".join(group))
     return blocks
@@ -483,11 +549,11 @@ def plumber_struct_chunks(pages, n_per_chunk):
 
     Per page, in order: prose (the table-filtered 'text' field) is packed into
     sentence chunks with the dynamic-min floor; each detected table becomes
-    row chunks with header-labeled fields (packed up to the char cap); each
+    row chunks with header-labeled fields (packed up to the token cap); each
     embedded image becomes a small descriptor chunk. Every chunk records its
     source kind so downstream analysis can compare them."""
-    cap = sentence_cap_chars(n_per_chunk)
-    floor = sentence_min_chars(n_per_chunk)
+    cap = sentence_cap_tokens(n_per_chunk)
+    floor = sentence_min_tokens(n_per_chunk)
     chunks = []
     total_chars = 0
 
@@ -496,6 +562,7 @@ def plumber_struct_chunks(pages, n_per_chunk):
             "chunk_index": len(chunks),
             "text": text,
             "num_chars": len(text),
+            "num_tokens": count_tokens(text),
             "start_page": page,
             "end_page": page,
             "source": source,
@@ -506,7 +573,7 @@ def plumber_struct_chunks(pages, n_per_chunk):
         total_chars += len(p["text"])
         prose = p["text"].strip()
         if prose:
-            groups, _ = sentence_chunks([(p["page"], prose)], n_per_chunk, 0, min_chars=floor)
+            groups, _ = sentence_chunks([(p["page"], prose)], n_per_chunk, 0, min_tokens=floor)
             for g in groups:
                 add(g["text"], p["page"], "text",
                     {"num_sentences": g.get("num_sentences")})
@@ -534,7 +601,8 @@ def main():
     parser.add_argument(
         "--type",
         help="Chunk type: fixed_size:<size>:<overlap>, sentence, or semantic. "
-             "Overlap is characters, or percent of size if it ends with %%.",
+             "Size and overlap are tokens (cl100k_base); overlap may be a "
+             "percent of size if it ends with %%.",
     )
     parser.add_argument("--dataset", help="Dataset path (data/<extractor>/<date>/<title>) or list number")
     args = parser.parse_args()
@@ -554,8 +622,8 @@ def main():
         else:
             sys.exit(f"ERROR: '{choice}' is not a valid chunk type choice")
         if type_str == "fixed_size":
-            size_in = input("Chunk size (characters): ").strip()
-            overlap_in = input("Overlap (characters, or percent like 10%): ").strip()
+            size_in = input("Chunk size (tokens): ").strip()
+            overlap_in = input("Overlap (tokens, or percent like 10%): ").strip()
             type_str = f"fixed_size:{size_in}:{overlap_in}"
         elif type_str in SENTENCE_METHODS:
             n_in = input("Sentences per chunk: ").strip()
@@ -579,8 +647,8 @@ def main():
         pages = plumber_pages
     elif method in SENTENCE_METHODS:
         pages = load_and_validate_pages(ds)
-        min_chars = sentence_min_chars(size) if method == "sentence-dynamic-min" else None
-        chunks, total_chars = sentence_chunks(pages, size, overlap, min_chars=min_chars)
+        min_tokens = sentence_min_tokens(size) if method == "sentence-dynamic-min" else None
+        chunks, total_chars = sentence_chunks(pages, size, overlap, min_tokens=min_tokens)
     else:
         pages = load_and_validate_pages(ds)
         chunks, total_chars = fixed_size_chunks(pages, size, overlap)
@@ -598,10 +666,11 @@ def main():
         "total_chars": total_chars,
         "num_chunks": len(chunks),
     }
+    metadata["token_encoding"] = TOKEN_ENCODING
     if method == "plumber-struct":
         metadata["sentences_per_text_chunk"] = size
-        metadata["char_cap"] = sentence_cap_chars(size)
-        metadata["char_floor"] = sentence_min_chars(size)
+        metadata["token_cap"] = sentence_cap_tokens(size)
+        metadata["token_floor"] = sentence_min_tokens(size)
         by_source = {}
         for c in chunks:
             by_source[c["source"]] = by_source.get(c["source"], 0) + 1
@@ -609,12 +678,12 @@ def main():
     elif method in SENTENCE_METHODS:
         metadata["sentences_per_chunk"] = size
         metadata["overlap_sentences"] = overlap
-        metadata["char_cap"] = sentence_cap_chars(size)
+        metadata["token_cap"] = sentence_cap_tokens(size)
         if method == "sentence-dynamic-min":
-            metadata["char_floor"] = sentence_min_chars(size)
+            metadata["token_floor"] = sentence_min_tokens(size)
     else:
-        metadata["chunk_size"] = size
-        metadata["overlap"] = overlap
+        metadata["chunk_size_tokens"] = size
+        metadata["overlap_tokens"] = overlap
 
     result = {"metadata": metadata, "chunks": chunks}
 

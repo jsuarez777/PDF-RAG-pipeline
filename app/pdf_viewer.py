@@ -804,7 +804,7 @@ CHUNK_SPEC = re.compile(
 
 def chunk_spec_errors(spec: str) -> list[str]:
     """Numeric-rule violations for one chunk spec, mirroring the Run Pipeline
-    popup: fixed_size is character-based (size >= 20), sentence methods count
+    popup: fixed_size is token-based (size >= 20), sentence methods count
     sentences (size >= 1), and overlap is always >= 0 and below the size."""
     errs = []
     parts = spec.split(":")
@@ -812,7 +812,7 @@ def chunk_spec_errors(spec: str) -> list[str]:
     if method == "fixed_size":
         size = int(parts[1])
         if size < 20:
-            errs.append(f"{spec}: chunk size must be at least 20 characters")
+            errs.append(f"{spec}: chunk size must be at least 20 tokens")
         ov = parts[2]
         if ov.endswith("%"):
             if not 0 <= float(ov[:-1]) <= 90:
