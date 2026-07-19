@@ -39,6 +39,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from chunk_text import parse_type  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
+from rerank import DEFAULT_RERANK_MODEL, RERANK_PROVIDERS  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -120,12 +121,15 @@ def chunk_label(spec):
     return spec.replace(":", "_").replace("%", "pct")
 
 
-def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas):
+def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas,
+                          rerank=None):
     """One descriptor per (chunk config, retrieval variant) cell of the grid.
 
     embed_dbs maps each embedding model to the vector DBs chosen for it, so
     bm25 contributes one experiment per tokenizer, vector one per (model, db),
-    and hybrid one per (model, db) x tokenizer x alpha combination."""
+    and hybrid one per (model, db) x tokenizer x alpha combination. With a
+    reranker every experiment gains a *_rerank twin scored from the same
+    retrieval pass (eval_retrieval.py computes both in one run)."""
     experiments = []
     for spec in chunk_specs:
         label = chunk_label(spec)
@@ -154,6 +158,9 @@ def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas
                                 "embedding_model": model, "db": db, "tokenizer": tok,
                                 "alpha": alpha,
                             })
+    if rerank:
+        experiments += [{**exp, "experiment_id": exp["experiment_id"] + "_rerank",
+                         "rerank": rerank} for exp in experiments]
     return experiments
 
 
@@ -248,6 +255,9 @@ def match_experiment(experiments, chunk_spec, meta):
     for exp in experiments:
         if exp["chunk_type"] != chunk_spec or exp["retrieval"] != retrieval:
             continue
+        # a rerank eval only matches a rerank twin (and vice versa)
+        if bool(exp.get("rerank")) != bool(meta.get("rerank")):
+            continue
         if retrieval == "bm25" and exp["tokenizer"] == meta.get("tokenizer"):
             return exp
         if (retrieval == "vector" and exp["embedding_model"] == meta.get("embedding_model")
@@ -326,6 +336,12 @@ def main():
     parser.add_argument("--qa-model", default="gpt-4.1-mini",
                         help="Chat model for QA generation (default gpt-4.1-mini)")
     parser.add_argument("--seed", type=int, help="Random seed for QA chunk sampling")
+    parser.add_argument("--rerank", choices=("none",) + RERANK_PROVIDERS, default="none",
+                        help="Rerank each experiment's top-k results and report metrics "
+                             "both without and with reranking — the without-rerank twin "
+                             "comes from the same retrieval pass (default none)")
+    parser.add_argument("--rerank-model", default=DEFAULT_RERANK_MODEL,
+                        help=f"Rerank model for --rerank (default {DEFAULT_RERANK_MODEL})")
     parser.add_argument("--topk", type=int, default=10, help="Results per query (default 10)")
     parser.add_argument("--ks", default="1,3,5,10",
                         help="Metric cutoffs, comma-separated (default 1,3,5,10)")
@@ -355,9 +371,17 @@ def main():
     alphas = list(dict.fromkeys(alphas))
     if args.qa_num <= 0:
         sys.exit("ERROR: --qa-num must be > 0")
+    try:
+        ks_list = sorted({int(k) for k in args.ks.split(",") if k.strip()})
+    except ValueError:
+        sys.exit("ERROR: --ks must be comma-separated integers")
+    if not ks_list or ks_list[0] <= 0:
+        sys.exit("ERROR: --ks cutoffs must be positive integers")
+    ks_arg = ",".join(str(k) for k in ks_list)
 
+    rerank = None if args.rerank == "none" else args.rerank
     experiments = enumerate_experiments(chunk_specs, embed_dbs, tokenizers,
-                                        retrievals, alphas)
+                                        retrievals, alphas, rerank=rerank)
     log.info(f"Pipeline grid: {len(chunk_specs)} chunk config(s) -> "
              f"{len(experiments)} experiment(s)")
     for exp in experiments:
@@ -437,13 +461,15 @@ def main():
         if "vector" in retrievals:
             eval_dbs += [rel(p) for p in vector_files]
         eval_cmd = [sys.executable, str(SCRIPT_DIR / "eval_retrieval.py"),
-                    "--qa", rel(qa_file), "--topk", str(args.topk), "--ks", args.ks]
+                    "--qa", rel(qa_file), "--topk", str(args.topk), "--ks", ks_arg]
         if eval_dbs:
             eval_cmd += ["--db", ",".join(eval_dbs)]
         if "hybrid" in retrievals:
             pairs = [f"{rel(v)}+{rel(b)}" for v in vector_files for b in bm25_files]
             eval_cmd += ["--hybrid", ",".join(pairs),
                          "--alpha", ",".join(f"{a:g}" for a in alphas)]
+        if rerank:
+            eval_cmd += ["--rerank", rerank, "--rerank-model", args.rerank_model]
         eval_dir = title_dir / "evaluations"
         before = snapshot(eval_dir, "eval_*.json")
         run_step(eval_cmd)
@@ -465,6 +491,7 @@ def main():
                 "db": meta.get("db_type") if meta.get("db_type") != "bm25" else None,
                 "tokenizer": meta.get("tokenizer"),
                 "alpha": meta.get("alpha"),
+                "rerank": meta.get("rerank"),
                 "metrics": overall,
             }
             all_rows.append(row)
@@ -475,7 +502,7 @@ def main():
 
     # ------------------------------------------------------------- reporting
     all_rows.sort(key=lambda r: -(r["metrics"].get("mrr") or 0))
-    ks_last = max(int(k) for k in args.ks.split(","))
+    ks_last = ks_list[-1]
     log.info("")
     print_summary(all_rows, ks_last)
 
@@ -500,8 +527,10 @@ def main():
             "qa_types": qa_types,
             "qa_model": args.qa_model,
             "seed": args.seed,
+            "rerank": rerank,
+            "rerank_model": args.rerank_model if rerank else None,
             "topk": args.topk,
-            "ks": args.ks,
+            "ks": ks_list,
             "num_experiments": len(all_rows),
         },
         "chunk_configs": per_chunk,

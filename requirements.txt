@@ -1,4 +1,5 @@
 chromadb>=0.5
+cohere>=5.13
 easyocr>=1.7
 filelock>=3.0
 flask>=3.0

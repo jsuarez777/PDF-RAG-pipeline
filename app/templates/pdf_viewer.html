@@ -367,6 +367,8 @@
         <button type="button" class="info-btn" data-info="topk" title="About Top-K">i</button></label>
       <label>Cutoffs <input id="eval-ks" type="text" value="1,3,5,10">
         <button type="button" class="info-btn" data-info="cutoffs" title="About cutoffs">i</button></label>
+      <label><input type="checkbox" id="eval-rerank"> Cohere rerank (metrics with &amp; without)
+        <button type="button" class="info-btn" data-info="rerank" title="About reranking">i</button></label>
       <label><input type="checkbox" id="eval-force"> Force (ignore chunk-run mismatch)</label>
       <button id="eval-go" class="primary">Evaluate</button>
     </div>
@@ -443,6 +445,8 @@
             <input class="ph-slider" type="range" min="0" max="1" step="0.05" value="0.7">
             vector (&alpha;) = <span class="ph-vec-w"></span></div>
         </div>
+        <label><input type="checkbox" id="pipe-rerank"> Cohere rerank (metrics with &amp; without)
+          <button type="button" class="info-btn" data-info="rerank" title="About reranking">i</button></label>
       </div>
       <div class="sec-head"><small>QA generation</small>
         <button type="button" class="info-btn" data-info="qa" title="About QA generation">i</button></div>
@@ -1043,7 +1047,8 @@ function humanStamp(s) {
 function evalLabel(e) {
   const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
   const m = e.metadata || {};
-  return [humanStamp(ts), m.db_type, m.embedding_model].filter(Boolean).join(' · ');
+  return [humanStamp(ts), m.db_type, m.embedding_model,
+          m.rerank && `${m.rerank} rerank`].filter(Boolean).join(' · ');
 }
 
 async function selectEval(file) {
@@ -1629,6 +1634,7 @@ $('eval-go').onclick = async () => {
     topk: parseInt($('eval-topk').value, 10),
     ks: $('eval-ks').value.trim(),
     force: $('eval-force').checked,
+    rerank: $('eval-rerank').checked,
   };
   closeMenus();
   const doc = current;
@@ -1755,6 +1761,21 @@ const INFO = {
          question reworded away from the chunk's wording, stressing semantic
          matching.</p>`,
   },
+  rerank: {
+    title: 'Cohere rerank',
+    html: `
+      <p>A <b>reranker</b> is a second-stage model (Cohere's rerank API) that
+         reads the query together with each retrieved chunk and rescores them
+         jointly — more accurate than first-stage retrieval, but only practical
+         over a small candidate list. The top-K results from each retrieval
+         method are reordered by relevance.</p>
+      <p>Metrics are captured from the ranked list right <i>before</i> reranking
+         and again after, so one run reports both: reranked results appear as a
+         separate <code>…_rerank</code> experiment/eval alongside its
+         without-rerank twin. Retrieval and QA generation are not repeated.</p>
+      <p>Needs a <code>COHERE_API_KEY</code>; one rerank API call is made per
+         question.</p>`,
+  },
   topk: {
     title: 'Top-K',
     html: `<p>How many chunks each retrieval method returns per query. Metrics
@@ -1874,17 +1895,20 @@ function pipeConfig() {
     qa_types: vals('.pqat'),
     topk: parseInt($('pipe-topk').value, 10),
     ks: $('pipe-ks').value.trim(),
+    rerank: $('pipe-rerank').checked,
   };
 }
 /* bm25 runs once per tokenizer, vector once per embedding model, hybrid once
-   per embedding x tokenizer pair — all times the number of chunk configs. */
+   per embedding x tokenizer pair — all times the number of chunk configs.
+   Reranking doubles the reported experiments (each gets a _rerank twin scored
+   from the same retrieval pass, so retrieval itself is not repeated). */
 function pipePermutations(cfg) {
   let perChunk = 0;
   if (cfg.retrievals.includes('bm25')) perChunk += cfg.tokenizers.length;
   if (cfg.retrievals.includes('vector')) perChunk += cfg.vector_configs.length;
   if (cfg.retrievals.includes('hybrid'))
     perChunk += cfg.vector_configs.length * cfg.tokenizers.length * cfg.alphas.length;
-  return cfg.chunk_types.length * perChunk;
+  return cfg.chunk_types.length * perChunk * (cfg.rerank ? 2 : 1);
 }
 function updatePipeCount() {
   const n = pipePermutations(pipeConfig());
@@ -2188,6 +2212,7 @@ function expDesc(e) {
   if (e.db && e.db !== e.retrieval) parts.push(e.db);
   if (e.tokenizer) parts.push(e.tokenizer);
   if (e.alpha != null) parts.push(`α=${e.alpha}`);
+  if (e.rerank) parts.push(`${e.rerank} rerank`);
   if (e.chunk_type) parts.push(e.chunk_type);
   return parts.join(' · ');
 }
@@ -2266,6 +2291,7 @@ function renderPipelineModal(runs, index, sort) {
     { key: 'retrieval', label: 'Retrieval Type',
       get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
     { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
+    { key: 'rerank', label: 'Rerank', get: e => e.rerank },
   ].filter(c => experiments.some(e => c.get(e) != null));
   cols.push(
     { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],

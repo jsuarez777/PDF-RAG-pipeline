@@ -21,6 +21,11 @@ metrics are computed at every cutoff in --ks from the same ranked list:
 Each question has a single gold chunk, so per question Recall@K is 0/1
 (hit rate), Precision@K = Recall@K / K, MAP == MRR, and IDCG == 1.
 
+With --rerank cohere, each question's top-k results are additionally reordered
+by the Cohere rerank API and scored again. Metrics are taken from the ranked
+list right before reranking, so one retrieval run yields both without-rerank
+and with-rerank numbers (the latter in a separate eval_*_rerank.json).
+
 Outputs one eval_<dt>_<index>.json per index under <title>/evaluations/ with
 per-question records and aggregate metrics (overall and per question_type),
 plus an eval_summary_<dt>.json comparison when several indexes are evaluated.
@@ -43,6 +48,11 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from logging_utils import setup_logging  # noqa: E402
+from rerank import (  # noqa: E402
+    DEFAULT_RERANK_MODEL,
+    RERANK_PROVIDERS,
+    rerank_results,
+)
 from retriever_topk import (  # noqa: E402
     DEFAULT_ALPHA,
     EXTRACTORS,
@@ -328,12 +338,44 @@ def aggregate(records, ks):
     return out
 
 
-def evaluate_db(run_search, questions, vectors, ks, hybrid=False):
-    """Run every question against one index; return (records, aggregates).
+def make_record(q, results, elapsed):
+    return {
+        "chunk_index": q["chunk_index"],
+        "question_type": q["question_type"],
+        "question": q["question"],
+        "answer": q["answer"],
+        "gold_rank": gold_rank(results, q["chunk_index"]),
+        "retrieval_seconds": elapsed,
+        "retrieved": [
+            {"rank": r["rank"], "chunk_index": r["chunk"].get("chunk_index"),
+             "score": r["score"], "similarity": r["similarity"],
+             **({"pre_rerank_rank": r["pre_rerank_rank"]} if "pre_rerank_rank" in r else {}),
+             "text": r["chunk"].get("text")}
+            for r in results
+        ],
+    }
+
+
+def summarize(records, ks):
+    aggregates = {"overall": aggregate(records, ks)}
+    by_type = {}
+    for r in records:
+        by_type.setdefault(r["question_type"], []).append(r)
+    aggregates["by_question_type"] = {
+        qtype: aggregate(recs, ks) for qtype, recs in sorted(by_type.items())
+    }
+    return aggregates
+
+
+def evaluate_db(run_search, questions, vectors, ks, hybrid=False, reranker=None):
+    """Run every question against one index; return (records, aggregates,
+    rerank_records, rerank_aggregates) — the rerank pair is None without a
+    reranker. Base metrics come from the ranked list right before reranking,
+    so a single retrieval pass yields both sets of numbers.
 
     hybrid searchers need both the question text and its embedding, so their
     run_search takes a (text, vector) tuple."""
-    records = []
+    records, rerank_records = [], []
     for i, q in enumerate(questions, 1):
         print(f"  [{i}/{len(questions)}] querying ...", end="\r", flush=True)
         if hybrid:
@@ -343,30 +385,20 @@ def evaluate_db(run_search, questions, vectors, ks, hybrid=False):
         started = time.perf_counter()
         results = run_search(query)
         elapsed = time.perf_counter() - started
-        records.append({
-            "chunk_index": q["chunk_index"],
-            "question_type": q["question_type"],
-            "question": q["question"],
-            "answer": q["answer"],
-            "gold_rank": gold_rank(results, q["chunk_index"]),
-            "retrieval_seconds": elapsed,
-            "retrieved": [
-                {"rank": r["rank"], "chunk_index": r["chunk"].get("chunk_index"),
-                 "score": r["score"], "similarity": r["similarity"],
-                 "text": r["chunk"].get("text")}
-                for r in results
-            ],
-        })
+        records.append(make_record(q, results, elapsed))
+        if reranker:
+            started = time.perf_counter()
+            reranked = reranker(q["question"], results)
+            rr_elapsed = time.perf_counter() - started
+            # total time to produce the reranked list = retrieval + rerank
+            record = make_record(q, reranked, elapsed + rr_elapsed)
+            record["rerank_seconds"] = rr_elapsed
+            rerank_records.append(record)
     print()
 
-    aggregates = {"overall": aggregate(records, ks)}
-    by_type = {}
-    for r in records:
-        by_type.setdefault(r["question_type"], []).append(r)
-    aggregates["by_question_type"] = {
-        qtype: aggregate(recs, ks) for qtype, recs in sorted(by_type.items())
-    }
-    return records, aggregates
+    return (records, summarize(records, ks),
+            rerank_records or None,
+            summarize(rerank_records, ks) if rerank_records else None)
 
 
 def print_aggregates(aggregates, ks):
@@ -401,6 +433,12 @@ def main():
     parser.add_argument("--ks", default=DEFAULT_KS,
                         help=f"Metric cutoffs, comma-separated (default {DEFAULT_KS}; "
                              "--topk is always included)")
+    parser.add_argument("--rerank", choices=RERANK_PROVIDERS,
+                        help="Also rerank each question's top-k results with this provider "
+                             "and report with-rerank metrics alongside the without-rerank "
+                             "ones (retrieval runs once per question either way)")
+    parser.add_argument("--rerank-model", default=DEFAULT_RERANK_MODEL,
+                        help=f"Rerank model for --rerank (default {DEFAULT_RERANK_MODEL})")
     parser.add_argument("--force", action="store_true",
                         help="Evaluate even if an index was built from a different chunk run")
     args = parser.parse_args()
@@ -459,6 +497,11 @@ def main():
     out_dir = qa["title_dir"] / "evaluations"
     out_dir.mkdir(exist_ok=True)
 
+    reranker = None
+    if args.rerank:
+        reranker = lambda query, results: rerank_results(  # noqa: E731
+            query, results, model=args.rerank_model)
+
     summary_rows = []
     for db, method, run_search in searchers:
         log.info(f"\nEvaluating {db['rel']} ...")
@@ -473,38 +516,50 @@ def main():
         else:
             vectors = vectors_by_model[method]
             method_meta = {"embedding_model": method}
-        records, aggregates = evaluate_db(run_search, questions, vectors, ks,
-                                          hybrid=db["type"] == "hybrid")
+        records, aggregates, rr_records, rr_aggregates = evaluate_db(
+            run_search, questions, vectors, ks,
+            hybrid=db["type"] == "hybrid", reranker=reranker)
 
-        out = {
-            "metadata": {
-                "datetime": now.isoformat(timespec="seconds"),
-                "qa_file": qa["rel"],
-                "chunk_run": qa_chunk_run,
+        stem = db["stem"] if db["type"] == "hybrid" else db["path"].stem
+        variants = [(stem, {}, records, aggregates)]
+        if rr_records:
+            variants.append((f"{stem}_rerank",
+                             {"rerank": args.rerank, "rerank_model": args.rerank_model},
+                             rr_records, rr_aggregates))
+        for out_stem, rerank_meta, out_records, out_aggregates in variants:
+            out = {
+                "metadata": {
+                    "datetime": now.isoformat(timespec="seconds"),
+                    "qa_file": qa["rel"],
+                    "chunk_run": qa_chunk_run,
+                    "db": db["rel"],
+                    "db_type": db["type"],
+                    **method_meta,
+                    **rerank_meta,
+                    "top_k": args.topk,
+                    "ks": ks,
+                    "num_questions": len(questions),
+                    "relevance": RELEVANCE_NOTE,
+                },
+                "aggregates": out_aggregates,
+                "questions": out_records,
+            }
+            out_file = out_dir / f"eval_{stamp}_{out_stem}.json"
+            out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+
+            if rerank_meta:
+                log.info(f"  with {rerank_meta['rerank']} rerank ({rerank_meta['rerank_model']}):")
+            print_aggregates(out_aggregates, ks)
+            log.info(f"    -> {out_file.relative_to(ROOT)}")
+            summary_rows.append({
                 "db": db["rel"],
                 "db_type": db["type"],
                 **method_meta,
-                "top_k": args.topk,
-                "ks": ks,
-                "num_questions": len(questions),
-                "relevance": RELEVANCE_NOTE,
-            },
-            "aggregates": aggregates,
-            "questions": records,
-        }
-        out_file = out_dir / f"eval_{stamp}_{db['stem'] if db['type'] == 'hybrid' else db['path'].stem}.json"
-        out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
-
-        print_aggregates(aggregates, ks)
-        log.info(f"    -> {out_file.relative_to(ROOT)}")
-        summary_rows.append({
-            "db": db["rel"],
-            "db_type": db["type"],
-            **method_meta,
-            "eval_file": out_file.name,
-            "overall": aggregates["overall"],
-            "by_question_type": aggregates["by_question_type"],
-        })
+                **rerank_meta,
+                "eval_file": out_file.name,
+                "overall": out_aggregates["overall"],
+                "by_question_type": out_aggregates["by_question_type"],
+            })
 
     if len(summary_rows) > 1:
         summary = {

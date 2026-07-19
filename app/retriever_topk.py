@@ -36,6 +36,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from embedding_backends import embed_local, is_local_model  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
+from rerank import (  # noqa: E402
+    DEFAULT_RERANK_MODEL,
+    RERANK_PROVIDERS,
+    rerank_results,
+)
 
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
 
@@ -384,6 +389,10 @@ def main():
     parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
                         help="Hybrid weight of the vector score; bm25 gets 1-alpha "
                              f"(default {DEFAULT_ALPHA})")
+    parser.add_argument("--rerank", choices=RERANK_PROVIDERS,
+                        help="Rerank the retrieved top-k with this provider before reporting")
+    parser.add_argument("--rerank-model", default=DEFAULT_RERANK_MODEL,
+                        help=f"Rerank model for --rerank (default {DEFAULT_RERANK_MODEL})")
     parser.add_argument("--query-text", help="Query as a string")
     parser.add_argument("--query-json", help='Query json file: {"type": "text", "query": "..."}')
     args = parser.parse_args()
@@ -436,6 +445,14 @@ def main():
         }
     if len(results) < k:
         log.warning(f"WARNING: index only returned {len(results)} results (asked for {k})")
+
+    if args.rerank:
+        log.info(f"Reranking top {len(results)} with {args.rerank} ({args.rerank_model}) ...")
+        results = rerank_results(query, results, model=args.rerank_model)
+        method_meta["rerank"] = args.rerank
+        method_meta["rerank_model"] = args.rerank_model
+        method_meta["similarity"] = (f"{args.rerank} rerank relevance in [0, 1] over the "
+                                     f"top-{k} first-stage results ({method_meta['similarity']})")
 
     now = datetime.now()
     out = {

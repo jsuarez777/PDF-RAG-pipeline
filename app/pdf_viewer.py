@@ -754,6 +754,7 @@ def run_eval(dtype: str, run: str, name: str):
         "dtype": dtype, "run": run, "name": name,
         "db_arg": db_arg, "topk": topk, "ks": ks,
         "force": bool(payload.get("force")),
+        "rerank": bool(payload.get("rerank")),
     })
 
 
@@ -769,6 +770,8 @@ def job_eval(uid: int, params: dict) -> list:
            "--ks", params["ks"]]
     if params.get("force"):
         cmd.append("--force")
+    if params.get("rerank"):
+        cmd += ["--rerank", "cohere"]
 
     started = time.time()
     code = run_and_stream(cmd, env=user_env(uid))
@@ -902,6 +905,7 @@ def run_full_pipeline(dtype: str, run: str, name: str):
         "qa_num": qa_num, "qa_types": qa_types,
         "topk": topk, "ks": ks,
         "vector_configs": vector_configs, "seed": seed,
+        "rerank": bool(payload.get("rerank")),
     })
 
 
@@ -920,6 +924,8 @@ def job_pipeline(uid: int, params: dict) -> dict:
         cmd += ["--vector-configs", params["vector_configs"]]
     if params.get("seed") is not None:
         cmd += ["--seed", str(params["seed"])]
+    if params.get("rerank"):
+        cmd += ["--rerank", "cohere"]
 
     started = time.time()
     code = run_and_stream(cmd, env=user_env(uid))
