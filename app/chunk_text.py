@@ -6,7 +6,7 @@ Datasets live under data/{pdf2image,pdfplumber}/<date>/<title>/.
   - pdfplumber: page_N.json,         text field "full_text"
 
 Chunk types: fixed_size, sentence, sentence-dynamic-min, plumber-struct,
-semantic (semantic not yet implemented).
+semantic.
   fixed_size:<size>:<overlap>       size/overlap in tokens (tiktoken cl100k_base,
                                     the encoding of the OpenAI embedding models
                                     used downstream); overlap may also be a
@@ -24,6 +24,15 @@ semantic (semantic not yet implemented).
                                     header-labeled row chunks, images as
                                     descriptor chunks; each chunk records its
                                     source kind.
+  semantic:<max>[:<percentile>]     embed each sentence and cut a chunk wherever
+                                    the topic shifts (cosine distance between
+                                    consecutive sentences above the <percentile>
+                                    of all such distances, default 90) or adding
+                                    the next sentence would exceed <max> tokens.
+                                    Groups sentences by meaning while keeping
+                                    every chunk under the token cap. Requires an
+                                    OpenAI API key (embeds with
+                                    text-embedding-3-small).
 """
 
 import argparse
@@ -39,6 +48,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
             else ROOT / "data")  # per-user override set by the web viewer
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(ROOT))  # so semantic chunking can import the openai_client package
 
 from logging_utils import setup_logging  # noqa: E402
 
@@ -56,6 +66,11 @@ SENTENCE_METHODS = ("sentence", "sentence-dynamic-min")
 
 # plumber-struct: sentences packed per text chunk when no :n is given.
 PLUMBER_STRUCT_DEFAULT_SENTENCES = 5
+
+# semantic: embedding model used to score sentence-to-sentence topic shifts, and
+# the default breakpoint percentile (top 10% largest distances become seams).
+SEMANTIC_EMBED_MODEL = "text-embedding-3-small"
+SEMANTIC_DEFAULT_PERCENTILE = 90
 
 PAGE_RE = re.compile(r"^page_(\d+)")
 
@@ -134,7 +149,7 @@ def parse_type(type_str):
     fixed_size:            size=tokens/chunk, overlap=tokens.
     sentence:              size=sentences/chunk, overlap=sentences (default 0).
     sentence-dynamic-min:  same params; packs past size until a min-chars floor.
-    semantic:              size/overlap None.
+    semantic:              size=max tokens/chunk, overlap=breakpoint percentile.
     """
     parts = type_str.split(":")
     method = parts[0]
@@ -175,10 +190,24 @@ def parse_type(type_str):
                 sys.exit("ERROR: sentences per chunk must be > 0")
         return method, size, 0
 
-    if method != "fixed_size":
-        if len(parts) > 1:
-            sys.exit(f"ERROR: chunk type '{method}' does not take extra parameters")
-        return method, None, None
+    if method == "semantic":
+        if len(parts) not in (2, 3):
+            sys.exit("ERROR: semantic must be of form semantic:<max tokens>[:<breakpoint percentile>], e.g. semantic:512 or semantic:512:90")
+        try:
+            size = int(parts[1])
+        except ValueError:
+            sys.exit(f"ERROR: invalid max tokens '{parts[1]}' (must be an integer)")
+        if size <= 0:
+            sys.exit("ERROR: max tokens must be > 0")
+        percentile = SEMANTIC_DEFAULT_PERCENTILE
+        if len(parts) == 3:
+            try:
+                percentile = int(parts[2])
+            except ValueError:
+                sys.exit(f"ERROR: invalid breakpoint percentile '{parts[2]}' (must be an integer)")
+            if not 0 < percentile < 100:
+                sys.exit("ERROR: breakpoint percentile must be between 1 and 99")
+        return method, size, percentile
 
     if len(parts) != 3:
         sys.exit("ERROR: fixed_size must be of form fixed_size:<chunk size>:<overlap>, e.g. fixed_size:100:20 or fixed_size:200:10%")
@@ -596,6 +625,107 @@ def plumber_struct_chunks(pages, n_per_chunk):
     return chunks, total_chars
 
 
+def percentile(values, pct):
+    """Linear-interpolated percentile of a list (pct in 1..99). Empty -> 0.0."""
+    if not values:
+        return 0.0
+    s = sorted(values)
+    if len(s) == 1:
+        return s[0]
+    rank = (pct / 100) * (len(s) - 1)
+    lo = int(rank)
+    hi = min(lo + 1, len(s) - 1)
+    return s[lo] + (s[hi] - s[lo]) * (rank - lo)
+
+
+def embed_sentences(texts):
+    """Embed sentence strings with the semantic-chunk embedding model.
+
+    Returns one vector per input text, in order. OpenAI embeddings are
+    unit-norm, so a dot product of two vectors is their cosine similarity."""
+    from openai_client.openai_client import MyOpenAIClient  # local: only for semantic
+
+    api = MyOpenAIClient(model=SEMANTIC_EMBED_MODEL)
+    api.validate_api_key()
+    client = api.get_client()
+
+    vectors = []
+    batch = 128  # matches embed_chunks.py's embedding batch size
+    for start in range(0, len(texts), batch):
+        resp = client.embeddings.create(model=SEMANTIC_EMBED_MODEL, input=texts[start:start + batch])
+        vectors.extend(item.embedding for item in resp.data)
+        log.info(f"  embedded {min(start + batch, len(texts))}/{len(texts)} sentences")
+    if len(vectors) != len(texts):
+        sys.exit(f"ERROR: got {len(vectors)} embeddings for {len(texts)} sentences")
+    return vectors
+
+
+def cosine_distance(a, b):
+    """1 - cosine similarity of two (unit-norm) embedding vectors."""
+    return 1.0 - sum(x * y for x, y in zip(a, b))
+
+
+def semantic_chunks(pages, max_tokens, breakpoint_percentile):
+    """Group sentences into chunks by meaning, bounded by max_tokens.
+
+    Each sentence is embedded and the cosine distance between consecutive
+    sentence embeddings measures how far the topic shifts across that boundary.
+    A chunk is closed when either that distance is a "seam" (>= the given
+    percentile of all consecutive distances, so the largest topic shifts end a
+    chunk) or adding the next sentence would exceed max_tokens (the hard cap
+    always wins). Any single sentence longer than max_tokens was already
+    hard-split by segment_sentences, so every chunk stays under the cap.
+
+    Char offsets are carried through so each chunk records where it falls in the
+    concatenated page text, exactly like the other chunkers.
+    """
+    full_text, page_at = build_full_text(pages)
+    sentences = segment_sentences(full_text, max_tokens)
+    if not sentences:
+        return [], len(full_text)
+
+    vectors = embed_sentences([s for s, _, _ in sentences])
+    distances = [cosine_distance(vectors[i], vectors[i + 1]) for i in range(len(vectors) - 1)]
+    threshold = percentile(distances, breakpoint_percentile) if distances else None
+
+    chunks = []
+    group = []  # (sentence_text, start_char)
+    toks = 0
+
+    def flush():
+        nonlocal group, toks
+        if not group:
+            return
+        start_char = group[0][1]
+        last_sent, last_start = group[-1]
+        end_char = last_start + len(last_sent)
+        text = full_text[start_char:end_char]
+        chunks.append({
+            "chunk_index": len(chunks),
+            "text": text,
+            "start_char": start_char,
+            "end_char": end_char,
+            "num_chars": len(text),
+            "num_tokens": count_tokens(text),
+            "num_sentences": len(group),
+            "start_page": page_at(start_char),
+            "end_page": page_at(end_char - 1),
+        })
+        group, toks = [], 0
+
+    for i, (sent, sstart, ntok) in enumerate(sentences):
+        # Cap wins: close the current chunk before a sentence that would overflow it.
+        if group and toks + ntok > max_tokens:
+            flush()
+        group.append((sent, sstart))
+        toks += ntok
+        # Close the chunk on a semantic seam right after this sentence.
+        if threshold is not None and i < len(distances) and distances[i] >= threshold:
+            flush()
+    flush()  # trailing sentences
+    return chunks, len(full_text)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Chunk extracted dataset text.")
     parser.add_argument(
@@ -633,10 +763,12 @@ def main():
             n_in = input(f"Sentences per text chunk (blank for {PLUMBER_STRUCT_DEFAULT_SENTENCES}): ").strip()
             if n_in:
                 type_str = f"plumber-struct:{n_in}"
+        elif type_str == "semantic":
+            mt_in = input("Max tokens per chunk: ").strip()
+            pctl_in = input(f"Breakpoint percentile (blank for {SEMANTIC_DEFAULT_PERCENTILE}): ").strip()
+            type_str = f"semantic:{mt_in}:{pctl_in}" if pctl_in else f"semantic:{mt_in}"
 
     method, size, overlap = parse_type(type_str)
-    if method == "semantic":
-        sys.exit(f"ERROR: chunk type '{method}' is not implemented yet")
 
     datasets = scan_datasets()
     ds = choose_dataset(datasets, preselect=args.dataset)
@@ -649,6 +781,9 @@ def main():
         pages = load_and_validate_pages(ds)
         min_tokens = sentence_min_tokens(size) if method == "sentence-dynamic-min" else None
         chunks, total_chars = sentence_chunks(pages, size, overlap, min_tokens=min_tokens)
+    elif method == "semantic":
+        pages = load_and_validate_pages(ds)
+        chunks, total_chars = semantic_chunks(pages, size, overlap)
     else:
         pages = load_and_validate_pages(ds)
         chunks, total_chars = fixed_size_chunks(pages, size, overlap)
@@ -681,6 +816,10 @@ def main():
         metadata["token_cap"] = sentence_cap_tokens(size)
         if method == "sentence-dynamic-min":
             metadata["token_floor"] = sentence_min_tokens(size)
+    elif method == "semantic":
+        metadata["max_tokens"] = size
+        metadata["breakpoint_percentile"] = overlap
+        metadata["embedding_model"] = SEMANTIC_EMBED_MODEL
     else:
         metadata["chunk_size_tokens"] = size
         metadata["overlap_tokens"] = overlap

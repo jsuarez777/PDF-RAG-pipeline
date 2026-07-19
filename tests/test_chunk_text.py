@@ -71,7 +71,14 @@ def test_parse_overlap_just_below_size_ok(caplog):
         "sentence:5:5",           # sentence overlap must be below the chunk size
         "sentence:5:1:2",         # too many parts
         "sentence-dynamic-min",   # same rules as sentence
-        "semantic:5",             # semantic takes no params
+        "semantic",               # missing max tokens
+        "semantic:abc",           # non-integer max tokens
+        "semantic:0",             # max tokens must be > 0
+        "semantic:-100",          # negative max tokens
+        "semantic:100:0",         # percentile must be > 0
+        "semantic:100:100",       # percentile must be < 100
+        "semantic:100:abc",       # non-integer percentile
+        "semantic:100:90:1",      # too many parts
     ],
 )
 def test_parse_type_rejects_bad_specs(spec):
@@ -89,8 +96,10 @@ def test_parse_no_warning_at_exactly_half(caplog):
     assert "WARNING" not in caplog.text
 
 
-def test_parse_semantic_takes_no_params():
-    assert chunk_text.parse_type("semantic") == ("semantic", None, None)
+def test_parse_semantic_specs():
+    assert chunk_text.parse_type("semantic:512") == (
+        "semantic", 512, chunk_text.SEMANTIC_DEFAULT_PERCENTILE)
+    assert chunk_text.parse_type("semantic:512:75") == ("semantic", 512, 75)
 
 
 def test_parse_sentence_specs():
@@ -280,10 +289,10 @@ def test_main_end_to_end(data_root, monkeypatch):
     assert chunks[-1]["end_char"] == meta["total_chars"]
 
 
-def test_main_rejects_unimplemented_type(data_root, monkeypatch):
+def test_main_rejects_bad_semantic_spec(data_root, monkeypatch):
     with pytest.raises(SystemExit) as exc:
-        run_main(monkeypatch, "--type", "semantic")
-    assert "not implemented" in str(exc.value)
+        run_main(monkeypatch, "--type", "semantic:0")
+    assert "max tokens" in str(exc.value)
 
 
 def test_main_bad_overlap_exits_before_dataset_prompt(data_root, monkeypatch):
@@ -325,6 +334,44 @@ def test_pack_lines_respects_cap():
     assert blocks == [lines[0] + "\n" + lines[1], lines[2]]
     # a single oversized line still becomes its own block
     assert chunk_text.pack_lines([lines[0]], cap=1) == [lines[0]]
+
+
+# ----------------------------------------------------------- semantic_chunks
+
+def test_semantic_chunks_splits_on_topic_shift(monkeypatch):
+    """Two topics, four sentences: a big embedding-distance seam should split
+    the chunk between the pet sentences and the finance sentences, with the
+    embedding call mocked so the test needs no live API access."""
+    pages = [(1, "Cats are great pets. Dogs are loyal too. "
+                  "The stock market fell sharply. Interest rates rose again.")]
+    # Two on-axis clusters: distance within a cluster is 0, across is 1.
+    fake_vectors = [[1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, 1.0]]
+
+    def fake_embed(texts):
+        assert len(texts) == len(fake_vectors)
+        return fake_vectors
+
+    monkeypatch.setattr(chunk_text, "embed_sentences", fake_embed)
+    chunks, total = chunk_text.semantic_chunks(pages, max_tokens=1000, breakpoint_percentile=90)
+    assert total == len(pages[0][1])
+    assert [c["num_sentences"] for c in chunks] == [2, 2]
+    assert "Cats" in chunks[0]["text"] and "Dogs" in chunks[0]["text"]
+    assert "stock market" in chunks[1]["text"] and "Interest rates" in chunks[1]["text"]
+    assert chunks[0]["end_char"] <= chunks[1]["start_char"]
+
+
+def test_semantic_chunks_respects_max_tokens_cap(monkeypatch):
+    """Even with no embedding-distance seam, the token cap must still close a
+    chunk before it overflows."""
+    pages = [(1, "Cats are great pets. Dogs are loyal too. Birds can sing well.")]
+    fake_vectors = [[1.0, 0.0], [1.0, 0.0], [1.0, 0.0]]  # identical -> no seams
+
+    monkeypatch.setattr(chunk_text, "embed_sentences", lambda texts: fake_vectors)
+    sentence_tokens = chunk_text.count_tokens("Cats are great pets.")
+    chunks, _ = chunk_text.semantic_chunks(
+        pages, max_tokens=sentence_tokens + 1, breakpoint_percentile=90)
+    assert len(chunks) > 1
+    assert all(c["num_tokens"] <= sentence_tokens + 1 for c in chunks)
 
 
 def test_plumber_struct_chunks_sources():
