@@ -99,26 +99,56 @@ def test_parse_sentence_specs():
     assert chunk_text.parse_type("sentence-dynamic-min:3:2") == ("sentence-dynamic-min", 3, 2)
 
 
+# ----------------------------------------------------------- token_starts
+
+def test_token_starts_tiles_the_text():
+    text = "hello world, this is a test"
+    tokens, starts = chunk_text.token_starts(text)
+    assert starts[0] == 0
+    assert starts[-1] == len(text)
+    assert len(starts) == len(tokens) + 1
+    assert all(a <= b for a, b in zip(starts, starts[1:]))
+    # slicing at consecutive starts reassembles the text exactly
+    assert "".join(text[starts[i]:starts[i + 1]] for i in range(len(tokens))) == text
+
+
+def test_token_starts_multibyte_text():
+    text = "naïve café — π ≈ 3.14159, 数据处理 test"
+    tokens, starts = chunk_text.token_starts(text)
+    assert starts[0] == 0 and starts[-1] == len(text)
+    assert all(a <= b for a, b in zip(starts, starts[1:]))
+    assert "".join(text[starts[i]:starts[i + 1]] for i in range(len(tokens))) == text
+
+
 # --------------------------------------------------------- fixed_size_chunks
 
 def test_chunk_stride_and_last_chunk():
-    pages = [(1, "a" * 100)]
-    chunks, total = chunk_text.fixed_size_chunks(pages, size=40, overlap=10)
-    assert total == 100
-    # Stops at the chunk that reaches the end of text: a chunk starting at 90
-    # would add no new characters (it lies entirely inside chunk 60..100).
-    assert [c["start_char"] for c in chunks] == [0, 30, 60]
-    assert [c["num_chars"] for c in chunks] == [40, 40, 40]
-    assert chunks[-1]["end_char"] == 100
-    assert all(c["end_char"] - c["start_char"] == c["num_chars"] for c in chunks)
-    assert [c["chunk_index"] for c in chunks] == [0, 1, 2]
+    text = "The quick brown fox jumps over the lazy dog. " * 10
+    tokens, starts = chunk_text.token_starts(text)
+    assert len(tokens) > 50  # sanity: enough tokens for several windows
+    size, overlap = 40, 10
+    chunks, total = chunk_text.fixed_size_chunks([(1, text)], size=size, overlap=overlap)
+    assert total == len(text)
+    step = size - overlap
+    for k, c in enumerate(chunks):
+        t0, t1 = k * step, min(k * step + size, len(tokens))
+        assert c["start_char"] == starts[t0]
+        assert c["end_char"] == starts[t1]
+        assert c["num_tokens"] == t1 - t0
+        assert c["text"] == text[c["start_char"]:c["end_char"]]
+        assert c["num_chars"] == c["end_char"] - c["start_char"]
+    # stops at the chunk that reaches the end of the token stream
+    assert (len(chunks) - 1) * step + size >= len(tokens)
+    assert chunks[-1]["end_char"] == len(text)
+    assert [c["chunk_index"] for c in chunks] == list(range(len(chunks)))
 
 
 def test_chunk_short_final_chunk():
-    pages = [(1, "a" * 105)]
-    chunks, _ = chunk_text.fixed_size_chunks(pages, size=40, overlap=10)
-    assert [c["start_char"] for c in chunks] == [0, 30, 60, 90]
-    assert chunks[-1]["num_chars"] == 15
+    text = "one small page of text with a handful of tokens in it"
+    tokens, _ = chunk_text.token_starts(text)
+    chunks, _ = chunk_text.fixed_size_chunks([(1, text)], size=len(tokens) - 2, overlap=0)
+    assert [c["num_tokens"] for c in chunks] == [len(tokens) - 2, 2]
+    assert chunks[-1]["end_char"] == len(text)
 
 
 def test_chunk_spans_page_boundary():
@@ -228,20 +258,26 @@ def run_main(monkeypatch, *argv):
 
 
 def test_main_end_to_end(data_root, monkeypatch):
-    run_main(monkeypatch, "--type", "fixed_size:50:10%", "--dataset", "data/pdfplumber/20260101_01/good")
-    out_dirs = list((data_root / "data/pdfplumber/20260101_01/good").glob("*_chunk_fixed_size_50_5"))
+    run_main(monkeypatch, "--type", "fixed_size:10:10%", "--dataset", "data/pdfplumber/20260101_01/good")
+    out_dirs = list((data_root / "data/pdfplumber/20260101_01/good").glob("*_chunk_fixed_size_10_1"))
     assert len(out_dirs) == 1
     result = json.loads((out_dirs[0] / "chunked_text.json").read_text(encoding="utf-8"))
     meta = result["metadata"]
     assert meta["dataset"] == "data/pdfplumber/20260101_01/good"
     assert meta["chunk_method"] == "fixed_size"
-    assert meta["chunk_size"] == 50
-    assert meta["overlap"] == 5
+    assert meta["chunk_size_tokens"] == 10
+    assert meta["overlap_tokens"] == 1
+    assert meta["token_encoding"] == "cl100k_base"
     assert meta["num_pages"] == 2
     assert meta["num_chunks"] == len(result["chunks"])
-    starts = [c["start_char"] for c in result["chunks"]]
-    assert starts[:3] == [0, 45, 90]
-    assert result["chunks"][-1]["end_char"] == meta["total_chars"]
+    chunks = result["chunks"]
+    assert len(chunks) > 1
+    assert all(c["num_tokens"] == 10 for c in chunks[:-1])
+    assert 0 < chunks[-1]["num_tokens"] <= 10
+    starts = [c["start_char"] for c in chunks]
+    assert starts[0] == 0
+    assert all(a < b for a, b in zip(starts, starts[1:]))
+    assert chunks[-1]["end_char"] == meta["total_chars"]
 
 
 def test_main_rejects_unimplemented_type(data_root, monkeypatch):
@@ -282,10 +318,13 @@ def test_table_row_lines_single_row_and_empty():
 
 
 def test_pack_lines_respects_cap():
-    blocks = chunk_text.pack_lines(["x" * 40, "y" * 40, "z" * 40], cap=90)
-    assert blocks == ["x" * 40 + "\n" + "y" * 40, "z" * 40]
+    lines = ["the quick brown fox", "jumps over the lazy dog", "and runs far away"]
+    ntok = [chunk_text.count_tokens(line) for line in lines]
+    # a cap (in tokens) that fits the first two lines exactly but not the third
+    blocks = chunk_text.pack_lines(lines, cap=ntok[0] + ntok[1])
+    assert blocks == [lines[0] + "\n" + lines[1], lines[2]]
     # a single oversized line still becomes its own block
-    assert chunk_text.pack_lines(["w" * 200], cap=90) == ["w" * 200]
+    assert chunk_text.pack_lines([lines[0]], cap=1) == [lines[0]]
 
 
 def test_plumber_struct_chunks_sources():
