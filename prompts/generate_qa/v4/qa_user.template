@@ -1,0 +1,9 @@
+Generate the three question/answer pairs for this chunk:
+
+<chunk>
+{chunk_text}
+</chunk>
+
+Reminder: if the chunk starts or ends mid-sentence, that is a normal mechanical cut, not
+a defect - ignore the truncated fragments and write the questions from the concrete facts
+in the readable portion. Reject only if no concrete fact remains.
