@@ -18,16 +18,23 @@ to visualizations/<ts>/:
                     when eval_retrieval.py started recording timing; older
                     evals are dropped from this chart only)
 
-Evals are computed at ks {1,3,5,10}; the project mostly reports @5, so
-metric/k-dependent charts take --metric and -k (default mrr / k=5).
+The K cutoffs available for charting come from the loaded evals themselves
+(whatever --ks the eval/pipeline run used); metric/k-dependent charts take
+--metric and -k (default mrr / k=5, falling back to the largest evaluated K).
 By default the latest eval per (chunk config, index) is used; --all-evals
-keeps re-runs of the same combination apart.
+keeps re-runs of the same combination apart. Hybrid evals at different alphas
+always count as separate experiments.
+
+--pipeline restricts the charts to exactly the experiments of one
+run_pipeline.py results file (pipeline_runs/pipeline_*.json), instead of
+every eval ever written to the dataset's evaluations/ dir.
 
 Run from the project root:
 
     python app/generate_visualizations.py                    # all charts, latest evals
     python app/generate_visualizations.py --chart mrr qtype  # a subset
     python app/generate_visualizations.py --metric recall -k 5
+    python app/generate_visualizations.py --pipeline data/.../pipeline_runs/pipeline_20260716_001654.json -k 3
     python app/generate_visualizations.py --checkpoint best_config_found
 """
 
@@ -55,7 +62,6 @@ from app.logging_utils import setup_logging  # noqa: E402
 
 log = logging.getLogger(__name__)
 
-KS = [1, 3, 5, 10]
 K_METRICS = ["recall", "precision", "ndcg"]
 SCALAR_METRICS = ["mrr", "map"]
 
@@ -128,6 +134,35 @@ def _pick_dataset(explicit: str | None) -> Path:
     return dirs[0]
 
 
+def _pipeline_eval_files(arg: str) -> tuple[Path, list[Path]]:
+    """Resolve --pipeline into (dataset dir, that run's eval files).
+
+    Accepts a pipeline_*.json path, a pipeline_runs/ dir, or a dataset dir
+    (the two dir forms use the newest results file found)."""
+    path = Path(arg) if Path(arg).is_absolute() else PROJECT_ROOT / arg
+    if path.is_dir():
+        candidates = sorted(path.glob("pipeline_*.json")) or sorted(
+            path.glob("pipeline_runs/pipeline_*.json"))
+        if not candidates:
+            sys.exit(f"No pipeline_*.json under {path}")
+        path = candidates[-1]
+    if not path.is_file():
+        sys.exit(f"Pipeline results file not found: {arg}")
+    run = json.loads(path.read_text())
+    dataset = PROJECT_ROOT / run["metadata"]["dataset"]
+    eval_files, missing = [], []
+    for exp in run.get("experiments", []):
+        f = PROJECT_ROOT / exp["eval_file"]
+        (eval_files if f.is_file() else missing).append(f)
+    if missing:
+        log.warning("  %d eval file(s) from %s no longer exist; skipping: %s",
+                    len(missing), path.name, ", ".join(m.name for m in missing))
+    if not eval_files:
+        sys.exit(f"None of the eval files recorded in {path.name} exist anymore")
+    log.info("Pipeline run: %s (%d experiments)", path.name, len(eval_files))
+    return dataset, eval_files
+
+
 def _chunk_label(chunk_run: str) -> str:
     """'.../20260713_075540_chunk_fixed_size_256_50' -> 'fixed_size 256/50'."""
     name = Path(chunk_run).name
@@ -149,16 +184,18 @@ def _index_parts(meta: dict) -> tuple[str, str, str]:
     return meta["db_type"], short, f"{meta['db_type']} · 3-{short}"
 
 
-def load_experiments(dataset: Path, all_evals: bool) -> pd.DataFrame:
+def load_experiments(eval_files: list[Path], all_evals: bool) -> pd.DataFrame:
     """One row per experiment (chunk config x index), latest eval per combo
     unless all_evals. Metric columns: mrr, map, recall@K/precision@K/ndcg@K
-    for every K the eval recorded (NaN where a file used fewer ks)."""
+    for every K any eval recorded (NaN where a file used fewer ks); the sorted
+    union of evaluated ks is exposed as df.attrs["ks"]."""
     rows = []
-    for f in sorted((dataset / "evaluations").glob("eval_*.json")):
-        if f.name.startswith("eval_summary"):
-            continue
+    all_ks: set[int] = set()
+    for f in sorted(eval_files):
         data = json.loads(f.read_text())
         meta, overall = data["metadata"], data["aggregates"]["overall"]
+        ks = [int(k) for k in meta["ks"]]
+        all_ks.update(ks)
         method, model, index_label = _index_parts(meta)
         chunk = _chunk_label(meta["chunk_run"])
         row = {
@@ -167,22 +204,29 @@ def load_experiments(dataset: Path, all_evals: bool) -> pd.DataFrame:
             "chunk": chunk,
             "method": method,
             "model": model,
+            "alpha": meta.get("alpha"),
             "index": index_label,
             "experiment": f"{chunk} | {index_label}",
             "num_questions": overall["num_questions"],
-            "ks": meta["ks"],
+            "ks": ks,
             "by_question_type": data["aggregates"]["by_question_type"],
             "mrr": overall["mrr"],
             "map": overall["map"],
             "avg_time": overall.get("avg_retrieval_time"),
         }
-        for k in KS:
+        for k in ks:
             for m in K_METRICS:
                 row[f"{m}@{k}"] = overall.get(f"{m}@{k}")
         rows.append(row)
     if not rows:
-        sys.exit(f"No eval_*.json files under {dataset / 'evaluations'}")
+        sys.exit("No eval files to load")
     df = pd.DataFrame(rows)
+    # An alpha sweep produces several hybrid evals per (chunk, index); fold
+    # alpha into the label so they chart (and dedup) as distinct experiments.
+    hybrid = df["method"].eq("hybrid") & df["alpha"].notna()
+    if df.loc[hybrid, "alpha"].nunique() > 1:
+        df.loc[hybrid, "index"] += " α=" + df.loc[hybrid, "alpha"].map("{:g}".format)
+        df.loc[hybrid, "experiment"] = df.loc[hybrid, "chunk"] + " | " + df.loc[hybrid, "index"]
     if not all_evals:
         df = (
             df.sort_values("eval_ts")
@@ -191,7 +235,9 @@ def load_experiments(dataset: Path, all_evals: bool) -> pd.DataFrame:
         )
     else:
         df["experiment"] = df["experiment"] + " @" + df["eval_ts"].str[9:]
-    return df.sort_values(["chunk", "index"]).reset_index(drop=True)
+    df = df.sort_values(["chunk", "index"]).reset_index(drop=True)
+    df.attrs["ks"] = sorted(all_ks)
+    return df
 
 
 def _metric_col(metric: str, k: int) -> str:
@@ -382,7 +428,7 @@ def plot_retrieval(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: 
 def plot_correlation(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -> None:
     """Required chart 5: correlation of all IR metrics across experiments.
     map == mrr by construction (single gold chunk), so map is omitted."""
-    cols = ["mrr"] + [f"{m}@{kk}" for m in K_METRICS for kk in KS]
+    cols = ["mrr"] + [f"{m}@{kk}" for m in K_METRICS for kk in df.attrs["ks"]]
     d = df[cols].dropna(axis=1, how="all")
     corr = d.corr()
     n = len(corr)
@@ -408,6 +454,7 @@ def plot_correlation(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k
 def plot_recall_curve(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -> None:
     """Extra: Recall@K as K grows, small multiples per chunk config. Hue is
     the retrieval backend, dashed marks the -large embedding model."""
+    all_ks = df.attrs["ks"]
     chunks = sorted(df["chunk"].unique())
     fig, axes = plt.subplots(
         1, len(chunks), figsize=(5.2 * len(chunks) + 1, 5), sharey=True, squeeze=False
@@ -415,7 +462,7 @@ def plot_recall_curve(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
     for ax, chunk in zip(axes[0], chunks):
         sub = df[df["chunk"] == chunk]
         for _, r in sub.iterrows():
-            ks = [kk for kk in KS if pd.notna(r[f"recall@{kk}"])]
+            ks = [kk for kk in all_ks if pd.notna(r[f"recall@{kk}"])]
             ax.plot(
                 ks,
                 [r[f"recall@{kk}"] for kk in ks],
@@ -428,7 +475,7 @@ def plot_recall_curve(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
                 markeredgewidth=1,
             )
         ax.set_title(chunk, fontsize=11)
-        ax.set_xticks(KS)
+        ax.set_xticks(all_ks)
         ax.set_xlabel("K")
         ax.set_ylim(0, 1.02)
         ax.grid(color=GRID_COLOR, linewidth=0.7)
@@ -612,14 +659,23 @@ def main() -> None:
     parser.add_argument(
         "-k",
         type=int,
-        choices=KS,
-        default=5,
-        help="Cutoff K for @K metrics and the scatter plot (default: 5).",
+        default=None,
+        help="Cutoff K for @K metrics and the scatter plot; must be one of the "
+        "ks the loaded evals were computed at (default: 5, or the largest "
+        "evaluated K when 5 is unavailable).",
     )
     parser.add_argument(
         "--data",
         default=None,
         help="Dataset dir holding evaluations/ (default: menu / newest data run).",
+    )
+    parser.add_argument(
+        "--pipeline",
+        default=None,
+        metavar="RESULTS",
+        help="A run_pipeline.py results file (pipeline_runs/pipeline_*.json), or "
+        "a dir holding them (newest is used): chart exactly that run's "
+        "experiments instead of every eval in the dataset.",
     )
     parser.add_argument(
         "--all-evals",
@@ -637,8 +693,25 @@ def main() -> None:
     args = parser.parse_args()
 
     log_file = setup_logging("generate_visualizations")
-    dataset = _pick_dataset(args.data)
-    df = load_experiments(dataset, args.all_evals)
+    if args.pipeline:
+        dataset, eval_files = _pipeline_eval_files(args.pipeline)
+    else:
+        dataset = _pick_dataset(args.data)
+        eval_files = [f for f in (dataset / "evaluations").glob("eval_*.json")
+                      if not f.name.startswith("eval_summary")]
+        if not eval_files:
+            sys.exit(f"No eval_*.json files under {dataset / 'evaluations'}")
+    df = load_experiments(eval_files, args.all_evals)
+
+    ks_avail = df.attrs["ks"]
+    if args.k is None:
+        k = 5 if 5 in ks_avail else ks_avail[-1]
+    elif args.k in ks_avail:
+        k = args.k
+    else:
+        sys.exit(f"k={args.k} was not evaluated; available cutoffs: "
+                 f"{', '.join(map(str, ks_avail))} (re-run the eval/pipeline "
+                 f"with --ks including {args.k} to chart it)")
 
     renamed_from: Path | None = None
     if args.checkpoint:
@@ -659,7 +732,8 @@ def main() -> None:
         df["index"].nunique(),
         "" if args.all_evals else ", latest eval per combo",
     )
-    log.info("Metric: %s, k=%d", args.metric, args.k)
+    log.info("Metric: %s, k=%d (evaluated ks: %s)", args.metric, k,
+             ", ".join(map(str, ks_avail)))
     log.info("Output: %s", out_dir.relative_to(PROJECT_ROOT))
     if renamed_from is not None:
         _warn_checkpoint_renamed(renamed_from, out_dir)
@@ -669,7 +743,7 @@ def main() -> None:
     failed: list[str] = []
     for name in wanted:
         try:
-            CHARTS[name](df, out_dir, show, args.metric, args.k)
+            CHARTS[name](df, out_dir, show, args.metric, k)
         except Exception:  # noqa: BLE001 - one bad chart shouldn't kill the rest
             log.exception("ERROR building chart %r; skipping", name)
             failed.append(name)
