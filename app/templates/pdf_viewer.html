@@ -330,6 +330,8 @@
         <div id="index-emb-models">
           <label><input type="checkbox" class="emb" value="small" checked> small (text-embedding-3-small)</label>
           <label><input type="checkbox" class="emb" value="large"> large (text-embedding-3-large)</label>
+          <label><input type="checkbox" class="emb" value="minilm"> minilm (all-MiniLM-L6-v2, local)</label>
+          <label><input type="checkbox" class="emb" value="bge"> bge (bge-base-en-v1.5, local)</label>
         </div>
         <div class="sec-head"><small>Vector DBs</small>
           <button type="button" class="info-btn" data-info="embeddings" title="About embeddings and vector DBs">i</button></div>
@@ -408,6 +410,16 @@
         <div class="emb-dbs">
           <label><input type="checkbox" class="pedb" data-model="large" value="milvus" checked> Milvus</label>
           <label><input type="checkbox" class="pedb" data-model="large" value="chromadb"> Chroma</label>
+        </div>
+        <label><input type="checkbox" class="pemb" value="minilm"> minilm (all-MiniLM-L6-v2, local)</label>
+        <div class="emb-dbs">
+          <label><input type="checkbox" class="pedb" data-model="minilm" value="milvus" checked> Milvus</label>
+          <label><input type="checkbox" class="pedb" data-model="minilm" value="chromadb"> Chroma</label>
+        </div>
+        <label><input type="checkbox" class="pemb" value="bge"> bge (bge-base-en-v1.5, local)</label>
+        <div class="emb-dbs">
+          <label><input type="checkbox" class="pedb" data-model="bge" value="milvus" checked> Milvus</label>
+          <label><input type="checkbox" class="pedb" data-model="bge" value="chromadb"> Chroma</label>
         </div>
       </div>
       <div class="sec-head"><small>BM25 tokenizers</small>
@@ -1681,6 +1693,11 @@ const INFO = {
       <p><b>small</b> = OpenAI <code>text-embedding-3-small</code>: cheaper and
          faster, 1536 dimensions. <b>large</b> = <code>text-embedding-3-large</code>:
          higher quality, 3072 dimensions, slower and more costly.</p>
+      <p><b>minilm</b> = <code>all-MiniLM-L6-v2</code>: tiny local model
+         (sentence-transformers), 384 dimensions, free but weaker.
+         <b>bge</b> = <code>bge-base-en-v1.5</code>: local, 768 dimensions,
+         quality close to OpenAI small; queries are automatically prefixed
+         with the instruction the model was trained with.</p>
       <h4>Vector DBs</h4>
       <p><b>Milvus</b> — stored via <code>milvus-lite</code>, the embedded
          (no-server) build of the open-source Milvus vector database, as a

@@ -44,7 +44,8 @@ log = logging.getLogger(__name__)
 
 EXTRACT_METHODS = ("pdfplumber", "pdf2image")
 RETRIEVALS = ("bm25", "vector", "hybrid")
-EMBEDDING_ALIASES = {"small": "text-embedding-3-small", "large": "text-embedding-3-large"}
+EMBEDDING_ALIASES = {"small": "text-embedding-3-small", "large": "text-embedding-3-large",
+                     "minilm": "all-MiniLM-L6-v2", "bge": "bge-base-en-v1.5"}
 EMBEDDING_MODELS = tuple(EMBEDDING_ALIASES.values())
 TOKENIZERS = ("simple", "word", "porter")
 VECTOR_DBS = ("milvus", "chromadb")

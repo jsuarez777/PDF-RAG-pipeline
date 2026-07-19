@@ -18,6 +18,12 @@ def test_parse_csv_maps_aliases_and_dedupes():
     assert models == ["text-embedding-3-small", "text-embedding-3-large"]
 
 
+def test_parse_csv_maps_local_model_aliases():
+    models = parse_csv("minilm,bge", run_pipeline.EMBEDDING_MODELS,
+                       "embedding model", aliases=run_pipeline.EMBEDDING_ALIASES)
+    assert models == ["all-MiniLM-L6-v2", "bge-base-en-v1.5"]
+
+
 def test_parse_csv_rejects_unknown():
     with pytest.raises(SystemExit):
         parse_csv("bm25,bogus", run_pipeline.RETRIEVALS, "retrieval method")

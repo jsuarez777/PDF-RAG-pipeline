@@ -34,6 +34,7 @@ DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from embedding_backends import embed_local, is_local_model  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
 
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
@@ -358,6 +359,8 @@ EMBED_BATCH_SIZE = 1000
 
 def embed_query(model, texts):
     """Embed a list of query texts; return one vector per text."""
+    if is_local_model(model):
+        return embed_local(model, texts, "query")
     api = MyOpenAIClient(model=model)
     api.validate_api_key()
     client = api.get_client()
