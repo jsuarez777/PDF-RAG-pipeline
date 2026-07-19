@@ -226,10 +226,24 @@ def metrics_from_eval(eval_path):
     return data.get("metadata", {}), data.get("aggregates", {}).get("overall", {})
 
 
+def vector_db_type(rel_path):
+    """Recover the short db name ("milvus"/"chromadb") from a vector index's
+    rel path, as recorded in a hybrid eval's "vector_db" metadata field."""
+    name = Path(rel_path).name if rel_path else ""
+    if name.startswith("milvus_"):
+        return "milvus"
+    if name.startswith("chromadb_"):
+        return "chromadb"
+    return None
+
+
 def match_experiment(experiments, chunk_spec, meta):
     """Find the grid descriptor an eval file belongs to."""
     db_type = meta.get("db_type")
     retrieval = {"milvus": "vector", "chromadb": "vector"}.get(db_type, db_type)
+    # Hybrid eval metadata's db_type is the literal "hybrid"; the underlying
+    # vector db name lives in "vector_db" instead.
+    hybrid_db = vector_db_type(meta.get("vector_db")) if retrieval == "hybrid" else None
     for exp in experiments:
         if exp["chunk_type"] != chunk_spec or exp["retrieval"] != retrieval:
             continue
@@ -239,7 +253,7 @@ def match_experiment(experiments, chunk_spec, meta):
                 and exp["db"] == db_type):
             return exp
         if (retrieval == "hybrid" and exp["embedding_model"] == meta.get("embedding_model")
-                and exp["db"] == db_type and exp["tokenizer"] == meta.get("tokenizer")
+                and exp["db"] == hybrid_db and exp["tokenizer"] == meta.get("tokenizer")
                 and abs(exp["alpha"] - (meta.get("alpha") or 0)) < 1e-9):
             return exp
     return None
@@ -447,7 +461,7 @@ def main():
                 "eval_file": rel(ef),
                 "retrieval": (exp or {}).get("retrieval", meta.get("db_type")),
                 "embedding_model": meta.get("embedding_model"),
-                "db": meta.get("db_type"),
+                "db": meta.get("db_type") if meta.get("db_type") != "bm25" else None,
                 "tokenizer": meta.get("tokenizer"),
                 "alpha": meta.get("alpha"),
                 "metrics": overall,

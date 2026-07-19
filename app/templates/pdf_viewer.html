@@ -109,6 +109,8 @@
   .eval-table th.sortable { cursor: pointer; user-select: none; }
   .eval-table th.sortable:hover { background: #f5f5f5; }
   .eval-table th:first-child, .eval-table td:first-child { text-align: left; }
+  .eval-table th.draggable { cursor: grab; }
+  .eval-table th.drag-over { background: #dbe9ff; }
 
   /* Document list view */
   #list-view { flex: 1; overflow-y: auto; padding: 20px; }
@@ -2170,6 +2172,8 @@ function expDesc(e) {
   return parts.join(' · ');
 }
 
+let pipelineK = null;  // K cutoff selected in the pipeline results dialog
+
 /* Pipeline results modal: run selector + ranked experiment table + best line.
    sort = {col: <header label>, dir: 1|-1}; defaults to MRR descending. */
 function renderPipelineModal(runs, index, sort) {
@@ -2201,43 +2205,75 @@ function renderPipelineModal(runs, index, sort) {
 
   const run = runs[index];
   const meta = run.metadata || {};
+  const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
+  const maxk = Math.max(...ks);
+  const selK = ks.includes(pipelineK) ? pipelineK : maxk;
+  const experiments = [...(run.experiments || [])];
+
   const info = document.createElement('div');
   info.className = 'eval-db-head';
   info.textContent = `${fmtRunDate(meta.datetime)} — ` +
     `QA ${meta.qa_num} chunks · top_k ${meta.topk}`;
+  if (ks.length > 1) {
+    const klabel = document.createElement('span');
+    klabel.textContent = ' · metrics @ K = ';
+    const ksel = document.createElement('select');
+    for (const k of ks) {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = k;
+      ksel.appendChild(opt);
+    }
+    ksel.value = selK;
+    ksel.onchange = () => {
+      pipelineK = parseInt(ksel.value, 10);
+      renderPipelineModal(runs, index, sort);
+    };
+    info.append(klabel, ksel);
+  }
   body.appendChild(info);
-
-  const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
-  const maxk = Math.max(...ks);
-  const experiments = [...(run.experiments || [])];
 
   // One column per field: {label, get, num}. Config columns no experiment in
   // this run uses are skipped; metric columns sort numerically, descending
   // first (a metric's best values on top), config ascending first.
+  // key is a stable identifier for sort/drag persistence, independent of the
+  // (renameable) display label.
   const cols = [
-    { label: 'Search', get: e => e.retrieval },
-    { label: 'Embedding', get: e => e.embedding_model },
-    { label: 'DB', get: e => e.db },
-    { label: 'Tokenizer', get: e => e.tokenizer },
-    { label: 'α', get: e => e.alpha, num: true },
-    { label: 'Chunking', get: e => e.chunk_type },
+    { key: 'chunking', label: 'Chunking', get: e => e.chunk_type },
+    { key: 'embedding', label: 'Embedding', get: e => e.embedding_model },
+    { key: 'db', label: 'DB', get: e => e.db === 'bm25' ? null : e.db },
+    { key: 'tokenizer', label: 'BM25 Tokenizer', get: e => e.tokenizer },
+    { key: 'retrieval', label: 'Retrieval Type',
+      get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
+    { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
   ].filter(c => experiments.some(e => c.get(e) != null));
   cols.push(
-    { label: `R@${maxk}`, get: e => (e.metrics || {})[`recall@${maxk}`],
+    { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],
       num: true, fix: 3, desc: true },
-    { label: 'MRR', get: e => (e.metrics || {}).mrr,
+    { key: 'mrr', label: 'MRR', get: e => (e.metrics || {}).mrr,
       num: true, fix: 3, desc: true },
-    { label: 'MAP', get: e => (e.metrics || {}).map,
+    { key: 'map', label: 'MAP', get: e => (e.metrics || {}).map,
       num: true, fix: 3, desc: true },
-    { label: `NDCG@${maxk}`, get: e => (e.metrics || {})[`ndcg@${maxk}`],
+    { key: 'ndcg', label: `NDCG@${selK}`, get: e => (e.metrics || {})[`ndcg@${selK}`],
       num: true, fix: 3, desc: true },
-    { label: 'Avg time (s)', get: e => (e.metrics || {}).avg_retrieval_time,
+    { key: 'time', label: 'Avg time (s)', get: e => (e.metrics || {}).avg_retrieval_time,
       num: true, fix: 4 },
   );
 
-  sort = sort || { col: 'MRR', dir: -1 };
-  const sortCol = cols.find(c => c.label === sort.col) ||
-                  cols.find(c => c.label === 'MRR');
+  // User-dragged column order persists across renders/reopens (localStorage);
+  // columns not seen before (e.g. a run with a metric absent elsewhere) keep
+  // their default position at the end.
+  const savedOrder = JSON.parse(localStorage.getItem('pipelineColOrder') || 'null');
+  if (Array.isArray(savedOrder)) {
+    const known = savedOrder.filter(k => cols.some(c => c.key === k));
+    const rest = cols.map(c => c.key).filter(k => !known.includes(k));
+    const order = [...known, ...rest];
+    cols.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+  }
+
+  sort = sort || { col: 'mrr', dir: -1 };
+  const sortCol = cols.find(c => c.key === sort.col) ||
+                  cols.find(c => c.key === 'mrr');
   experiments.sort((a, b) => {
     const va = sortCol.get(a), vb = sortCol.get(b);
     if (va == null && vb == null) return 0;
@@ -2252,14 +2288,32 @@ function renderPipelineModal(runs, index, sort) {
   const head = table.insertRow();
   for (const c of cols) {
     const th = document.createElement('th');
-    th.className = 'sortable';
+    th.className = 'sortable draggable';
     th.textContent = c.label +
       (c === sortCol ? (sort.dir === 1 ? ' ▲' : ' ▼') : '');
-    th.title = 'Sort by ' + c.label;
+    th.title = 'Sort by ' + c.label + ' · drag to reorder columns';
     th.onclick = () => renderPipelineModal(runs, index, {
-      col: c.label,
+      col: c.key,
       dir: c === sortCol ? -sort.dir : (c.desc ? -1 : 1),
     });
+    th.draggable = true;
+    th.ondragstart = ev => {
+      ev.dataTransfer.setData('text/plain', c.key);
+      ev.dataTransfer.effectAllowed = 'move';
+    };
+    th.ondragover = ev => { ev.preventDefault(); th.classList.add('drag-over'); };
+    th.ondragleave = () => th.classList.remove('drag-over');
+    th.ondrop = ev => {
+      ev.preventDefault();
+      th.classList.remove('drag-over');
+      const fromKey = ev.dataTransfer.getData('text/plain');
+      if (fromKey === c.key) return;
+      const order = cols.map(x => x.key);
+      order.splice(order.indexOf(c.key), 0,
+                   order.splice(order.indexOf(fromKey), 1)[0]);
+      localStorage.setItem('pipelineColOrder', JSON.stringify(order));
+      renderPipelineModal(runs, index, sort);
+    };
     head.appendChild(th);
   }
   for (const e of experiments) {

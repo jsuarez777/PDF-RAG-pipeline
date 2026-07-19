@@ -54,10 +54,10 @@ def test_chunk_label():
 def test_grid_counts_per_retrieval_method():
     exps = enumerate_experiments(
         chunk_specs=["fixed_size:256:50", "sentence:5:1"],
-        embeddings=["text-embedding-3-small", "text-embedding-3-large"],
+        embed_dbs={"text-embedding-3-small": ["milvus"], "text-embedding-3-large": ["milvus"]},
         tokenizers=["word"],
         retrievals=["bm25", "vector", "hybrid"],
-        alpha=0.7,
+        alphas=[0.7],
     )
     # per chunk config: 1 bm25 (tokenizers) + 2 vector (embeddings) + 2 hybrid (emb x tok)
     assert len(exps) == 2 * (1 + 2 + 2)
@@ -72,38 +72,44 @@ def test_grid_counts_per_retrieval_method():
 def test_grid_experiment_ids_are_unique():
     exps = enumerate_experiments(
         ["fixed_size:256:50", "fixed_size:512:100"],
-        ["text-embedding-3-small"], ["simple", "word"],
-        ["bm25", "vector", "hybrid"], 0.5)
+        {"text-embedding-3-small": ["milvus"]}, ["simple", "word"],
+        ["bm25", "vector", "hybrid"], [0.5])
     ids = [e["experiment_id"] for e in exps]
     assert len(ids) == len(set(ids))
 
 
 def test_grid_single_method_only():
-    exps = enumerate_experiments(["sentence:5"], ["text-embedding-3-small"],
-                                 ["word"], ["vector"], 0.7)
+    exps = enumerate_experiments(["sentence:5"], {"text-embedding-3-small": ["milvus"]},
+                                 ["word"], ["vector"], [0.7])
     assert len(exps) == 1
     exp = exps[0]
     assert exp["retrieval"] == "vector"
     assert exp["embedding_model"] == "text-embedding-3-small"
+    assert exp["db"] == "milvus"
     assert exp["chunk_type"] == "sentence:5"
 
 
 def test_grid_hybrid_records_alpha_and_both_sides():
-    (exp,) = enumerate_experiments(["sentence:5"], ["text-embedding-3-small"],
-                                   ["porter"], ["hybrid"], 0.3)
+    (exp,) = enumerate_experiments(["sentence:5"], {"text-embedding-3-small": ["milvus"]},
+                                   ["porter"], ["hybrid"], [0.3])
     assert exp["alpha"] == 0.3
     assert exp["embedding_model"] == "text-embedding-3-small"
+    assert exp["db"] == "milvus"
     assert exp["tokenizer"] == "porter"
 
 
 def test_match_experiment_maps_eval_metadata_back_to_grid():
-    exps = enumerate_experiments(["sentence:5"], ["text-embedding-3-small"],
-                                 ["word"], ["bm25", "vector", "hybrid"], 0.7)
+    exps = enumerate_experiments(["sentence:5"], {"text-embedding-3-small": ["milvus"]},
+                                 ["word"], ["bm25", "vector", "hybrid"], [0.7])
     cases = [
         ({"db_type": "bm25", "tokenizer": "word"}, "bm25"),
         ({"db_type": "milvus", "embedding_model": "text-embedding-3-small"}, "vector"),
+        # Hybrid eval metadata's db_type is the literal "hybrid"; the underlying
+        # vector db name is recovered from the "vector_db" rel path instead.
         ({"db_type": "hybrid", "embedding_model": "text-embedding-3-small",
-          "tokenizer": "word"}, "hybrid"),
+          "tokenizer": "word", "alpha": 0.7,
+          "vector_db": "data/pdfplumber/20260716_01/doc/embedding_databases/"
+                       "milvus_20260716_text-embedding-3-small.db"}, "hybrid"),
     ]
     for meta, expected in cases:
         exp = run_pipeline.match_experiment(exps, "sentence:5", meta)
@@ -111,7 +117,7 @@ def test_match_experiment_maps_eval_metadata_back_to_grid():
 
 
 def test_match_experiment_returns_none_for_unknown():
-    exps = enumerate_experiments(["sentence:5"], ["text-embedding-3-small"],
-                                 ["word"], ["vector"], 0.7)
+    exps = enumerate_experiments(["sentence:5"], {"text-embedding-3-small": ["milvus"]},
+                                 ["word"], ["vector"], [0.7])
     assert run_pipeline.match_experiment(
         exps, "sentence:5", {"db_type": "bm25", "tokenizer": "word"}) is None
