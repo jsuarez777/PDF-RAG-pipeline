@@ -17,13 +17,16 @@ Outputs go to <title>/embedding_databases/<db>_<datetime>_<model>.<ext>
 
 import argparse
 import json
+import os
 import logging
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT / "data"
+DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
+            else ROOT / "data")  # per-user override set by the web viewer
 sys.path.insert(0, str(ROOT))
 
 from logging_utils import setup_logging  # noqa: E402
@@ -43,6 +46,7 @@ EMBEDDING_ALIASES = {
 VECTOR_DBS = ("milvus", "chromadb")
 
 EMBED_BATCH_SIZE = 128
+EMBED_WORKERS = 8  # concurrent embedding API requests
 
 
 # ---------------------------------------------------------------- selection
@@ -186,13 +190,26 @@ def load_chunks(run):
 
 
 def embed_texts(client, model, texts):
-    """Embed texts in batches; return list of vectors (list[float])."""
-    vectors = []
-    for start in range(0, len(texts), EMBED_BATCH_SIZE):
-        batch = texts[start:start + EMBED_BATCH_SIZE]
+    """Embed texts in parallel batches; return list of vectors (list[float]).
+
+    Batches of EMBED_BATCH_SIZE go to the API concurrently (up to
+    EMBED_WORKERS requests in flight); executor.map preserves batch order,
+    so the returned vectors line up with the input texts.
+    """
+    batches = [texts[start:start + EMBED_BATCH_SIZE]
+               for start in range(0, len(texts), EMBED_BATCH_SIZE)]
+    done = 0
+
+    def embed_batch(batch):
+        nonlocal done
         resp = client.embeddings.create(model=model, input=batch)
-        vectors.extend(item.embedding for item in resp.data)
-        print(f"  embedded {min(start + len(batch), len(texts))}/{len(texts)} chunks", end="\r")
+        done += len(batch)  # progress display only
+        print(f"  embedded {done}/{len(texts)} chunks", end="\r")
+        return [item.embedding for item in resp.data]
+
+    with ThreadPoolExecutor(max_workers=EMBED_WORKERS) as pool:
+        vectors = [v for batch_vectors in pool.map(embed_batch, batches)
+                   for v in batch_vectors]
     print()
     if len(vectors) != len(texts):
         sys.exit(f"ERROR: got {len(vectors)} embeddings for {len(texts)} chunks")

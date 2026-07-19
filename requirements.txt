@@ -1,5 +1,6 @@
 chromadb>=0.5
 easyocr>=1.7
+filelock>=3.0
 flask>=3.0
 instructor>=1.0
 nltk>=3.8

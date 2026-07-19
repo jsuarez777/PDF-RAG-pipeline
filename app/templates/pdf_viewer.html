@@ -12,6 +12,8 @@
            background: #fff; border-bottom: 1px solid #ddd; }
   header h1 { font-size: 16px; }
   #head-spacer { flex: 1; }
+  #user-name { font-size: 13px; color: #6e6e73; }
+  #logout-form { display: inline; }
   button { padding: 6px 14px; border: 1px solid #ccc; border-radius: 6px;
            background: #fff; cursor: pointer; font-size: 13px; }
   button:hover { background: #f0f0f0; }
@@ -86,8 +88,9 @@
                    display: flex; align-items: center; justify-content: center; }
   #modal-overlay[hidden] { display: none; }
   #modal { background: #fff; border-radius: 12px; width: 720px;
-           max-width: calc(100vw - 40px); max-height: 80vh; display: flex;
+           max-width: calc(100vw - 40px); max-height: 88vh; display: flex;
            flex-direction: column; box-shadow: 0 12px 48px rgba(0,0,0,.35); }
+  #modal.wide { width: min(1080px, calc(100vw - 40px)); }
   #modal-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px;
                 border-bottom: 1px solid #eee; }
   #modal-head h3 { flex: 1; font-size: 14px; }
@@ -102,6 +105,9 @@
   .eval-table { border-collapse: collapse; width: 100%; margin: 6px 0 14px; }
   .eval-table th, .eval-table td { border: 1px solid #e0e0e0; padding: 4px 8px;
                                    font-size: 12px; text-align: right; }
+  .eval-table .tl { text-align: left; }
+  .eval-table th.sortable { cursor: pointer; user-select: none; }
+  .eval-table th.sortable:hover { background: #f5f5f5; }
   .eval-table th:first-child, .eval-table td:first-child { text-align: left; }
 
   /* Document list view */
@@ -447,6 +453,10 @@
   <span id="status"></span>
   <button id="extract-all" style="display:none">Extract all via EasyOCR</button>
   <button id="back" style="display:none">&larr; All documents</button>
+  <span id="user-name" title="Logged in as">{{ username }}</span>
+  <form method="post" action="/logout" id="logout-form">
+    <button type="submit">Log out</button>
+  </form>
   <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
 </header>
 
@@ -508,6 +518,29 @@ let evalList = [];       // eval files available for the loaded QA file
 let evalData = null;     // loaded eval file (questions + chunk_texts), or null
 let evalSelected = '';   // filename of the selected eval, '' = None
 
+/* POST wrapper for long-running work: the server answers 202 {job: id} and
+   this polls /api/jobs/<id> until the background worker finishes, then
+   resolves with a fetch-Response-alike (ok / json() / text()). */
+async function jobFetch(url, options) {
+  const resp = await fetch(url, options);
+  if (resp.status === 401) { location.href = '/login'; throw new Error('not logged in'); }
+  if (resp.status !== 202) return resp;
+  const { job } = await resp.json();
+  while (true) {
+    await new Promise(r => setTimeout(r, 1500));
+    const jr = await fetch(`/api/jobs/${job}`);
+    if (jr.status === 401) { location.href = '/login'; throw new Error('not logged in'); }
+    if (!jr.ok) return jr;
+    const j = await jr.json();
+    if (j.status === 'done')
+      return { ok: true, json: async () => j.result,
+               text: async () => JSON.stringify(j.result) };
+    if (j.status === 'error')
+      return { ok: false, json: async () => null,
+               text: async () => j.error || 'job failed' };
+  }
+}
+
 function refreshExtractAll() {
   const missing = Object.values(ocrState).filter(t => t === null).length;
   const btn = $('extract-all');
@@ -520,7 +553,9 @@ function refreshExtractAll() {
 }
 
 async function loadDocuments() {
-  const docs = await (await fetch('/api/documents')).json();
+  const resp = await fetch('/api/documents');
+  if (resp.status === 401) { location.href = '/login'; return; }
+  const docs = await resp.json();
   document.querySelectorAll('.doc-list').forEach(list => {
     const type = list.dataset.type;
     const mine = docs.filter(d => d.type === type);
@@ -748,7 +783,7 @@ async function extractPage(button, doc, pageNo, row) {
   button.disabled = true;
   button.textContent = 'Extracting…';
   try {
-    const resp = await fetch(`/api/documents/${doc.run}/${doc.name}/ocr/${pageNo}`, { method: 'POST' });
+    const resp = await jobFetch(`/api/documents/${doc.run}/${doc.name}/ocr/${pageNo}`, { method: 'POST' });
     if (!resp.ok) throw new Error(await resp.text());
     const data = await resp.json();
     setOcrText(row, data.extracted_text);
@@ -946,7 +981,7 @@ async function generateQa(chunks, types) {
   renderChunkHighlights();
   $('status').textContent = `Generating QA pairs for chunk(s) ${chunks.join(', ')}… (see logs)`;
   try {
-    const resp = await fetch(
+    const resp = await jobFetch(
       `/api/documents/${current.type}/${current.run}/${current.name}/qa/generate`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chunks, types }) });
@@ -1289,7 +1324,7 @@ $('genall-go').onclick = async () => {
   refreshGenButton();
   $('status').textContent = 'Generating QA pairs for the document… (see logs)';
   try {
-    const resp = await fetch(
+    const resp = await jobFetch(
       `/api/documents/${doc.type}/${doc.run}/${doc.name}/qa/generate-all`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body) });
@@ -1355,7 +1390,7 @@ $('extract-all').onclick = async () => {
   btn.disabled = true;
   btn.textContent = 'Extracting all… (see logs)';
   try {
-    const resp = await fetch(`/api/documents/${doc.run}/${doc.name}/ocr`, { method: 'POST' });
+    const resp = await jobFetch(`/api/documents/${doc.run}/${doc.name}/ocr`, { method: 'POST' });
     if (!resp.ok) throw new Error(await resp.text());
     const ocr = await resp.json();
     if (current !== doc) return;  // user navigated away meanwhile
@@ -1420,7 +1455,7 @@ async function runPipeline(path, body, statusMsg) {
   refreshGenButton();
   $('status').textContent = `${statusMsg}… (see logs)`;
   try {
-    const resp = await fetch(
+    const resp = await jobFetch(
       `/api/documents/${doc.type}/${doc.run}/${doc.name}/${path}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body) });
@@ -2093,6 +2128,7 @@ $('pipe-view-btn').onclick = async () => {
   const doc = current;
   if (!doc) return;
   $('modal-title').textContent = 'Pipeline results';
+  $('modal').classList.add('wide');
   const body = $('modal-body');
   body.innerHTML = '<small>Loading pipeline runs…</small>';
   $('modal-overlay').hidden = false;
@@ -2114,9 +2150,31 @@ $('pipe-view-btn').onclick = async () => {
   }
 };
 
-/* Pipeline results modal: run selector + ranked experiment table + best line */
-function renderPipelineModal(runs, index) {
+/* "2026-07-18T14:32:05" -> "Jul 18, 2026, 2:32 PM" (falls back to raw text) */
+function fmtRunDate(iso) {
+  if (!iso) return '?';
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString(undefined,
+    { year: 'numeric', month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit' });
+}
+
+/* Short human description of one experiment's configuration */
+function expDesc(e) {
+  const parts = [e.retrieval || '?'];
+  if (e.embedding_model) parts.push(e.embedding_model);
+  if (e.db && e.db !== e.retrieval) parts.push(e.db);
+  if (e.tokenizer) parts.push(e.tokenizer);
+  if (e.alpha != null) parts.push(`α=${e.alpha}`);
+  if (e.chunk_type) parts.push(e.chunk_type);
+  return parts.join(' · ');
+}
+
+/* Pipeline results modal: run selector + ranked experiment table + best line.
+   sort = {col: <header label>, dir: 1|-1}; defaults to MRR descending. */
+function renderPipelineModal(runs, index, sort) {
   $('modal-title').textContent = 'Pipeline results';
+  $('modal').classList.add('wide');
   const body = $('modal-body');
   body.innerHTML = '';
   $('modal-overlay').hidden = false;
@@ -2131,7 +2189,8 @@ function renderPipelineModal(runs, index) {
       const opt = document.createElement('option');
       opt.value = i;
       const m = r.metadata || {};
-      opt.textContent = `${m.datetime || '?'} · ${m.num_experiments || 0} experiments`;
+      opt.textContent =
+        `${fmtRunDate(m.datetime)} · ${m.num_experiments || 0} experiments`;
       sel.appendChild(opt);
     });
     sel.value = index;
@@ -2144,38 +2203,80 @@ function renderPipelineModal(runs, index) {
   const meta = run.metadata || {};
   const info = document.createElement('div');
   info.className = 'eval-db-head';
-  info.textContent = `${meta.datetime || ''} — chunk types: ` +
-    `${(meta.chunk_types || []).join(', ')} · QA ${meta.qa_num} chunks · ` +
-    `top_k ${meta.topk} · alpha ${(meta.alphas || [meta.alpha]).join(', ')}`;
+  info.textContent = `${fmtRunDate(meta.datetime)} — ` +
+    `QA ${meta.qa_num} chunks · top_k ${meta.topk}`;
   body.appendChild(info);
 
   const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
   const maxk = Math.max(...ks);
+  const experiments = [...(run.experiments || [])];
+
+  // One column per field: {label, get, num}. Config columns no experiment in
+  // this run uses are skipped; metric columns sort numerically, descending
+  // first (a metric's best values on top), config ascending first.
+  const cols = [
+    { label: 'Search', get: e => e.retrieval },
+    { label: 'Embedding', get: e => e.embedding_model },
+    { label: 'DB', get: e => e.db },
+    { label: 'Tokenizer', get: e => e.tokenizer },
+    { label: 'α', get: e => e.alpha, num: true },
+    { label: 'Chunking', get: e => e.chunk_type },
+  ].filter(c => experiments.some(e => c.get(e) != null));
+  cols.push(
+    { label: `R@${maxk}`, get: e => (e.metrics || {})[`recall@${maxk}`],
+      num: true, fix: 3, desc: true },
+    { label: 'MRR', get: e => (e.metrics || {}).mrr,
+      num: true, fix: 3, desc: true },
+    { label: 'MAP', get: e => (e.metrics || {}).map,
+      num: true, fix: 3, desc: true },
+    { label: `NDCG@${maxk}`, get: e => (e.metrics || {})[`ndcg@${maxk}`],
+      num: true, fix: 3, desc: true },
+    { label: 'Avg time (s)', get: e => (e.metrics || {}).avg_retrieval_time,
+      num: true, fix: 4 },
+  );
+
+  sort = sort || { col: 'MRR', dir: -1 };
+  const sortCol = cols.find(c => c.label === sort.col) ||
+                  cols.find(c => c.label === 'MRR');
+  experiments.sort((a, b) => {
+    const va = sortCol.get(a), vb = sortCol.get(b);
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;               // blanks last either direction
+    if (vb == null) return -1;
+    const cmp = sortCol.num ? va - vb : String(va).localeCompare(String(vb));
+    return cmp * sort.dir;
+  });
+
   const table = document.createElement('table');
   table.className = 'eval-table';
   const head = table.insertRow();
-  ['Experiment', `R@${maxk}`, 'MRR', 'MAP', `NDCG@${maxk}`, 'Avg time (s)'].forEach(t => {
+  for (const c of cols) {
     const th = document.createElement('th');
-    th.textContent = t;
+    th.className = 'sortable';
+    th.textContent = c.label +
+      (c === sortCol ? (sort.dir === 1 ? ' ▲' : ' ▼') : '');
+    th.title = 'Sort by ' + c.label;
+    th.onclick = () => renderPipelineModal(runs, index, {
+      col: c.label,
+      dir: c === sortCol ? -sort.dir : (c.desc ? -1 : 1),
+    });
     head.appendChild(th);
-  });
-  const experiments = [...(run.experiments || [])]
-    .sort((a, b) => ((b.metrics || {}).mrr || 0) - ((a.metrics || {}).mrr || 0));
+  }
   for (const e of experiments) {
-    const m = e.metrics || {};
     const tr = table.insertRow();
-    tr.insertCell().textContent = e.experiment_id;
-    for (const v of [m[`recall@${maxk}`], m.mrr, m.map, m[`ndcg@${maxk}`]])
-      tr.insertCell().textContent = v == null ? '' : v.toFixed(3);
-    tr.insertCell().textContent =
-      m.avg_retrieval_time == null ? '' : m.avg_retrieval_time.toFixed(4);
+    for (const c of cols) {
+      const td = tr.insertCell();
+      const v = c.get(e);
+      if (!c.fix) td.className = 'tl';
+      td.textContent = v == null ? '' : (c.fix ? v.toFixed(c.fix) : v);
+    }
   }
   body.appendChild(table);
 
   if (run.best_by_mrr) {
     const best = document.createElement('div');
     best.className = 'eval-db-head';
-    best.textContent = `Best by MRR: ${run.best_by_mrr.experiment_id} ` +
+    best.textContent = `Best by MRR: ${expDesc(run.best_by_mrr)} ` +
       `(MRR=${((run.best_by_mrr.metrics || {}).mrr || 0).toFixed(3)})`;
     body.appendChild(best);
   }
@@ -2213,6 +2314,7 @@ async function openEvalModal(defaultFile) {
   const doc = current;
   if (!doc) return;
   $('modal-title').textContent = 'Retrieval evaluation results';
+  $('modal').classList.remove('wide');
   const body = $('modal-body');
   body.innerHTML = '<small>Loading evaluations…</small>';
   $('modal-overlay').hidden = false;
@@ -2318,7 +2420,7 @@ $('file-input').onchange = async () => {
     const form = new FormData();
     form.append('pdf', file);
     form.append('method', uploadMethod);
-    const resp = await fetch('/upload', { method: 'POST', body: form });
+    const resp = await jobFetch('/upload', { method: 'POST', body: form });
     if (!resp.ok) throw new Error(await resp.text());
     const doc = await resp.json();
     $('status').textContent = '';

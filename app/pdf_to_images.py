@@ -52,8 +52,8 @@ def next_run_dir(root: Path) -> Path:
     return root / f"{today}_{iteration:02d}"
 
 
-def convert(pdf_path: Path) -> Path:
-    out_dir = next_run_dir(OUTPUT_ROOT) / normalize_name(pdf_path)
+def convert(pdf_path: Path, output_root: Path | None = None) -> Path:
+    out_dir = next_run_dir(output_root or OUTPUT_ROOT) / normalize_name(pdf_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     log.info(f"Converting {pdf_path} at {DPI} dpi ...")

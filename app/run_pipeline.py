@@ -24,6 +24,7 @@ table is printed (Rich if available).
 
 import argparse
 import json
+import os
 import logging
 import subprocess
 import sys
@@ -31,7 +32,8 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT / "data"
+DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
+            else ROOT / "data")  # per-user override set by the web viewer
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 

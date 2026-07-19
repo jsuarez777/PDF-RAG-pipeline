@@ -21,6 +21,7 @@ and the full chunk with its metadata).
 
 import argparse
 import json
+import os
 import logging
 import pickle
 import sys
@@ -28,7 +29,8 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT / "data"
+DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
+            else ROOT / "data")  # per-user override set by the web viewer
 sys.path.insert(0, str(ROOT))
 
 from logging_utils import setup_logging  # noqa: E402

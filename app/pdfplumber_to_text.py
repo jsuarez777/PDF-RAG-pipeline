@@ -232,8 +232,8 @@ def extract_images(page, out_dir: Path, page_number: int) -> list[dict]:
     return records
 
 
-def convert(pdf_path: Path) -> Path:
-    out_dir = next_run_dir(OUTPUT_ROOT) / normalize_name(pdf_path)
+def convert(pdf_path: Path, output_root: Path | None = None) -> Path:
+    out_dir = next_run_dir(output_root or OUTPUT_ROOT) / normalize_name(pdf_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     log.info(f"Extracting text from {pdf_path} with pdfplumber ...")
