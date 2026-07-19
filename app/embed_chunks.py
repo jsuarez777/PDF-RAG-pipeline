@@ -5,7 +5,8 @@ Chunk runs live under data/{pdf2image,pdfplumber}/<date>/<title>/<chunk dir>/
 where <chunk dir> looks like 20260712_101112_chunk_fixed_size_100_20 and
 contains a chunked_text.json produced by chunk_text.py.
 
-Embedding models: text-embedding-3-small, text-embedding-3-large.
+Embedding models: text-embedding-3-small, text-embedding-3-large (OpenAI API),
+all-MiniLM-L6-v2, bge-base-en-v1.5 (local, via sentence-transformers).
 Vector DBs: milvus (Milvus Lite .db file), chromadb (persistent dir).
 
 Outputs go to <title>/embedding_databases/<db>_<datetime>_<model>.<ext>
@@ -29,6 +30,9 @@ DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
             else ROOT / "data")  # per-user override set by the web viewer
 sys.path.insert(0, str(ROOT))
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from embedding_backends import embed_local, is_local_model  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
 
 from openai_client.openai_client import MyOpenAIClient  # noqa: E402
@@ -37,10 +41,13 @@ log = logging.getLogger(__name__)
 
 EXTRACTORS = ("pdf2image", "pdfplumber")
 
-EMBEDDING_MODELS = ("text-embedding-3-small", "text-embedding-3-large")
+EMBEDDING_MODELS = ("text-embedding-3-small", "text-embedding-3-large",
+                    "all-MiniLM-L6-v2", "bge-base-en-v1.5")
 EMBEDDING_ALIASES = {
     "small": "text-embedding-3-small",
     "large": "text-embedding-3-large",
+    "minilm": "all-MiniLM-L6-v2",
+    "bge": "bge-base-en-v1.5",
 }
 
 VECTOR_DBS = ("milvus", "chromadb")
@@ -227,7 +234,7 @@ def build_metadata(run, chunk_meta, model, vectors, now):
         "embedding_model": model,
         "dimensions": len(vectors[0]),
         "num_vectors": len(vectors),
-        "metric": "ip (cosine; OpenAI embeddings are unit-norm)",
+        "metric": "ip (cosine; vectors are unit-norm)",
     }
 
 
@@ -347,16 +354,22 @@ def main():
     out_dir = run["title_dir"] / "embedding_databases"
     out_dir.mkdir(exist_ok=True)
 
-    api = MyOpenAIClient(model=models[0])
-    api.validate_api_key()
-    client = api.get_client()
+    openai_models = [m for m in models if not is_local_model(m)]
+    client = None
+    if openai_models:
+        api = MyOpenAIClient(model=openai_models[0])
+        api.validate_api_key()
+        client = api.get_client()
 
     now = datetime.now()
     stamp = now.strftime("%Y%m%d_%H%M%S")
 
     for model in models:
         log.info(f"\nEmbedding {len(texts)} chunks with {model} ...")
-        vectors = embed_texts(client, model, texts)
+        if is_local_model(model):
+            vectors = embed_local(model, texts, "passage")
+        else:
+            vectors = embed_texts(client, model, texts)
         meta = build_metadata(run, chunk_meta, model, vectors, now)
         for db in dbs:
             STORERS[db](out_dir, stamp, model, vectors, chunks, meta)

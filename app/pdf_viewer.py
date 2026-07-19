@@ -624,8 +624,8 @@ def build_index(dtype: str, run: str, name: str):
         embeddings = payload.get("embeddings")
         dbs = payload.get("dbs")
         if not (isinstance(embeddings, list) and embeddings
-                and all(e in ("small", "large") for e in embeddings)):
-            abort(400, "embeddings must be a non-empty list of: small, large")
+                and all(e in ("small", "large", "minilm", "bge") for e in embeddings)):
+            abort(400, "embeddings must be a non-empty list of: small, large, minilm, bge")
         if not (isinstance(dbs, list) and dbs
                 and all(d in ("milvus", "chromadb") for d in dbs)):
             abort(400, "dbs must be a non-empty list of: milvus, chromadb")
@@ -866,7 +866,7 @@ def run_full_pipeline(dtype: str, run: str, name: str):
     needs_vector = "vector" in retrievals.split(",") or "hybrid" in retrievals.split(",")
     if not (isinstance(vc, list) and all(isinstance(v, str) for v in vc)):
         abort(400, "vector_configs must be a list of model:db strings")
-    if not all(re.fullmatch(r"(?:small|large):(?:milvus|chromadb)", v) for v in vc):
+    if not all(re.fullmatch(r"(?:small|large|minilm|bge):(?:milvus|chromadb)", v) for v in vc):
         abort(400, "each vector_config must look like small:milvus")
     vector_configs = ",".join(dict.fromkeys(vc))
     if needs_vector and not vector_configs:
