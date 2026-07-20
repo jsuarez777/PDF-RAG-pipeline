@@ -124,7 +124,7 @@
   /* delta-to-baseline shown after a reranked row's metric; the green/red
      magnitude tint is applied (via inline background) only while the row's
      group is highlighted — see applyHighlight/metricCell. */
-  .eval-table td .delta { font-size: 11px; opacity: 0.85; margin-left: 3px; }
+  .eval-table td .delta { font-size: 11px; opacity: 0.85; margin-right: 3px; }
 
   /* Document list view */
   #list-view { flex: 1; overflow-y: auto; padding: 20px; }
@@ -1151,11 +1151,33 @@ function humanStamp(s) {
     '$1/$2/$3 $4:$5:$6');
 }
 
+/* Human-readable retrieval config for an eval's metadata: the index kind
+   (BM25 with its tokenizer / vector db + embedding model / hybrid), the
+   hybrid weight, and any reranker — never a filename. */
+function evalConfigLabel(m) {
+  m = m || {};
+  const bits = [];
+  const dt = m.db_type;
+  if (dt === 'bm25') {
+    bits.push('BM25' + (m.tokenizer ? ` (${m.tokenizer} tokenizer)` : ''));
+  } else if (dt === 'hybrid') {
+    bits.push('hybrid');
+    if (m.tokenizer) bits.push(`bm25:${m.tokenizer}`);
+    if (m.embedding_model) bits.push(m.embedding_model);
+    if (m.alpha != null) bits.push(`α=${m.alpha}`);
+  } else {
+    if (dt) bits.push(dt);            // milvus / chromadb
+    if (m.embedding_model) bits.push(m.embedding_model);
+  }
+  if (m.rerank) bits.push(`${m.rerank} rerank`);
+  return bits.join(' · ');
+}
+
 function evalLabel(e) {
-  const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
   const m = e.metadata || {};
-  return [humanStamp(ts), m.db_type, m.embedding_model,
-          m.rerank && `${m.rerank} rerank`].filter(Boolean).join(' · ');
+  const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+  const when = m.datetime ? fmtRunDate(m.datetime) : humanStamp(ts);
+  return [when, evalConfigLabel(m)].filter(Boolean).join(' · ');
 }
 
 async function selectEval(file) {
@@ -2409,21 +2431,26 @@ function renderExperimentTable(container, experiments, opts) {
   // The green (improved) / red (worsened) tint — fainter for a small relative
   // change, brighter for a large one — is stashed on the cell and only painted
   // while the row is highlighted (applyHighlight). `desc` marks higher-is-better
-  // metrics; columns flagged `notint` (Avg time) show the delta but no tint.
+  // metrics; columns flagged `notint` (Avg time) show the delta but no tint;
+  // `nodelta` (recall@k) never shows a delta — reranking only reorders the fixed
+  // top-k set, so recall can't change at k = top_k, and an unchanged delta is
+  // suppressed for every metric anyway (no meaningless "(+.000)").
   const metricCell = (td, e, c, v) => {
     if (v == null) { td.textContent = ''; return; }
-    td.textContent = v.toFixed(c.fix);
+    const valText = v.toFixed(c.fix);
     const base = baseOf(e);
     const bv = base ? c.get(base) : null;
-    if (bv == null) return;
-    const delta = v - bv;
+    const delta = bv == null ? null : v - bv;
+    if (delta == null || c.nodelta || delta === 0) { td.textContent = valText; return; }
     const span = document.createElement('span');
     span.className = 'delta';
     // drop the leading zero for compactness, e.g. +.139 / −.021
     span.textContent = `(${delta >= 0 ? '+' : '−'}` +
       `${Math.abs(delta).toFixed(c.fix).replace(/^0(?=\.)/, '')})`;
-    td.appendChild(span);
-    if (!delta || c.notint) return;
+    // delta sits before the (right-aligned) value so baseline and rerank values
+    // stay column-aligned and the delta hangs off to the left
+    td.append(span, valText);
+    if (c.notint) return;
     const better = c.desc ? delta > 0 : delta < 0;
     const frac = bv ? Math.abs(delta) / Math.abs(bv) : 1;  // relative change
     // strength 0..1 (~20% change = full); less drastic → mix toward white
@@ -2544,7 +2571,7 @@ function renderExperimentTable(container, experiments, opts) {
   });
   cols.push(
     { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],
-      num: true, fix: 3, desc: true, metric: true },
+      num: true, fix: 3, desc: true, metric: true, nodelta: true },
     { key: 'mrr', label: 'MRR', get: e => (e.metrics || {}).mrr,
       num: true, fix: 3, desc: true, metric: true },
     { key: 'map', label: 'MAP', get: e => (e.metrics || {}).map,
@@ -2809,7 +2836,7 @@ async function openEvalModal(defaultFile) {
   const doc = current;
   if (!doc) return;
   $('modal-title').textContent = 'Retrieval evaluation results';
-  $('modal').classList.remove('wide');
+  $('modal').classList.add('wide');  // the shared config+metrics table needs the full width
   const body = $('modal-body');
   body.innerHTML = '<small>Loading evaluations…</small>';
   $('modal-overlay').hidden = false;
@@ -2923,11 +2950,11 @@ function renderEvalModal(value, sort) {
 
   // Per-eval, per-question-type breakdown below the shared table.
   for (const r of shown) {
+    const m = r.metadata || {};
     const h = document.createElement('div');
     h.className = 'eval-db-head';
-    h.textContent = `${r.metadata.db || r.file}` +
-      (r.metadata.rerank ? ` + ${r.metadata.rerank} rerank` : '') +
-      ` — top_k ${r.metadata.top_k}, ${r.metadata.num_questions} questions`;
+    h.textContent = evalLabel(r) +
+      ` — top_k ${m.top_k}, ${m.num_questions} questions`;
     body.append(h, evalTable(r, selK));
   }
 }
