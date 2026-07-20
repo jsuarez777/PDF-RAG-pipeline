@@ -1202,8 +1202,14 @@ function closePopovers(level = 0) {
 // Capture phase so a click inside a menu (whose own handler stopPropagations,
 // see setupMenu) still closes any popover stacked above it; a click inside the
 // popover itself is spared so it never closes the popover or its parent menu.
+// A mousedown that starts inside the popover (e.g. selecting text) but drags
+// out before mouseup must not count as a click-outside either.
+let popoverMouseDownInside = false;
+document.addEventListener('mousedown', ev => {
+  popoverMouseDownInside = !!ev.target.closest('.popover');
+}, true);
 document.addEventListener('click', ev => {
-  if (!ev.target.closest('.popover')) closePopovers();
+  if (!ev.target.closest('.popover') && !popoverMouseDownInside) closePopovers();
 }, true);
 // popovers are viewport-fixed: close them when their anchors scroll away
 $('qa-pane').addEventListener('scroll', () => closePopovers());
@@ -1459,8 +1465,14 @@ function setupMenu(btnId, menuId, onOpen) {
 }
 // A popover (e.g. a pipeline info bubble) lives outside its menu in the DOM, so
 // guard against its clicks bubbling up here and closing the parent menu.
+// A mousedown that starts inside the menu but drags out before mouseup must
+// not count as a click-outside either.
+let menuMouseDownInside = false;
+document.addEventListener('mousedown', ev => {
+  menuMouseDownInside = !!ev.target.closest('.dropdown');
+}, true);
 document.addEventListener('click', ev => {
-  if (!ev.target.closest('.popover')) closeMenus();
+  if (!ev.target.closest('.popover') && !menuMouseDownInside) closeMenus();
 });
 
 /* Upload: button opens a method menu; picking one opens the file dialog */

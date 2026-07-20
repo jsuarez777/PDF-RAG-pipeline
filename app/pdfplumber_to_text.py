@@ -16,6 +16,7 @@ page_<n>_image_<m>.png alongside the JSON).
 
 import json
 import logging
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -194,21 +195,197 @@ def extract_page(page) -> dict:
     }
 
 
-def extract_images(page, out_dir: Path, page_number: int) -> list[dict]:
-    """Crop-and-render each embedded image on the page to a PNG file.
+def cluster_image_boxes(boxes: list[tuple], pad: float = 1.5) -> list[tuple]:
+    """Union-find merge of bboxes that overlap or nearly touch once padded.
 
-    Bounding boxes are clamped to the page, since embedded images can
-    bleed past the visible page edges and page.crop rejects that.
+    Some PDF exporters (e.g. gradient shading, tiled map screenshots) split
+    one visual into hundreds of adjacent image XObjects, individually too
+    thin to rasterize (they round to 0px at typical resolutions). Grouping
+    by adjacency and cropping the union bbox recovers the original figure
+    as a single image instead of many broken slivers.
     """
-    records = []
-    for number, image in enumerate(page.images, start=1):
+    n = len(boxes)
+    parent = list(range(n))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i, j):
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[ri] = rj
+
+    padded = [(x0 - pad, top - pad, x1 + pad, bottom + pad) for x0, top, x1, bottom in boxes]
+    for i in range(n):
+        ax0, at, ax1, ab = padded[i]
+        for j in range(i + 1, n):
+            bx0, bt, bx1, bb = padded[j]
+            if ax0 < bx1 and bx0 < ax1 and at < bb and bt < ab:
+                union(i, j)
+
+    groups: dict[int, list[int]] = {}
+    for i in range(n):
+        groups.setdefault(find(i), []).append(i)
+
+    merged = []
+    for idxs in groups.values():
+        x0 = min(boxes[i][0] for i in idxs)
+        top = min(boxes[i][1] for i in idxs)
+        x1 = max(boxes[i][2] for i in idxs)
+        bottom = max(boxes[i][3] for i in idxs)
+        merged.append((x0, top, x1, bottom))
+    return merged
+
+
+CAPTION_RE = re.compile(r"^Figure\s+\d+(\.\d+)*\b", re.IGNORECASE)
+
+
+def page_text_lines(page, y_tol: float = 2, x_gap: float = 20) -> list[dict]:
+    """Reading-order text lines, split so side-by-side columns don't merge.
+
+    Words are bucketed into rows by top-proximity (same trick as
+    rule_rows), then each row is split into contiguous horizontal segments
+    wherever two words are more than x_gap apart — otherwise two charts
+    sharing a row of axis labels would concatenate into one wide "line".
+    """
+    words = page.extract_words()
+    rows = defaultdict(list)
+    for w in sorted(words, key=lambda w: w["top"]):
+        key = next((k for k in rows if abs(k - w["top"]) <= y_tol), None)
+        rows[key if key is not None else w["top"]].append(w)
+
+    lines = []
+    for row_words in rows.values():
+        seg = None
+        for w in sorted(row_words, key=lambda w: w["x0"]):
+            if seg and w["x0"] - seg["x1"] <= x_gap:
+                seg["text"] += " " + w["text"]
+                seg["x1"] = max(seg["x1"], w["x1"])
+                seg["bottom"] = max(seg["bottom"], w["bottom"])
+            else:
+                if seg:
+                    lines.append(seg)
+                seg = {"top": w["top"], "bottom": w["bottom"], "x0": w["x0"], "x1": w["x1"], "text": w["text"]}
+        if seg:
+            lines.append(seg)
+    return sorted(lines, key=lambda l: l["top"])
+
+
+def find_captions(lines: list[dict], min_gap: float = 6) -> list[dict]:
+    """Lines starting with 'Figure N.M' that follow a real paragraph break.
+
+    Without the gap check, a body-text line that happens to word-wrap at
+    "figure 5.15) is always..." mid-sentence would also match the regex.
+    Real captions always sit in the whitespace right below their figure.
+    """
+    captions = []
+    prev_bottom = None
+    for l in lines:
+        gap = l["top"] - prev_bottom if prev_bottom is not None else None
+        if CAPTION_RE.match(l["text"].strip()) and (gap is None or gap > min_gap):
+            captions.append(l)
+        prev_bottom = l["bottom"]
+    return captions
+
+
+def figure_regions(page, lines: list[dict], captions: list[dict]) -> list[dict]:
+    """For each caption, find the figure's extent above it.
+
+    The bottom edge is the caption's top. The top edge is the bottom of the
+    nearest preceding "wide" line (close to full column width) above the
+    caption — that's the last line of the body-text paragraph before the
+    figure, since chart titles/tick-labels/legend text are all much
+    narrower than a wrapped prose line. Once that vertical band is known,
+    every image, non-trivial rect, and text line inside it (axes frame,
+    data-point markers, tick labels, legend) is unioned into one bbox, so
+    a figure fragmented across hundreds of image XObjects (or accompanied
+    by vector-drawn axes) still renders as a single clean crop.
+    """
+    wide_min = 180
+    regions = []
+    for cap in captions:
+        prev_bottom = max(
+            (c["bottom"] for c in captions if c["top"] < cap["top"]),
+            default=page.bbox[1],
+        )
+        band_top = prev_bottom
+        for l in sorted(
+            (l for l in lines if prev_bottom <= l["top"] < cap["top"]),
+            key=lambda l: -l["top"],
+        ):
+            if (l["x1"] - l["x0"]) >= wide_min:
+                band_top = l["bottom"]
+                break
+        band_bottom = cap["top"]
+
+        boxes = []
+        image_indexes = []
+        for idx, image in enumerate(page.images):
+            x0 = max(image["x0"], page.bbox[0])
+            top = max(image["top"], page.bbox[1])
+            x1 = min(image["x1"], page.bbox[2])
+            bottom = min(image["bottom"], page.bbox[3])
+            if x0 < x1 and band_top - 1 <= top and bottom <= band_bottom + 1:
+                boxes.append((x0, top, x1, bottom))
+                image_indexes.append(idx)
+        for r in page.rects:
+            if (r["x1"] - r["x0"]) * (r["bottom"] - r["top"]) < 4:
+                continue
+            if band_top - 1 <= r["top"] and r["bottom"] <= band_bottom + 1:
+                boxes.append((r["x0"], r["top"], r["x1"], r["bottom"]))
+        for l in lines:
+            if band_top - 1 <= l["top"] and l["bottom"] <= band_bottom + 1:
+                boxes.append((l["x0"], l["top"], l["x1"], l["bottom"]))
+
+        if not boxes:
+            continue
+        x0 = min(b[0] for b in boxes)
+        top = min(b[1] for b in boxes)
+        x1 = max(b[2] for b in boxes)
+        bottom = max(b[3] for b in boxes)
+        regions.append(
+            {"caption": cap["text"], "bbox": (x0, top, x1, bottom), "image_indexes": image_indexes}
+        )
+    return regions
+
+
+def extract_images(page, out_dir: Path, page_number: int) -> list[dict]:
+    """Crop-and-render each figure on the page to a PNG file.
+
+    Figures with a "Figure N.M" caption are extracted whole (see
+    figure_regions): axes, tick labels, legend, and every data-point image
+    fragment inside the caption's figure band, unioned into one crop. Any
+    remaining images not covered by a caption (or on pages with no
+    captions at all) fall back to adjacency clustering (see
+    cluster_image_boxes), since some PDF exporters fragment a single
+    visual into hundreds of touching image XObjects too thin to rasterize
+    on their own.
+    """
+    lines = page_text_lines(page)
+    captions = find_captions(lines)
+    regions = figure_regions(page, lines, captions)
+    consumed = {idx for region in regions for idx in region["image_indexes"]}
+
+    boxes = []
+    for idx, image in enumerate(page.images):
+        if idx in consumed:
+            continue
         x0 = max(image["x0"], page.bbox[0])
         top = max(image["top"], page.bbox[1])
         x1 = min(image["x1"], page.bbox[2])
         bottom = min(image["bottom"], page.bbox[3])
         if x0 >= x1 or top >= bottom:
             continue
+        boxes.append((x0, top, x1, bottom))
 
+    crops = [(region["bbox"], region["caption"]) for region in regions]
+    crops += [(box, None) for box in cluster_image_boxes(boxes)]
+
+    records = []
+    for number, ((x0, top, x1, bottom), caption) in enumerate(crops, start=1):
         filename = f"page_{page_number}_image_{number}.png"
         target = out_dir / filename
         try:
@@ -219,22 +396,17 @@ def extract_images(page, out_dir: Path, page_number: int) -> list[dict]:
             )
             continue
         log.info(f"  wrote {target.relative_to(PROJECT_ROOT)}")
-        records.append(
-            {
-                "file": filename,
-                "image_number": number,
-                "bbox": {
-                    "x0": image["x0"],
-                    "top": image["top"],
-                    "x1": image["x1"],
-                    "bottom": image["bottom"],
-                },
-                "width": image["width"],
-                "height": image["height"],
-                "source_size": list(image["srcsize"]),
-                "name": image.get("name"),
-            }
-        )
+        record = {
+            "file": filename,
+            "image_number": number,
+            "bbox": {"x0": x0, "top": top, "x1": x1, "bottom": bottom},
+            "width": x1 - x0,
+            "height": bottom - top,
+            "source_size": [round((x1 - x0) * 150 / 72), round((bottom - top) * 150 / 72)],
+        }
+        if caption:
+            record["caption"] = caption
+        records.append(record)
     return records
 
 
