@@ -21,8 +21,9 @@ metrics are computed at every cutoff in --ks from the same ranked list:
 Each question has a single gold chunk, so per question Recall@K is 0/1
 (hit rate), Precision@K = Recall@K / K, MAP == MRR, and IDCG == 1.
 
-With --rerank cohere, each question's top-k results are additionally reordered
-by the Cohere rerank API and scored again. Metrics are taken from the ranked
+With --rerank cohere/local, each question's top-k results are additionally
+reordered by a second-stage cross-encoder (the Cohere rerank API, or a local
+sentence-transformers CrossEncoder) and scored again. Metrics are taken from the ranked
 list right before reranking, so one retrieval run yields both without-rerank
 and with-rerank numbers (the latter in a separate eval_*_rerank.json).
 
@@ -49,7 +50,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from logging_utils import setup_logging  # noqa: E402
 from rerank import (  # noqa: E402
-    DEFAULT_RERANK_MODEL,
+    DEFAULT_RERANK_MODELS,
     RERANK_PROVIDERS,
     rerank_results,
 )
@@ -437,8 +438,9 @@ def main():
                         help="Also rerank each question's top-k results with this provider "
                              "and report with-rerank metrics alongside the without-rerank "
                              "ones (retrieval runs once per question either way)")
-    parser.add_argument("--rerank-model", default=DEFAULT_RERANK_MODEL,
-                        help=f"Rerank model for --rerank (default {DEFAULT_RERANK_MODEL})")
+    parser.add_argument("--rerank-model",
+                        help="Rerank model for --rerank (defaults per provider: "
+                             + ", ".join(f"{p}: {m}" for p, m in DEFAULT_RERANK_MODELS.items()))
     parser.add_argument("--force", action="store_true",
                         help="Evaluate even if an index was built from a different chunk run")
     args = parser.parse_args()
@@ -499,8 +501,9 @@ def main():
 
     reranker = None
     if args.rerank:
+        args.rerank_model = args.rerank_model or DEFAULT_RERANK_MODELS[args.rerank]
         reranker = lambda query, results: rerank_results(  # noqa: E731
-            query, results, model=args.rerank_model)
+            query, results, provider=args.rerank, model=args.rerank_model)
 
     summary_rows = []
     for db, method, run_search in searchers:
@@ -523,7 +526,7 @@ def main():
         stem = db["stem"] if db["type"] == "hybrid" else db["path"].stem
         variants = [(stem, {}, records, aggregates)]
         if rr_records:
-            variants.append((f"{stem}_rerank",
+            variants.append((f"{stem}_rerank_{args.rerank}",
                              {"rerank": args.rerank, "rerank_model": args.rerank_model},
                              rr_records, rr_aggregates))
         for out_stem, rerank_meta, out_records, out_aggregates in variants:

@@ -39,7 +39,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from chunk_text import parse_type  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
-from rerank import DEFAULT_RERANK_MODEL, RERANK_PROVIDERS  # noqa: E402
+from rerank import DEFAULT_RERANK_MODELS, RERANK_PROVIDERS  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -159,7 +159,7 @@ def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas
                                 "alpha": alpha,
                             })
     if rerank:
-        experiments += [{**exp, "experiment_id": exp["experiment_id"] + "_rerank",
+        experiments += [{**exp, "experiment_id": exp["experiment_id"] + f"_rerank_{rerank}",
                          "rerank": rerank} for exp in experiments]
     return experiments
 
@@ -255,8 +255,8 @@ def match_experiment(experiments, chunk_spec, meta):
     for exp in experiments:
         if exp["chunk_type"] != chunk_spec or exp["retrieval"] != retrieval:
             continue
-        # a rerank eval only matches a rerank twin (and vice versa)
-        if bool(exp.get("rerank")) != bool(meta.get("rerank")):
+        # a rerank eval only matches the same provider's rerank twin
+        if (exp.get("rerank") or None) != (meta.get("rerank") or None):
             continue
         if retrieval == "bm25" and exp["tokenizer"] == meta.get("tokenizer"):
             return exp
@@ -340,8 +340,9 @@ def main():
                         help="Rerank each experiment's top-k results and report metrics "
                              "both without and with reranking — the without-rerank twin "
                              "comes from the same retrieval pass (default none)")
-    parser.add_argument("--rerank-model", default=DEFAULT_RERANK_MODEL,
-                        help=f"Rerank model for --rerank (default {DEFAULT_RERANK_MODEL})")
+    parser.add_argument("--rerank-model",
+                        help="Rerank model for --rerank (defaults per provider: "
+                             + ", ".join(f"{p}: {m}" for p, m in DEFAULT_RERANK_MODELS.items()))
     parser.add_argument("--topk", type=int, default=10, help="Results per query (default 10)")
     parser.add_argument("--ks", default="1,3,5,10",
                         help="Metric cutoffs, comma-separated (default 1,3,5,10)")
@@ -380,6 +381,8 @@ def main():
     ks_arg = ",".join(str(k) for k in ks_list)
 
     rerank = None if args.rerank == "none" else args.rerank
+    if rerank:
+        args.rerank_model = args.rerank_model or DEFAULT_RERANK_MODELS[rerank]
     experiments = enumerate_experiments(chunk_specs, embed_dbs, tokenizers,
                                         retrievals, alphas, rerank=rerank)
     log.info(f"Pipeline grid: {len(chunk_specs)} chunk config(s) -> "

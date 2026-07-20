@@ -211,7 +211,13 @@ def extract_images(page, out_dir: Path, page_number: int) -> list[dict]:
 
         filename = f"page_{page_number}_image_{number}.png"
         target = out_dir / filename
-        page.crop((x0, top, x1, bottom)).to_image(resolution=150).save(target)
+        try:
+            page.crop((x0, top, x1, bottom)).to_image(resolution=150).save(target)
+        except (ValueError, AttributeError) as exc:
+            log.warning(
+                f"  skipped page_{page_number}_image_{number}: render failed ({exc})"
+            )
+            continue
         log.info(f"  wrote {target.relative_to(PROJECT_ROOT)}")
         records.append(
             {

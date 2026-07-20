@@ -89,8 +89,9 @@
   #modal-overlay[hidden] { display: none; }
   #modal { background: #fff; border-radius: 12px; width: 720px;
            max-width: calc(100vw - 40px); max-height: 88vh; display: flex;
-           flex-direction: column; box-shadow: 0 12px 48px rgba(0,0,0,.35); }
-  #modal.wide { width: min(1080px, calc(100vw - 40px)); }
+           flex-direction: column; box-shadow: 0 12px 48px rgba(0,0,0,.35);
+           resize: both; overflow: hidden; min-width: 360px; min-height: 200px; }
+  #modal.wide { width: fit-content; min-width: min(1080px, calc(100vw - 40px)); }
   #modal-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px;
                 border-bottom: 1px solid #eee; }
   #modal-head h3 { flex: 1; font-size: 14px; }
@@ -367,7 +368,11 @@
         <button type="button" class="info-btn" data-info="topk" title="About Top-K">i</button></label>
       <label>Cutoffs <input id="eval-ks" type="text" value="1,3,5,10">
         <button type="button" class="info-btn" data-info="cutoffs" title="About cutoffs">i</button></label>
-      <label><input type="checkbox" id="eval-rerank"> Cohere rerank (metrics with &amp; without)
+      <label>Rerank <select id="eval-rerank">
+          <option value="">none</option>
+          <option value="cohere">Cohere API</option>
+          <option value="local">local cross-encoder</option>
+        </select> (metrics with &amp; without)
         <button type="button" class="info-btn" data-info="rerank" title="About reranking">i</button></label>
       <label><input type="checkbox" id="eval-force"> Force (ignore chunk-run mismatch)</label>
       <button id="eval-go" class="primary">Evaluate</button>
@@ -445,7 +450,11 @@
             <input class="ph-slider" type="range" min="0" max="1" step="0.05" value="0.7">
             vector (&alpha;) = <span class="ph-vec-w"></span></div>
         </div>
-        <label><input type="checkbox" id="pipe-rerank"> Cohere rerank (metrics with &amp; without)
+        <label>Rerank <select id="pipe-rerank">
+            <option value="">none</option>
+            <option value="cohere">Cohere API</option>
+            <option value="local">local cross-encoder</option>
+          </select> (metrics with &amp; without)
           <button type="button" class="info-btn" data-info="rerank" title="About reranking">i</button></label>
       </div>
       <div class="sec-head"><small>QA generation</small>
@@ -1634,7 +1643,7 @@ $('eval-go').onclick = async () => {
     topk: parseInt($('eval-topk').value, 10),
     ks: $('eval-ks').value.trim(),
     force: $('eval-force').checked,
-    rerank: $('eval-rerank').checked,
+    rerank: $('eval-rerank').value || null,
   };
   closeMenus();
   const doc = current;
@@ -1762,19 +1771,21 @@ const INFO = {
          matching.</p>`,
   },
   rerank: {
-    title: 'Cohere rerank',
+    title: 'Reranking',
     html: `
-      <p>A <b>reranker</b> is a second-stage model (Cohere's rerank API) that
-         reads the query together with each retrieved chunk and rescores them
-         jointly — more accurate than first-stage retrieval, but only practical
-         over a small candidate list. The top-K results from each retrieval
-         method are reordered by relevance.</p>
+      <p>A <b>reranker</b> is a second-stage cross-encoder that reads the query
+         together with each retrieved chunk and rescores them jointly — more
+         accurate than first-stage retrieval, but only practical over a small
+         candidate list. The top-K results from each retrieval method are
+         reordered by relevance.</p>
+      <p><b>Cohere API</b> uses rerank-v3.5 (needs a <code>COHERE_API_KEY</code>;
+         one API call per question — trial keys allow only 10 calls/min).
+         <b>Local cross-encoder</b> runs ms-marco-MiniLM-L-6-v2 on this machine
+         via sentence-transformers: no key or rate limit, smaller model.</p>
       <p>Metrics are captured from the ranked list right <i>before</i> reranking
          and again after, so one run reports both: reranked results appear as a
          separate <code>…_rerank</code> experiment/eval alongside its
-         without-rerank twin. Retrieval and QA generation are not repeated.</p>
-      <p>Needs a <code>COHERE_API_KEY</code>; one rerank API call is made per
-         question.</p>`,
+         without-rerank twin. Retrieval and QA generation are not repeated.</p>`,
   },
   topk: {
     title: 'Top-K',
@@ -1895,7 +1906,7 @@ function pipeConfig() {
     qa_types: vals('.pqat'),
     topk: parseInt($('pipe-topk').value, 10),
     ks: $('pipe-ks').value.trim(),
-    rerank: $('pipe-rerank').checked,
+    rerank: $('pipe-rerank').value || null,
   };
 }
 /* bm25 runs once per tokenizer, vector once per embedding model, hybrid once
@@ -2164,6 +2175,7 @@ $('pipe-go').onclick = async () => {
   const doc = current;
   const data = await runPipeline('pipeline', pipeConfig(), 'Running pipeline');
   if (data && current === doc) {
+    pipeSelectedEvals.clear();
     renderPipelineModal([data], 0);
     if (qaData) loadEvalList(doc);  // pipeline evals belong in the QA pane too
   }
@@ -2189,6 +2201,7 @@ $('pipe-view-btn').onclick = async () => {
       body.textContent = 'No pipeline runs yet for this document.';
       return;
     }
+    pipeSelectedEvals.clear();
     renderPipelineModal(runs, 0);
   } catch (err) {
     body.innerHTML = '';
@@ -2218,6 +2231,25 @@ function expDesc(e) {
 }
 
 let pipelineK = null;  // K cutoff selected in the pipeline results dialog
+let pipeSelectedEvals = new Set();  // eval_file paths ticked for bulk rerank
+
+/* Rerank existing eval file(s) in place (no retrieval/QA rerun) and reload
+   the pipeline runs so the new twin rows appear in the same dialog. */
+async function startRerank(files, provider, runIndex) {
+  const doc = current;
+  const res = await runPipeline('rerank-evals',
+    { files: files.map(f => f.split('/').pop()), provider }, 'Reranking');
+  if (!res || current !== doc || $('modal-overlay').hidden) return;
+  pipeSelectedEvals.clear();
+  try {
+    const resp = await jobFetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/pipeline-runs`);
+    if (!resp.ok) throw new Error(await resp.text());
+    renderPipelineModal(await resp.json(), runIndex);
+  } catch (err) {
+    $('status').textContent = 'Failed to reload pipeline runs: ' + err.message;
+  }
+}
 
 /* Pipeline results modal: run selector + ranked experiment table + best line.
    sort = {col: <header label>, dir: 1|-1}; defaults to MRR descending. */
@@ -2243,7 +2275,10 @@ function renderPipelineModal(runs, index, sort) {
       sel.appendChild(opt);
     });
     sel.value = index;
-    sel.onchange = () => renderPipelineModal(runs, parseInt(sel.value, 10));
+    sel.onchange = () => {
+      pipeSelectedEvals.clear();
+      renderPipelineModal(runs, parseInt(sel.value, 10));
+    };
     bar.append(label, sel);
     body.appendChild(bar);
   }
@@ -2278,11 +2313,28 @@ function renderPipelineModal(runs, index, sort) {
   }
   body.appendChild(info);
 
+  // A base (non-reranked) experiment row can be reranked after the fact from
+  // its eval file's stored retrieved lists. Its twin under a provider is the
+  // row with the identical configuration plus that rerank provider.
+  const CONFIG_KEYS = ['chunk_type', 'retrieval', 'embedding_model', 'db', 'tokenizer', 'alpha'];
+  const cfgEq = (a, b) => CONFIG_KEYS.every(k => (a[k] ?? null) === (b[k] ?? null));
+  const twinOf = (e, prov) => experiments.find(x => x.rerank === prov && cfgEq(x, e));
+  // still missing at least one provider's twin → offers a rerank control
+  const canRerank = e => !e.rerank && e.eval_file &&
+    (!twinOf(e, 'cohere') || !twinOf(e, 'local'));
+  // labels mirror DEFAULT_RERANK_MODELS in app/rerank.py
+  const RERANK_OPTS = [
+    ['cohere', 'Cohere (rerank-v3.5)'],
+    ['local', 'local (ms-marco-MiniLM-L-6-v2)'],
+    ['both', 'both'],
+  ];
+
   // One column per field: {label, get, num}. Config columns no experiment in
-  // this run uses are skipped; metric columns sort numerically, descending
+  // this run uses are skipped (Rerank always shows, since its cells double as
+  // "not reranked" markers); metric columns sort numerically, descending
   // first (a metric's best values on top), config ascending first.
   // key is a stable identifier for sort/drag persistence, independent of the
-  // (renameable) display label.
+  // (renameable) display label. render (if set) draws the cell itself.
   const cols = [
     { key: 'chunking', label: 'Chunking', get: e => e.chunk_type },
     { key: 'embedding', label: 'Embedding', get: e => e.embedding_model },
@@ -2291,8 +2343,36 @@ function renderPipelineModal(runs, index, sort) {
     { key: 'retrieval', label: 'Retrieval Type',
       get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
     { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
-    { key: 'rerank', label: 'Rerank', get: e => e.rerank },
   ].filter(c => experiments.some(e => c.get(e) != null));
+  // Rerank column: twin rows show their provider; base rows get a dropdown
+  // that reranks the stored top-k with the chosen provider(s). Providers
+  // whose twin already exists are omitted from the dropdown.
+  cols.push({
+    key: 'rerank', label: 'Rerank',
+    get: e => e.rerank || '—',
+    render: (e, td) => {
+      td.className = 'tl';
+      if (e.rerank) { td.textContent = e.rerank; return; }
+      if (!e.eval_file) { td.textContent = '—'; return; }
+      const missing = ['cohere', 'local'].filter(p => !twinOf(e, p));
+      if (!missing.length) {
+        td.textContent = '✓ both';
+        td.title = 'Reranked with both providers — see the rerank twin rows';
+        return;
+      }
+      const sel = document.createElement('select');
+      sel.appendChild(new Option('rerank…', ''));
+      for (const [v, t] of RERANK_OPTS) {
+        if (v === 'both' ? missing.length < 2 : !missing.includes(v)) continue;
+        sel.appendChild(new Option(t, v));
+      }
+      sel.title = "Rerank this experiment's stored top-k";
+      sel.onchange = () => {
+        if (sel.value) startRerank([e.eval_file], sel.value, index);
+      };
+      td.appendChild(sel);
+    },
+  });
   cols.push(
     { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],
       num: true, fix: 3, desc: true },
@@ -2329,9 +2409,15 @@ function renderPipelineModal(runs, index, sort) {
     return cmp * sort.dir;
   });
 
+  // Bulk rerank control (built before the table so row checkboxes can toggle
+  // its button); appended after it. Selections live in pipeSelectedEvals.
+  const bulkBtn = document.createElement('button');
+  const bulkSel = document.createElement('select');
+
   const table = document.createElement('table');
   table.className = 'eval-table';
   const head = table.insertRow();
+  if (experiments.some(canRerank)) head.appendChild(document.createElement('th'));
   for (const c of cols) {
     const th = document.createElement('th');
     th.className = 'sortable draggable';
@@ -2364,14 +2450,43 @@ function renderPipelineModal(runs, index, sort) {
   }
   for (const e of experiments) {
     const tr = table.insertRow();
+    if (experiments.some(canRerank)) {
+      const selTd = tr.insertCell();
+      if (canRerank(e)) {
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.title = 'Select for bulk rerank';
+        cb.checked = pipeSelectedEvals.has(e.eval_file);
+        cb.onchange = () => {
+          if (cb.checked) pipeSelectedEvals.add(e.eval_file);
+          else pipeSelectedEvals.delete(e.eval_file);
+          bulkBtn.disabled = !pipeSelectedEvals.size;
+        };
+        selTd.appendChild(cb);
+      }
+    }
     for (const c of cols) {
       const td = tr.insertCell();
+      if (c.render) { c.render(e, td); continue; }
       const v = c.get(e);
       if (!c.fix) td.className = 'tl';
       td.textContent = v == null ? '' : (c.fix ? v.toFixed(c.fix) : v);
     }
   }
   body.appendChild(table);
+
+  if (experiments.some(canRerank)) {
+    const bulk = document.createElement('div');
+    bulk.className = 'modal-eval-select';
+    const blabel = document.createElement('span');
+    blabel.textContent = 'Rerank selected rows with:';
+    for (const [v, t] of RERANK_OPTS) bulkSel.appendChild(new Option(t, v));
+    bulkBtn.textContent = 'Rerank';
+    bulkBtn.disabled = !pipeSelectedEvals.size;
+    bulkBtn.onclick = () => startRerank([...pipeSelectedEvals], bulkSel.value, index);
+    bulk.append(blabel, bulkSel, bulkBtn);
+    body.appendChild(bulk);
+  }
 
   if (run.best_by_mrr) {
     const best = document.createElement('div');
@@ -2501,14 +2616,34 @@ function renderEvalModal(value) {
   for (const r of shown) {
     const h = document.createElement('div');
     h.className = 'eval-db-head';
-    h.textContent = `${r.metadata.db || r.file} — top_k ${r.metadata.top_k}, ` +
-      `${r.metadata.num_questions} questions`;
+    h.textContent = `${r.metadata.db || r.file}` +
+      (r.metadata.rerank ? ` + ${r.metadata.rerank} rerank` : '') +
+      ` — top_k ${r.metadata.top_k}, ${r.metadata.num_questions} questions`;
     body.append(h, evalTable(r));
   }
 }
-$('modal-close').onclick = () => { $('modal-overlay').hidden = true; };
+function closeModal() {
+  $('modal-overlay').hidden = true;
+  // drop any manual resize/anchor so the next modal opens centered at default size
+  const s = $('modal').style;
+  s.width = s.height = s.position = s.left = s.top = '';
+}
+$('modal-close').onclick = closeModal;
+// Grabbing the resize grip on a flex-centered element grows it from the middle,
+// so the grip lags the mouse; pin the modal in place before the drag starts.
+$('modal').addEventListener('pointerdown', ev => {
+  const m = $('modal'), r = m.getBoundingClientRect();
+  if (ev.clientX < r.right - 20 || ev.clientY < r.bottom - 20) return;
+  m.style.position = 'absolute';
+  m.style.left = r.left + 'px';
+  m.style.top = r.top + 'px';
+});
+// Close only when the press started on the overlay itself — releasing a resize
+// drag outside the modal must not count as a click-outside.
+let overlayPressTarget = null;
+$('modal-overlay').addEventListener('pointerdown', ev => { overlayPressTarget = ev.target; });
 $('modal-overlay').onclick = ev => {
-  if (ev.target === $('modal-overlay')) $('modal-overlay').hidden = true;
+  if (ev.target === $('modal-overlay') && overlayPressTarget === $('modal-overlay')) closeModal();
 };
 
 $('file-input').onchange = async () => {

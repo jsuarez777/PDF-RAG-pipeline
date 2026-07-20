@@ -39,6 +39,7 @@ from jobs import BroadcastHandler, JobError, run_and_stream  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
 from pdf_to_images import convert  # noqa: E402
 from pdfplumber_to_text import convert as convert_text  # noqa: E402
+from rerank import RERANK_PROVIDERS  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -750,11 +751,15 @@ def run_eval(dtype: str, run: str, name: str):
     if any(int(k) > topk for k in ks.split(",")):
         abort(400, f"each cutoff (ks) must be ≤ top-k ({topk})")
 
+    rerank = payload.get("rerank") or None
+    if rerank is not None and rerank not in RERANK_PROVIDERS:
+        abort(400, "rerank must be one of: " + ", ".join(RERANK_PROVIDERS))
+
     return enqueue_job("eval", {
         "dtype": dtype, "run": run, "name": name,
         "db_arg": db_arg, "topk": topk, "ks": ks,
         "force": bool(payload.get("force")),
-        "rerank": bool(payload.get("rerank")),
+        "rerank": rerank,
     })
 
 
@@ -771,7 +776,7 @@ def job_eval(uid: int, params: dict) -> list:
     if params.get("force"):
         cmd.append("--force")
     if params.get("rerank"):
-        cmd += ["--rerank", "cohere"]
+        cmd += ["--rerank", params["rerank"]]
 
     started = time.time()
     code = run_and_stream(cmd, env=user_env(uid))
@@ -896,6 +901,9 @@ def run_full_pipeline(dtype: str, run: str, name: str):
     seed = payload.get("seed")
     if seed is not None and not isinstance(seed, int):
         abort(400, "seed must be an integer")
+    rerank = payload.get("rerank") or None
+    if rerank is not None and rerank not in RERANK_PROVIDERS:
+        abort(400, "rerank must be one of: " + ", ".join(RERANK_PROVIDERS))
 
     return enqueue_job("pipeline", {
         "dtype": dtype, "run": run, "name": name,
@@ -905,7 +913,7 @@ def run_full_pipeline(dtype: str, run: str, name: str):
         "qa_num": qa_num, "qa_types": qa_types,
         "topk": topk, "ks": ks,
         "vector_configs": vector_configs, "seed": seed,
-        "rerank": bool(payload.get("rerank")),
+        "rerank": rerank,
     })
 
 
@@ -925,7 +933,7 @@ def job_pipeline(uid: int, params: dict) -> dict:
     if params.get("seed") is not None:
         cmd += ["--seed", str(params["seed"])]
     if params.get("rerank"):
-        cmd += ["--rerank", "cohere"]
+        cmd += ["--rerank", params["rerank"]]
 
     started = time.time()
     code = run_and_stream(cmd, env=user_env(uid))
@@ -942,6 +950,49 @@ def job_pipeline(uid: int, params: dict) -> dict:
         return json.loads(newest.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         raise JobError(f"could not read {newest.name}")
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/rerank-evals")
+def rerank_evals(dtype: str, run: str, name: str):
+    """Rerank existing eval files from their stored retrieved lists (no
+    retrieval/QA rerun) and record twin rows in matching pipeline runs."""
+    qa_doc_dir(dtype, run, name)  # 404 unless the document exists
+    payload = request.get_json(silent=True) or {}
+    provider = payload.get("provider")
+    if provider not in RERANK_PROVIDERS + ("both",):
+        abort(400, "provider must be one of: " + ", ".join(RERANK_PROVIDERS + ("both",)))
+    files = payload.get("files")
+    if not isinstance(files, list) or not files \
+            or not all(isinstance(f, str) for f in files):
+        abort(400, "files must be a non-empty list of eval file names")
+    names = []
+    for f in files:
+        base = Path(f).name
+        if not re.fullmatch(r"eval_(?!summary_).+\.json", base) or "_rerank" in base:
+            abort(400, f"not a base eval file: {base}")
+        names.append(base)
+    return enqueue_job("rerank_eval", {
+        "dtype": dtype, "run": run, "name": name,
+        "files": names, "provider": provider,
+    })
+
+
+@jobs.handler("rerank_eval")
+def job_rerank_eval(uid: int, params: dict) -> dict:
+    doc_dir = job_doc_dir(uid, params)
+    eval_dir = doc_dir / "evaluations"
+    paths = []
+    for base in params["files"]:
+        p = eval_dir / base
+        if not p.is_file():
+            raise JobError(f"eval file not found: {base}")
+        paths.append(p.relative_to(PROJECT_ROOT).as_posix())
+    cmd = [sys.executable, str(SCRIPT_DIR / "rerank_eval.py"),
+           "--eval", ",".join(paths), "--provider", params["provider"]]
+    code = run_and_stream(cmd, env=user_env(uid))
+    if code != 0:
+        raise JobError(f"rerank_eval.py failed with exit code {code}")
+    return {"reranked": params["files"], "provider": params["provider"]}
 
 
 @app.get("/api/documents/<dtype>/<run>/<name>/pipeline-runs")
