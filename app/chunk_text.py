@@ -590,6 +590,18 @@ def plumber_struct_chunks(pages, n_per_chunk):
     chunks = []
     total_chars = 0
 
+    # Build the document-level joined text once, in the same coordinate system
+    # as fixed_size/sentence chunks, so prose chunks can record document-level
+    # char offsets. bases[page] is where each page's text starts in full_text.
+    text_pairs = [(p["page"], p["text"]) for p in pages]
+    full_text, page_at = build_full_text(text_pairs)
+    bases, _pos = {}, 0
+    for _i, (_n, _txt) in enumerate(text_pairs):
+        if _i > 0:
+            _pos += 1  # "\n" page separator, matching build_full_text
+        bases[_n] = _pos
+        _pos += len(_txt)
+
     def add(text, page, source, extra=None):
         chunks.append({
             "chunk_index": len(chunks),
@@ -607,9 +619,28 @@ def plumber_struct_chunks(pages, n_per_chunk):
         prose = p["text"].strip()
         if prose:
             groups, _ = sentence_chunks([(p["page"], prose)], n_per_chunk, 0, min_tokens=floor)
+            # Locate each prose chunk's exact extracted text within this page's
+            # slice of full_text (a running cursor keeps repeated sentences from
+            # matching the wrong copy). On a hit, record a document-level char
+            # span; on a miss (the chunk straddled a removed-table gap so it is
+            # not a contiguous substring) leave the span unset. Searching the
+            # extracted substring — not a pysbd re-segmentation — avoids offset
+            # drift.
+            cursor = 0
             for g in groups:
-                add(g["text"], p["page"], "text",
-                    {"num_sentences": g.get("num_sentences")})
+                extra = {"num_sentences": g.get("num_sentences")}
+                lo = p["text"].find(g["text"], cursor)
+                if lo != -1:
+                    start = bases[p["page"]] + lo
+                    end = start + len(g["text"])
+                    cursor = lo + len(g["text"])
+                    extra.update(
+                        start_char=start,
+                        end_char=end,
+                        start_page=page_at(start),
+                        end_page=page_at(max(end - 1, start)),
+                    )
+                add(g["text"], p["page"], "text", extra)
         for t_num, table in enumerate(p["tables"], 1):
             lines = table_row_lines(table)
             total_chars += sum(len(line) for line in lines)

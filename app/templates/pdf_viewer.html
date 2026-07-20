@@ -204,6 +204,15 @@
                      letter-spacing: .03em; margin-bottom: 2px; }
   .chunk-check { margin: 0; cursor: pointer; }
   .chunk-gen { display: block; font-size: 11px; padding: 3px 8px; margin: 2px 0 6px; }
+  /* span-less chunks (plumber-struct tables/images/gap-straddling prose):
+     a badge strip at the top of the page, reusing the chunk-box widget. */
+  .chunk-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px;
+                  padding: 6px; background: rgba(0,0,0,.04); border-radius: 6px; }
+  .chunk-badges .chunk-box { display: inline-block; margin: 0; min-width: 96px; }
+  .chunk-src { display: inline-block; margin-left: 5px; padding: 0 4px;
+               font-size: 9px; font-weight: 600; letter-spacing: .02em;
+               color: #6e6e73; background: rgba(0,0,0,.08); border-radius: 3px;
+               text-transform: uppercase; }
   /* overlap seams: text shared between consecutive chunks */
   .ov-shared { background: rgba(0,0,0,.10); border-radius: 3px; }
   .ov-dup { background: rgba(0,0,0,.06); color: #6e6e73; border-radius: 3px; }
@@ -549,6 +558,8 @@ let current = null;
 let ocrState = {};  // page number -> extracted text, or null when not yet OCR'd
 let qaData = null;      // latest QA dataset for the open document, or null
 let qaVisible = false;
+let chunkRuns = [];         // this document's chunk runs (from /chunk-runs)
+let selectedChunkRun = null;  // chosen chunk run basename, null = latest/default
 let pageTexts = {};    // page number -> chunk-source text (null when unavailable)
 let pageTextEls = {};  // page number -> element the text is rendered into
 let checkedChunks = new Set();  // chunk indices ticked for bulk generation
@@ -616,6 +627,8 @@ function showViewer(doc) {
   ocrState = {};
   qaData = null;
   qaVisible = false;
+  chunkRuns = [];
+  selectedChunkRun = null;
   pageTexts = {};
   pageTextEls = {};
   checkedChunks = new Set();
@@ -643,6 +656,7 @@ async function loadQa(doc) {
   const genAll = $('gen-all-btn');
   genAll.style.display = '';
   genAll.disabled = generating;
+  fetchChunkRuns(doc);  // populate the "Chunking:" selector (independent of QA)
   try {
     const resp = await fetch(`/api/documents/${doc.type}/${doc.run}/${doc.name}/qa`);
     if (!resp.ok) return;
@@ -655,6 +669,45 @@ async function loadQa(doc) {
       loadEvalList(doc);
     }
   } catch (err) { /* leave the button grayed out */ }
+}
+
+/* Load the document's chunk runs for the "Chunking:" selector; refresh the
+   pane if it's already open so the selector appears once the list arrives. */
+async function fetchChunkRuns(doc) {
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/chunk-runs`);
+    if (!resp.ok || current !== doc) return;
+    chunkRuns = await resp.json();
+    if (qaVisible && qaData) buildQaPane();
+  } catch (err) { /* selector just won't render */ }
+}
+
+/* Short label for one chunk run: humanized method:params + a QA hint. */
+function chunkRunLabel(entry) {
+  const n = (entry.qa_files || []).length;
+  return humanizeChunkRun(entry.basename) + (n ? ` (${n} QA)` : ' (no QA)');
+}
+
+/* Switch the viewer to a different chunk run: re-fetch its QA (or a QA-less
+   chunks-only payload), then rebuild the pane, highlights, and eval list. */
+async function selectChunkRun(basename) {
+  const doc = current;
+  if (!doc) return;
+  selectedChunkRun = basename || null;
+  try {
+    const url = `/api/documents/${doc.type}/${doc.run}/${doc.name}/qa` +
+      (selectedChunkRun ? `?chunk_run=${encodeURIComponent(selectedChunkRun)}` : '');
+    const resp = await fetch(url);
+    if (!resp.ok || current !== doc) return;
+    qaData = await resp.json();
+  } catch (err) { return; }
+  if (!qaData) return;
+  // boxes render for selection even when the run has no QA pairs yet
+  $('qa-btn').disabled = !(qaData.items && qaData.items.length);
+  showQaPane();
+  if (qaData.qa_file) loadEvalList(doc);
+  else { evalList = []; evalSelected = ''; evalData = null; buildQaPane(); }
 }
 
 /* Open the QA pane (documents with QA pairs show them without a click) */
@@ -933,9 +986,32 @@ function renderChunkHighlights() {
       delete el.dataset.highlighted;
     }
   }
+
+  // Page-level fallback: chunks without a char span can't be drawn inline
+  // (plumber-struct table/image chunks, and prose that straddled a removed-table
+  // gap). List each as a badge at the top of every page it covers, reusing
+  // makeChunkBox so active-state / select / "Generate QA Pair" work identically.
+  // Rebuilt every render so active-state stays in sync; coexists with inline boxes.
+  for (const n of order) {
+    const el = pageTextEls[n];
+    const col = el && el.closest('.ocr-col');
+    if (!col) continue;
+    const prev = col.querySelector(':scope > .chunk-badges');
+    if (prev) prev.remove();
+    if (!(qaVisible && qaData)) continue;
+    const here = (qaData.chunks || []).filter(c =>
+      (c.start_char == null || c.end_char == null) &&
+      c.start_page != null && c.start_page <= n && (c.end_page ?? c.start_page) >= n);
+    if (!here.length) continue;
+    const strip = document.createElement('div');
+    strip.className = 'chunk-badges';
+    for (const c of here)
+      strip.appendChild(makeChunkBox(c.chunk_index, qaChunks, c.source));
+    col.prepend(strip);
+  }
 }
 
-function makeChunkBox(idx, qaChunks) {  // caller appends the text content
+function makeChunkBox(idx, qaChunks, source) {  // caller appends the text content
   const box = document.createElement('span');
   box.className = 'chunk-box ' +
     (activeChunk === idx ? 'active' : qaChunks.has(idx) ? 'has-qa' : 'no-qa');
@@ -946,6 +1022,12 @@ function makeChunkBox(idx, qaChunks) {  // caller appends the text content
   const label = document.createElement('span');
   label.className = 'chunk-box-label';
   label.textContent = `Chunk_${idx}`;
+  if (source) {  // plumber-struct badges tag their source kind (text/table/image)
+    const tag = document.createElement('span');
+    tag.className = 'chunk-src';
+    tag.textContent = source;
+    label.appendChild(tag);
+  }
   const check = document.createElement('input');
   check.type = 'checkbox';
   check.className = 'chunk-check';
@@ -965,7 +1047,9 @@ function makeChunkBox(idx, qaChunks) {  // caller appends the text content
     const gen = document.createElement('button');
     gen.className = 'chunk-gen';
     gen.textContent = 'Generate QA Pair';
-    gen.disabled = generating;
+    // per-chunk generation appends to an existing QA file; a QA-less run must
+    // bootstrap via "Generate QA Pairs (all)" first.
+    gen.disabled = generating || !(qaData && qaData.qa_file);
     gen.onclick = ev => {
       ev.stopPropagation();
       generateQa([idx], ['direct', 'inference', 'paraphrased']);
@@ -984,7 +1068,8 @@ function refreshGenButton() {
   const show = qaVisible && qaData ? '' : 'none';
   const gen = $('gen-btn');
   gen.style.display = show;
-  gen.disabled = generating || checkedChunks.size === 0;
+  // bulk per-chunk generation needs an existing QA file to append to
+  gen.disabled = generating || checkedChunks.size === 0 || !(qaData && qaData.qa_file);
   const desel = $('deselect-btn');
   desel.style.display = show;
   desel.disabled = checkedChunks.size === 0;
@@ -1002,7 +1087,7 @@ function refreshPipelineButtons() {
     $(id).style.display = show;
   $('chunk-btn').disabled = generating;
   $('index-btn').disabled = generating;
-  $('eval-btn').disabled = generating || !qaData;
+  $('eval-btn').disabled = generating || !(qaData && qaData.qa_file);
   $('eval-view-btn').disabled = generating;
   $('pipe-btn').disabled = generating;
   $('pipe-view-btn').disabled = generating;
@@ -1015,7 +1100,7 @@ $('deselect-btn').onclick = () => {
 };
 
 async function generateQa(chunks, types) {
-  if (!qaData || generating || !current) return;
+  if (!qaData || !qaData.qa_file || generating || !current) return;
   generating = true;
   refreshGenButton();
   renderChunkHighlights();
@@ -1024,7 +1109,7 @@ async function generateQa(chunks, types) {
     const resp = await jobFetch(
       `/api/documents/${current.type}/${current.run}/${current.name}/qa/generate`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chunks, types }) });
+        body: JSON.stringify({ chunks, types, chunk_run: selectedChunkRun }) });
     if (!resp.ok) throw new Error(await resp.text());
     const data = await resp.json();
     generating = false;
@@ -1106,6 +1191,21 @@ function buildQaPane() {
 
   const bar = document.createElement('div');
   bar.id = 'eval-bar';
+  // Chunking selector: switch which chunk run (and its QA) the pane shows.
+  if (chunkRuns.length) {
+    const clabel = document.createElement('span');
+    clabel.textContent = 'Chunking:';
+    const csel = document.createElement('select');
+    for (const entry of chunkRuns) {
+      const opt = document.createElement('option');
+      opt.value = entry.basename;
+      opt.textContent = chunkRunLabel(entry);
+      csel.appendChild(opt);
+    }
+    csel.value = selectedChunkRun || (qaData && qaData.chunk_run) || '';
+    csel.onchange = () => selectChunkRun(csel.value);
+    bar.append(clabel, csel);
+  }
   const label = document.createElement('span');
   label.textContent = 'Eval:';
   const sel = document.createElement('select');
@@ -1125,8 +1225,9 @@ function buildQaPane() {
   pane.appendChild(bar);
 
   const head = document.createElement('h2');
-  head.textContent = 'QA pairs — ' +
-    humanStamp(`${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`);
+  head.textContent = 'QA pairs — ' + (qaData.qa_file
+    ? humanStamp(`${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`)
+    : `${qaData.chunk_run} (no QA pairs yet)`);
   pane.appendChild(head);
   // generate --add keeps the file sorted, but old files may predate that:
   // sort for display; itemIndex keeps each item's position in the file,
@@ -1365,6 +1466,7 @@ $('genall-go').onclick = async () => {
   const body = {
     num: parseInt($('genall-num').value, 10),
     types: [...document.querySelectorAll('.genall-type:checked')].map(c => c.value),
+    chunk_run: selectedChunkRun,
   };
   closeMenus();
   generating = true;
@@ -1408,6 +1510,8 @@ function showList() {
   ocrState = {};
   qaData = null;
   qaVisible = false;
+  chunkRuns = [];
+  selectedChunkRun = null;
   pageTexts = {};
   pageTextEls = {};
   checkedChunks = new Set();
@@ -1597,7 +1701,7 @@ bindMenuValidation('index-menu', collectIndexErrors);
 $('index-go').onclick = async () => {
   if (!submitIfValid('index-menu', collectIndexErrors)) return;
   const kind = document.querySelector('input[name="index-kind"]:checked').value;
-  const body = { kind };
+  const body = { kind, chunk_run: selectedChunkRun };
   if (kind === 'bm25') {
     body.tokenizers = [...document.querySelectorAll('#index-bm25 .tok:checked')].map(c => c.value);
   } else {
@@ -1617,7 +1721,8 @@ async function loadEvalIndexes() {
   holder.innerHTML = '<small>Loading indexes…</small>';
   try {
     const resp = await fetch(
-      `/api/documents/${doc.type}/${doc.run}/${doc.name}/indexes`);
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/indexes` +
+      (selectedChunkRun ? `?chunk_run=${encodeURIComponent(selectedChunkRun)}` : ''));
     if (!resp.ok) throw new Error(await resp.text());
     const data = await resp.json();
     if (current !== doc) return;
@@ -1669,6 +1774,7 @@ $('eval-go').onclick = async () => {
     ks: $('eval-ks').value.trim(),
     force: $('eval-force').checked,
     rerank: $('eval-rerank').value || null,
+    chunk_run: selectedChunkRun,
   };
   closeMenus();
   const doc = current;
@@ -1932,6 +2038,7 @@ function pipeConfig() {
     topk: parseInt($('pipe-topk').value, 10),
     ks: $('pipe-ks').value.trim(),
     rerank: $('pipe-rerank').value || null,
+    chunk_run: selectedChunkRun,
   };
 }
 /* bm25 runs once per tokenizer, vector once per embedding model, hybrid once
@@ -2277,6 +2384,286 @@ async function startRerank(files, provider, runIndex) {
   }
 }
 
+/* Shared ranked experiment table (used by the pipeline results modal and the
+   individual eval view). experiments are pipeline-shaped rows ({chunk_type,
+   embedding_model, db, tokenizer, alpha, retrieval, rerank, metrics,
+   eval_file}). opts = {ks, selK, allowRerank, sort, rerender, runIndex}:
+   rerender(sort) re-renders the whole host modal; the rerank-initiating
+   controls (bulk button, per-row dropdown, selection checkboxes) render only
+   when allowRerank. Base-vs-rerank delta rows + highlight groups work in both
+   modes. */
+function renderExperimentTable(container, experiments, opts) {
+  const { ks, selK, allowRerank } = opts;
+  let sort = opts.sort;
+
+  // A base (non-reranked) experiment row can be reranked after the fact from
+  // its eval file's stored retrieved lists. Its twin under a provider is the
+  // row with the identical configuration plus that rerank provider.
+  const CONFIG_KEYS = ['chunk_type', 'retrieval', 'embedding_model', 'db', 'tokenizer', 'alpha'];
+  const cfgEq = (a, b) => CONFIG_KEYS.every(k => (a[k] ?? null) === (b[k] ?? null));
+  const twinOf = (e, prov) => experiments.find(x => x.rerank === prov && cfgEq(x, e));
+  // The un-reranked baseline row a reranked row is measured against (same
+  // config, no rerank), so metric cells can show a delta to it.
+  const baseOf = e => e.rerank ? experiments.find(x => !x.rerank && cfgEq(x, e)) : null;
+  // Draw a metric value; for reranked rows append the signed delta to baseline.
+  // The green (improved) / red (worsened) tint — fainter for a small relative
+  // change, brighter for a large one — is stashed on the cell and only painted
+  // while the row is highlighted (applyHighlight). `desc` marks higher-is-better
+  // metrics; columns flagged `notint` (Avg time) show the delta but no tint.
+  const metricCell = (td, e, c, v) => {
+    if (v == null) { td.textContent = ''; return; }
+    td.textContent = v.toFixed(c.fix);
+    const base = baseOf(e);
+    const bv = base ? c.get(base) : null;
+    if (bv == null) return;
+    const delta = v - bv;
+    const span = document.createElement('span');
+    span.className = 'delta';
+    // drop the leading zero for compactness, e.g. +.139 / −.021
+    span.textContent = `(${delta >= 0 ? '+' : '−'}` +
+      `${Math.abs(delta).toFixed(c.fix).replace(/^0(?=\.)/, '')})`;
+    td.appendChild(span);
+    if (!delta || c.notint) return;
+    const better = c.desc ? delta > 0 : delta < 0;
+    const frac = bv ? Math.abs(delta) / Math.abs(bv) : 1;  // relative change
+    // strength 0..1 (~20% change = full); less drastic → mix toward white
+    const t = Math.min(1, Math.max(0.15, frac / 0.2));
+    const mix = c => Math.round(255 + t * (c - 255));  // lerp white → base
+    const [r, g, b] = better ? [74, 255, 74] : [255, 74, 74];
+    td.dataset.deltaBg = `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+  };
+  // Rows sharing a config (the un-reranked base plus its rerank twins) form one
+  // highlight group; clicking any of their Rerank cells lights up all of them.
+  const groupKey = e => JSON.stringify(CONFIG_KEYS.map(k => e[k] ?? null));
+  const applyHighlight = () => container.querySelectorAll('tr[data-rgroup]').forEach(tr => {
+    const on = pipeHighlightGroup != null && tr.dataset.rgroup === pipeHighlightGroup;
+    tr.classList.toggle('rerank-hl', on);
+    // green/red metric tint rides along with the highlight, not always on
+    tr.querySelectorAll('td[data-delta-bg]').forEach(td =>
+      td.style.background = on ? td.dataset.deltaBg : '');
+  });
+  const toggleHighlight = key => {
+    pipeHighlightGroup = pipeHighlightGroup === key ? null : key;
+    applyHighlight();
+  };
+  const hlLink = (text, key, title) => {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'rerank-link';
+    a.textContent = text;
+    if (title) a.title = title;
+    a.onclick = ev => { ev.preventDefault(); toggleHighlight(key); };
+    return a;
+  };
+  // Clear-highlights control (only when some row can be highlighted).
+  if (experiments.some(e => e.rerank)) {
+    const clear = document.createElement('div');
+    clear.className = 'rerank-clear';
+    const btn = document.createElement('button');
+    btn.textContent = 'Clear highlights';
+    btn.onclick = () => { pipeHighlightGroup = null; applyHighlight(); };
+    clear.appendChild(btn);
+    container.appendChild(clear);
+  }
+  // still missing at least one provider's twin → offers a rerank control
+  // (only when the host modal allows initiating reranks)
+  const canRerank = e => allowRerank && !e.rerank && e.eval_file &&
+    (!twinOf(e, 'cohere') || !twinOf(e, 'local'));
+  // labels mirror DEFAULT_RERANK_MODELS in app/rerank.py
+  const RERANK_OPTS = [
+    ['cohere', 'Cohere (rerank-v3.5)'],
+    ['local', 'local (ms-marco-MiniLM-L-6-v2)'],
+    ['both', 'both'],
+  ];
+
+  // One column per field: {label, get, num}. Config columns no experiment in
+  // this run uses are skipped (Rerank always shows, since its cells double as
+  // "not reranked" markers); metric columns sort numerically, descending
+  // first (a metric's best values on top), config ascending first.
+  // key is a stable identifier for sort/drag persistence, independent of the
+  // (renameable) display label. render (if set) draws the cell itself.
+  const cols = [
+    { key: 'chunking', label: 'Chunking', get: e => e.chunk_type },
+    { key: 'embedding', label: 'Embedding', get: e => e.embedding_model },
+    { key: 'db', label: 'DB', get: e => e.db === 'bm25' ? null : e.db },
+    { key: 'tokenizer', label: 'BM25 Tokenizer', get: e => e.tokenizer },
+    { key: 'retrieval', label: 'Retrieval Type',
+      get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
+    { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
+  ].filter(c => experiments.some(e => c.get(e) != null));
+  // Rerank column: twin rows show their provider; base rows get a dropdown
+  // that reranks the stored top-k with the chosen provider(s). Providers
+  // whose twin already exists are omitted from the dropdown.
+  cols.push({
+    key: 'rerank', label: 'Rerank',
+    get: e => e.rerank || '—',
+    render: (e, td) => {
+      td.className = 'tl';
+      const key = groupKey(e);
+      if (e.rerank) {
+        td.appendChild(hlLink(e.rerank, key,
+          'Click to highlight this experiment and its base/rerank siblings'));
+        return;
+      }
+      // base row: with reranking disabled, just show a highlight link / dash
+      if (!allowRerank || !e.eval_file) {
+        if (experiments.some(x => x.rerank && cfgEq(x, e))) {
+          td.appendChild(hlLink('None', key,
+            'Un-reranked baseline; click to highlight it and its rerank twins'));
+        } else {
+          td.textContent = '—';
+        }
+        return;
+      }
+      const missing = ['cohere', 'local'].filter(p => !twinOf(e, p));
+      if (!missing.length) {
+        td.appendChild(hlLink('None (see other lines for reranks)', key,
+          'Un-reranked baseline; click to highlight it and its rerank twins'));
+        return;
+      }
+      if (missing.length < 2) {
+        // at least one rerank twin exists → the base "None" is a highlight link
+        td.appendChild(hlLink('None', key,
+          'Un-reranked baseline; click to highlight it and its rerank twins'));
+        td.appendChild(document.createTextNode(' '));
+      } else {
+        td.appendChild(document.createTextNode('None '));
+      }
+      const sel = document.createElement('select');
+      sel.appendChild(new Option('rerank…', ''));
+      for (const [v, t] of RERANK_OPTS) {
+        if (v === 'both' ? missing.length < 2 : !missing.includes(v)) continue;
+        sel.appendChild(new Option(t, v));
+      }
+      sel.title = "Rerank this experiment's stored top-k";
+      sel.onchange = () => {
+        if (sel.value) startRerank([e.eval_file], sel.value, opts.runIndex);
+      };
+      td.appendChild(sel);
+    },
+  });
+  cols.push(
+    { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],
+      num: true, fix: 3, desc: true, metric: true },
+    { key: 'mrr', label: 'MRR', get: e => (e.metrics || {}).mrr,
+      num: true, fix: 3, desc: true, metric: true },
+    { key: 'map', label: 'MAP', get: e => (e.metrics || {}).map,
+      num: true, fix: 3, desc: true, metric: true },
+    { key: 'ndcg', label: `NDCG@${selK}`, get: e => (e.metrics || {})[`ndcg@${selK}`],
+      num: true, fix: 3, desc: true, metric: true },
+    // time is a metric too, but rerank always adds latency, so show the delta
+    // without the (always-red) tint
+    { key: 'time', label: 'Avg time (s)', get: e => (e.metrics || {}).avg_retrieval_time,
+      num: true, fix: 4, metric: true, notint: true },
+  );
+
+  // User-dragged column order persists across renders/reopens (localStorage);
+  // columns not seen before (e.g. a run with a metric absent elsewhere) keep
+  // their default position at the end.
+  const savedOrder = JSON.parse(localStorage.getItem('pipelineColOrder') || 'null');
+  if (Array.isArray(savedOrder)) {
+    const known = savedOrder.filter(k => cols.some(c => c.key === k));
+    const rest = cols.map(c => c.key).filter(k => !known.includes(k));
+    const order = [...known, ...rest];
+    cols.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+  }
+
+  sort = sort || { col: 'mrr', dir: -1 };
+  const sortCol = cols.find(c => c.key === sort.col) ||
+                  cols.find(c => c.key === 'mrr');
+  experiments.sort((a, b) => {
+    const va = sortCol.get(a), vb = sortCol.get(b);
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;               // blanks last either direction
+    if (vb == null) return -1;
+    const cmp = sortCol.num ? va - vb : String(va).localeCompare(String(vb));
+    return cmp * sort.dir;
+  });
+
+  // Bulk rerank control (built before the table so row checkboxes can toggle
+  // its button); appended after it. Selections live in pipeSelectedEvals.
+  const bulkBtn = document.createElement('button');
+  const bulkSel = document.createElement('select');
+
+  const table = document.createElement('table');
+  table.className = 'eval-table';
+  const head = table.insertRow();
+  if (experiments.some(canRerank)) head.appendChild(document.createElement('th'));
+  for (const c of cols) {
+    const th = document.createElement('th');
+    th.className = 'sortable draggable';
+    th.textContent = c.label +
+      (c === sortCol ? (sort.dir === 1 ? ' ▲' : ' ▼') : '');
+    th.title = 'Sort by ' + c.label + ' · drag to reorder columns';
+    th.onclick = () => opts.rerender({
+      col: c.key,
+      dir: c === sortCol ? -sort.dir : (c.desc ? -1 : 1),
+    });
+    th.draggable = true;
+    th.ondragstart = ev => {
+      ev.dataTransfer.setData('text/plain', c.key);
+      ev.dataTransfer.effectAllowed = 'move';
+    };
+    th.ondragover = ev => { ev.preventDefault(); th.classList.add('drag-over'); };
+    th.ondragleave = () => th.classList.remove('drag-over');
+    th.ondrop = ev => {
+      ev.preventDefault();
+      th.classList.remove('drag-over');
+      const fromKey = ev.dataTransfer.getData('text/plain');
+      if (fromKey === c.key) return;
+      const order = cols.map(x => x.key);
+      order.splice(order.indexOf(c.key), 0,
+                   order.splice(order.indexOf(fromKey), 1)[0]);
+      localStorage.setItem('pipelineColOrder', JSON.stringify(order));
+      opts.rerender(sort);
+    };
+    head.appendChild(th);
+  }
+  for (const e of experiments) {
+    const tr = table.insertRow();
+    tr.dataset.rgroup = groupKey(e);
+    if (experiments.some(canRerank)) {
+      const selTd = tr.insertCell();
+      if (canRerank(e)) {
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.title = 'Select for bulk rerank';
+        cb.checked = pipeSelectedEvals.has(e.eval_file);
+        cb.onchange = () => {
+          if (cb.checked) pipeSelectedEvals.add(e.eval_file);
+          else pipeSelectedEvals.delete(e.eval_file);
+          bulkBtn.disabled = !pipeSelectedEvals.size;
+        };
+        selTd.appendChild(cb);
+      }
+    }
+    for (const c of cols) {
+      const td = tr.insertCell();
+      if (c.render) { c.render(e, td); continue; }
+      const v = c.get(e);
+      if (!c.fix) td.className = 'tl';
+      if (c.metric && e.rerank) { metricCell(td, e, c, v); continue; }
+      td.textContent = v == null ? '' : (c.fix ? v.toFixed(c.fix) : v);
+    }
+  }
+  // Bulk rerank control sits above the table; compact dropdown + button.
+  if (experiments.some(canRerank)) {
+    const bulk = document.createElement('div');
+    bulk.className = 'bulk-rerank';
+    const blabel = document.createElement('span');
+    blabel.textContent = 'Rerank selected rows with:';
+    for (const [v, t] of RERANK_OPTS) bulkSel.appendChild(new Option(t, v));
+    bulkBtn.textContent = 'Rerank';
+    bulkBtn.disabled = !pipeSelectedEvals.size;
+    bulkBtn.onclick = () => startRerank([...pipeSelectedEvals], bulkSel.value, opts.runIndex);
+    bulk.append(blabel, bulkSel, bulkBtn);
+    container.appendChild(bulk);
+  }
+
+  container.appendChild(table);
+  applyHighlight();  // re-light the group across sort/K re-renders
+}
+
 /* Pipeline results modal: run selector + ranked experiment table + best line.
    sort = {col: <header label>, dir: 1|-1}; defaults to MRR descending. */
 function renderPipelineModal(runs, index, sort) {
@@ -2340,262 +2727,11 @@ function renderPipelineModal(runs, index, sort) {
   }
   body.appendChild(info);
 
-  // A base (non-reranked) experiment row can be reranked after the fact from
-  // its eval file's stored retrieved lists. Its twin under a provider is the
-  // row with the identical configuration plus that rerank provider.
-  const CONFIG_KEYS = ['chunk_type', 'retrieval', 'embedding_model', 'db', 'tokenizer', 'alpha'];
-  const cfgEq = (a, b) => CONFIG_KEYS.every(k => (a[k] ?? null) === (b[k] ?? null));
-  const twinOf = (e, prov) => experiments.find(x => x.rerank === prov && cfgEq(x, e));
-  // The un-reranked baseline row a reranked row is measured against (same
-  // config, no rerank), so metric cells can show a delta to it.
-  const baseOf = e => e.rerank ? experiments.find(x => !x.rerank && cfgEq(x, e)) : null;
-  // Draw a metric value; for reranked rows append the signed delta to baseline.
-  // The green (improved) / red (worsened) tint — fainter for a small relative
-  // change, brighter for a large one — is stashed on the cell and only painted
-  // while the row is highlighted (applyHighlight). `desc` marks higher-is-better
-  // metrics; columns flagged `notint` (Avg time) show the delta but no tint.
-  const metricCell = (td, e, c, v) => {
-    if (v == null) { td.textContent = ''; return; }
-    td.textContent = v.toFixed(c.fix);
-    const base = baseOf(e);
-    const bv = base ? c.get(base) : null;
-    if (bv == null) return;
-    const delta = v - bv;
-    const span = document.createElement('span');
-    span.className = 'delta';
-    // drop the leading zero for compactness, e.g. +.139 / −.021
-    span.textContent = `(${delta >= 0 ? '+' : '−'}` +
-      `${Math.abs(delta).toFixed(c.fix).replace(/^0(?=\.)/, '')})`;
-    td.appendChild(span);
-    if (!delta || c.notint) return;
-    const better = c.desc ? delta > 0 : delta < 0;
-    const frac = bv ? Math.abs(delta) / Math.abs(bv) : 1;  // relative change
-    // strength 0..1 (~20% change = full); less drastic → mix toward white
-    const t = Math.min(1, Math.max(0.15, frac / 0.2));
-    const mix = c => Math.round(255 + t * (c - 255));  // lerp white → base
-    const [r, g, b] = better ? [74, 255, 74] : [255, 74, 74];
-    td.dataset.deltaBg = `rgb(${mix(r)},${mix(g)},${mix(b)})`;
-  };
-  // Rows sharing a config (the un-reranked base plus its rerank twins) form one
-  // highlight group; clicking any of their Rerank cells lights up all of them.
-  const groupKey = e => JSON.stringify(CONFIG_KEYS.map(k => e[k] ?? null));
-  const applyHighlight = () => body.querySelectorAll('tr[data-rgroup]').forEach(tr => {
-    const on = pipeHighlightGroup != null && tr.dataset.rgroup === pipeHighlightGroup;
-    tr.classList.toggle('rerank-hl', on);
-    // green/red metric tint rides along with the highlight, not always on
-    tr.querySelectorAll('td[data-delta-bg]').forEach(td =>
-      td.style.background = on ? td.dataset.deltaBg : '');
+  renderExperimentTable(body, experiments, {
+    ks, selK, allowRerank: true, sort,
+    runIndex: index,
+    rerender: s => renderPipelineModal(runs, index, s),
   });
-  const toggleHighlight = key => {
-    pipeHighlightGroup = pipeHighlightGroup === key ? null : key;
-    applyHighlight();
-  };
-  const hlLink = (text, key, title) => {
-    const a = document.createElement('a');
-    a.href = '#';
-    a.className = 'rerank-link';
-    a.textContent = text;
-    if (title) a.title = title;
-    a.onclick = ev => { ev.preventDefault(); toggleHighlight(key); };
-    return a;
-  };
-  // Clear-highlights control (only when some row can be highlighted).
-  if (experiments.some(e => e.rerank)) {
-    const clear = document.createElement('div');
-    clear.className = 'rerank-clear';
-    const btn = document.createElement('button');
-    btn.textContent = 'Clear highlights';
-    btn.onclick = () => { pipeHighlightGroup = null; applyHighlight(); };
-    clear.appendChild(btn);
-    body.appendChild(clear);
-  }
-  // still missing at least one provider's twin → offers a rerank control
-  const canRerank = e => !e.rerank && e.eval_file &&
-    (!twinOf(e, 'cohere') || !twinOf(e, 'local'));
-  // labels mirror DEFAULT_RERANK_MODELS in app/rerank.py
-  const RERANK_OPTS = [
-    ['cohere', 'Cohere (rerank-v3.5)'],
-    ['local', 'local (ms-marco-MiniLM-L-6-v2)'],
-    ['both', 'both'],
-  ];
-
-  // One column per field: {label, get, num}. Config columns no experiment in
-  // this run uses are skipped (Rerank always shows, since its cells double as
-  // "not reranked" markers); metric columns sort numerically, descending
-  // first (a metric's best values on top), config ascending first.
-  // key is a stable identifier for sort/drag persistence, independent of the
-  // (renameable) display label. render (if set) draws the cell itself.
-  const cols = [
-    { key: 'chunking', label: 'Chunking', get: e => e.chunk_type },
-    { key: 'embedding', label: 'Embedding', get: e => e.embedding_model },
-    { key: 'db', label: 'DB', get: e => e.db === 'bm25' ? null : e.db },
-    { key: 'tokenizer', label: 'BM25 Tokenizer', get: e => e.tokenizer },
-    { key: 'retrieval', label: 'Retrieval Type',
-      get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
-    { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
-  ].filter(c => experiments.some(e => c.get(e) != null));
-  // Rerank column: twin rows show their provider; base rows get a dropdown
-  // that reranks the stored top-k with the chosen provider(s). Providers
-  // whose twin already exists are omitted from the dropdown.
-  cols.push({
-    key: 'rerank', label: 'Rerank',
-    get: e => e.rerank || '—',
-    render: (e, td) => {
-      td.className = 'tl';
-      const key = groupKey(e);
-      if (e.rerank) {
-        td.appendChild(hlLink(e.rerank, key,
-          'Click to highlight this experiment and its base/rerank siblings'));
-        return;
-      }
-      if (!e.eval_file) { td.textContent = '—'; return; }
-      const missing = ['cohere', 'local'].filter(p => !twinOf(e, p));
-      if (!missing.length) {
-        td.appendChild(hlLink('None (see other lines for reranks)', key,
-          'Un-reranked baseline; click to highlight it and its rerank twins'));
-        return;
-      }
-      if (missing.length < 2) {
-        // at least one rerank twin exists → the base "None" is a highlight link
-        td.appendChild(hlLink('None', key,
-          'Un-reranked baseline; click to highlight it and its rerank twins'));
-        td.appendChild(document.createTextNode(' '));
-      } else {
-        td.appendChild(document.createTextNode('None '));
-      }
-      const sel = document.createElement('select');
-      sel.appendChild(new Option('rerank…', ''));
-      for (const [v, t] of RERANK_OPTS) {
-        if (v === 'both' ? missing.length < 2 : !missing.includes(v)) continue;
-        sel.appendChild(new Option(t, v));
-      }
-      sel.title = "Rerank this experiment's stored top-k";
-      sel.onchange = () => {
-        if (sel.value) startRerank([e.eval_file], sel.value, index);
-      };
-      td.appendChild(sel);
-    },
-  });
-  cols.push(
-    { key: 'recall', label: `R@${selK}`, get: e => (e.metrics || {})[`recall@${selK}`],
-      num: true, fix: 3, desc: true, metric: true },
-    { key: 'mrr', label: 'MRR', get: e => (e.metrics || {}).mrr,
-      num: true, fix: 3, desc: true, metric: true },
-    { key: 'map', label: 'MAP', get: e => (e.metrics || {}).map,
-      num: true, fix: 3, desc: true, metric: true },
-    { key: 'ndcg', label: `NDCG@${selK}`, get: e => (e.metrics || {})[`ndcg@${selK}`],
-      num: true, fix: 3, desc: true, metric: true },
-    // time is a metric too, but rerank always adds latency, so show the delta
-    // without the (always-red) tint
-    { key: 'time', label: 'Avg time (s)', get: e => (e.metrics || {}).avg_retrieval_time,
-      num: true, fix: 4, metric: true, notint: true },
-  );
-
-  // User-dragged column order persists across renders/reopens (localStorage);
-  // columns not seen before (e.g. a run with a metric absent elsewhere) keep
-  // their default position at the end.
-  const savedOrder = JSON.parse(localStorage.getItem('pipelineColOrder') || 'null');
-  if (Array.isArray(savedOrder)) {
-    const known = savedOrder.filter(k => cols.some(c => c.key === k));
-    const rest = cols.map(c => c.key).filter(k => !known.includes(k));
-    const order = [...known, ...rest];
-    cols.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
-  }
-
-  sort = sort || { col: 'mrr', dir: -1 };
-  const sortCol = cols.find(c => c.key === sort.col) ||
-                  cols.find(c => c.key === 'mrr');
-  experiments.sort((a, b) => {
-    const va = sortCol.get(a), vb = sortCol.get(b);
-    if (va == null && vb == null) return 0;
-    if (va == null) return 1;               // blanks last either direction
-    if (vb == null) return -1;
-    const cmp = sortCol.num ? va - vb : String(va).localeCompare(String(vb));
-    return cmp * sort.dir;
-  });
-
-  // Bulk rerank control (built before the table so row checkboxes can toggle
-  // its button); appended after it. Selections live in pipeSelectedEvals.
-  const bulkBtn = document.createElement('button');
-  const bulkSel = document.createElement('select');
-
-  const table = document.createElement('table');
-  table.className = 'eval-table';
-  const head = table.insertRow();
-  if (experiments.some(canRerank)) head.appendChild(document.createElement('th'));
-  for (const c of cols) {
-    const th = document.createElement('th');
-    th.className = 'sortable draggable';
-    th.textContent = c.label +
-      (c === sortCol ? (sort.dir === 1 ? ' ▲' : ' ▼') : '');
-    th.title = 'Sort by ' + c.label + ' · drag to reorder columns';
-    th.onclick = () => renderPipelineModal(runs, index, {
-      col: c.key,
-      dir: c === sortCol ? -sort.dir : (c.desc ? -1 : 1),
-    });
-    th.draggable = true;
-    th.ondragstart = ev => {
-      ev.dataTransfer.setData('text/plain', c.key);
-      ev.dataTransfer.effectAllowed = 'move';
-    };
-    th.ondragover = ev => { ev.preventDefault(); th.classList.add('drag-over'); };
-    th.ondragleave = () => th.classList.remove('drag-over');
-    th.ondrop = ev => {
-      ev.preventDefault();
-      th.classList.remove('drag-over');
-      const fromKey = ev.dataTransfer.getData('text/plain');
-      if (fromKey === c.key) return;
-      const order = cols.map(x => x.key);
-      order.splice(order.indexOf(c.key), 0,
-                   order.splice(order.indexOf(fromKey), 1)[0]);
-      localStorage.setItem('pipelineColOrder', JSON.stringify(order));
-      renderPipelineModal(runs, index, sort);
-    };
-    head.appendChild(th);
-  }
-  for (const e of experiments) {
-    const tr = table.insertRow();
-    tr.dataset.rgroup = groupKey(e);
-    if (experiments.some(canRerank)) {
-      const selTd = tr.insertCell();
-      if (canRerank(e)) {
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.title = 'Select for bulk rerank';
-        cb.checked = pipeSelectedEvals.has(e.eval_file);
-        cb.onchange = () => {
-          if (cb.checked) pipeSelectedEvals.add(e.eval_file);
-          else pipeSelectedEvals.delete(e.eval_file);
-          bulkBtn.disabled = !pipeSelectedEvals.size;
-        };
-        selTd.appendChild(cb);
-      }
-    }
-    for (const c of cols) {
-      const td = tr.insertCell();
-      if (c.render) { c.render(e, td); continue; }
-      const v = c.get(e);
-      if (!c.fix) td.className = 'tl';
-      if (c.metric && e.rerank) { metricCell(td, e, c, v); continue; }
-      td.textContent = v == null ? '' : (c.fix ? v.toFixed(c.fix) : v);
-    }
-  }
-  // Bulk rerank control sits above the table; compact dropdown + button.
-  if (experiments.some(canRerank)) {
-    const bulk = document.createElement('div');
-    bulk.className = 'bulk-rerank';
-    const blabel = document.createElement('span');
-    blabel.textContent = 'Rerank selected rows with:';
-    for (const [v, t] of RERANK_OPTS) bulkSel.appendChild(new Option(t, v));
-    bulkBtn.textContent = 'Rerank';
-    bulkBtn.disabled = !pipeSelectedEvals.size;
-    bulkBtn.onclick = () => startRerank([...pipeSelectedEvals], bulkSel.value, index);
-    bulk.append(blabel, bulkSel, bulkBtn);
-    body.appendChild(bulk);
-  }
-
-  body.appendChild(table);
-  applyHighlight();  // re-light the group across sort/K re-renders
 
   if (run.best_by_mrr) {
     const best = document.createElement('div');
@@ -2606,14 +2742,16 @@ function renderPipelineModal(runs, index, sort) {
   }
 }
 
-/* Eval results modal: the metrics table for the selected eval file */
-function evalTable(r) {
+/* Compact per-question-type breakdown for one eval file. Columns:
+   [type, MRR, MAP, R@k…, NDCG@selK, Avg t]; the overall row is kept as a
+   summary above the by-type rows. */
+function evalTable(r, selK) {
   const ks = r.metadata.ks || [];
-  const maxk = ks[ks.length - 1];
+  const ndcgK = ks.includes(selK) ? selK : ks[ks.length - 1];
   const table = document.createElement('table');
   table.className = 'eval-table';
   const head = table.insertRow();
-  ['', 'MRR', ...ks.map(k => `R@${k}`), `NDCG@${maxk}`].forEach(t => {
+  ['', 'MRR', 'MAP', ...ks.map(k => `R@${k}`), `NDCG@${ndcgK}`, 'Avg t (s)'].forEach(t => {
     const th = document.createElement('th');
     th.textContent = t;
     head.appendChild(th);
@@ -2623,12 +2761,45 @@ function evalTable(r) {
   for (const [label, m] of rows) {
     const tr = table.insertRow();
     tr.insertCell().textContent = label;
-    const vals = [m.mrr, ...ks.map(k => m[`recall@${k}`]), m[`ndcg@${maxk}`]];
-    for (const v of vals) tr.insertCell().textContent = v == null ? '' : v.toFixed(3);
+    const vals = [[m.mrr, 3], [m.map, 3], ...ks.map(k => [m[`recall@${k}`], 3]),
+                  [m[`ndcg@${ndcgK}`], 3], [m.avg_retrieval_time, 4]];
+    for (const [v, fix] of vals)
+      tr.insertCell().textContent = v == null ? '' : v.toFixed(fix);
   }
   return table;
 }
+
+/* "20260719_223949_chunk_fixed_size_256_50" -> "fixed_size:256:50". Strips the
+   run's timestamp + "_chunk_" prefix and turns the numeric param tail's
+   underscores into colons (method names may themselves contain "_"/"-"). */
+function humanizeChunkRun(basename) {
+  const rest = String(basename).replace(/^\d{8}_\d{6}_chunk_/, '');
+  return rest.replace(/_(\d+)(?=_\d+|$)/g, ':$1');
+}
+
+/* Map a {file, metadata, aggregates} eval entry to a pipeline-shaped
+   experiment so it renders in the shared renderExperimentTable. Base and
+   rerank eval files share config and differ only by rerank, so the table's
+   baseOf/twinOf matching yields base-vs-rerank delta rows automatically. */
+function evalToExperiment(e) {
+  const m = e.metadata || {};
+  const base = s => String(s || '').split('/').pop();
+  const dt = m.db_type;
+  return {
+    chunk_type: humanizeChunkRun(base(m.chunk_run)),
+    embedding_model: m.embedding_model || null,
+    db: dt === 'bm25' ? 'bm25' : (dt || base(m.db)),
+    tokenizer: m.tokenizer || null,
+    alpha: m.alpha ?? null,
+    retrieval: dt === 'bm25' ? 'bm25' : dt === 'hybrid' ? 'hybrid' : 'embedding',
+    rerank: m.rerank || null,
+    metrics: (e.aggregates || {}).overall || {},
+    eval_file: e.file,
+  };
+}
+
 let modalEvals = [];  // eval entries ({file, metadata, aggregates}) in the dialog
+let evalK = null;      // K cutoff selected in the individual eval view
 
 /* Fetch every eval for the current document and open the results dialog,
    focused on defaultFile's run if given (else the newest). A dropdown at the
@@ -2674,10 +2845,14 @@ function evalStamp(e) {
 }
 
 /* Render one eval file (value = its filename) or a whole run's evals stacked
-   together (value = "group:<timestamp>", reproducing the original popup). */
-function renderEvalModal(value) {
+   together (value = "group:<timestamp>", reproducing the original popup).
+   The shown evals render in the shared experiment table (config columns, MAP,
+   avg time, base-vs-rerank deltas), with a compact per-question-type table
+   below each. A K selector + result dropdown sit at the top. */
+function renderEvalModal(value, sort) {
   const body = $('modal-body');
   body.innerHTML = '';
+  pipeHighlightGroup = null;  // don't carry a highlight in from the pipeline modal
 
   const groups = new Map();  // run timestamp -> its evals, insertion order
   for (const e of modalEvals) {
@@ -2713,22 +2888,47 @@ function renderEvalModal(value) {
   sel.value = value;
   sel.onchange = () => renderEvalModal(sel.value);
   bar.append(label, sel);
-  body.appendChild(bar);
 
   const shown = value.startsWith('group:')
     ? (groups.get(value.slice(6)) || [])
     : modalEvals.filter(e => e.file === value);
   if (!shown.length) {
+    body.appendChild(bar);
     body.append(document.createTextNode('Evaluation not found.'));
     return;
   }
+
+  // K selector (metrics/@K), from the shown evals' cutoffs.
+  const ks = (shown[0].metadata.ks || [10]).map(Number);
+  const maxk = Math.max(...ks);
+  const selK = ks.includes(evalK) ? evalK : maxk;
+  if (ks.length > 1) {
+    const klabel = document.createElement('span');
+    klabel.textContent = ' · metrics @ K = ';
+    const ksel = document.createElement('select');
+    for (const k of ks) ksel.appendChild(new Option(k, k));
+    ksel.value = selK;
+    ksel.onchange = () => { evalK = parseInt(ksel.value, 10); renderEvalModal(value, sort); };
+    bar.append(klabel, ksel);
+  }
+  body.appendChild(bar);
+
+  // Shared ranked table across the shown evals (base-vs-rerank deltas fall out
+  // of the config matching); reranking cannot be initiated from this view.
+  const experiments = shown.map(evalToExperiment);
+  renderExperimentTable(body, experiments, {
+    ks, selK, allowRerank: false, sort,
+    rerender: s => renderEvalModal(value, s),
+  });
+
+  // Per-eval, per-question-type breakdown below the shared table.
   for (const r of shown) {
     const h = document.createElement('div');
     h.className = 'eval-db-head';
     h.textContent = `${r.metadata.db || r.file}` +
       (r.metadata.rerank ? ` + ${r.metadata.rerank} rerank` : '') +
       ` — top_k ${r.metadata.top_k}, ${r.metadata.num_questions} questions`;
-    body.append(h, evalTable(r));
+    body.append(h, evalTable(r, selK));
   }
 }
 function closeModal() {

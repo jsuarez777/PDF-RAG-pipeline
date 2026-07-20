@@ -291,24 +291,28 @@ def latest_qa_file(doc_dir: Path) -> Path | None:
     return max(qa_files, key=lambda f: f.name) if qa_files else None
 
 
+def read_chunks(chunk_dir: Path) -> tuple[list, dict]:
+    """(chunks, metadata) from a chunk run's chunked_text.json, projecting the
+    per-chunk fields the viewer draws boxes/badges from. Missing/unreadable ->
+    ([], {}) so boxes for un-chunked docs just won't render."""
+    try:
+        cdata = json.loads((chunk_dir / "chunked_text.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return [], {}
+    chunks = [
+        {k: c.get(k) for k in ("chunk_index", "start_char", "end_char",
+                               "start_page", "end_page", "source")}
+        for c in cdata.get("chunks", [])
+    ]
+    return chunks, cdata.get("metadata", {})
+
+
 def qa_payload(doc_dir: Path, qa_path: Path) -> dict:
     try:
         data = json.loads(qa_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         raise JobError(f"could not read {qa_path.name}")
-    chunks = []
-    chunk_meta = {}
-    chunk_file = qa_path.parent / "chunked_text.json"
-    try:
-        cdata = json.loads(chunk_file.read_text(encoding="utf-8"))
-        chunk_meta = cdata.get("metadata", {})
-        chunks = [
-            {k: c.get(k) for k in ("chunk_index", "start_char", "end_char",
-                                   "start_page", "end_page")}
-            for c in cdata.get("chunks", [])
-        ]
-    except (OSError, json.JSONDecodeError):
-        pass  # boxes for un-QA'd chunks just won't render
+    chunks, chunk_meta = read_chunks(qa_path.parent)
     return {
         "qa_file": qa_path.relative_to(doc_dir).as_posix(),
         "chunk_run": qa_path.parent.name,
@@ -318,10 +322,88 @@ def qa_payload(doc_dir: Path, qa_path: Path) -> dict:
     }
 
 
+def chunks_payload(doc_dir: Path, chunk_run: Path) -> dict:
+    """A QA-less payload for a chunk run with no qa_*.json yet: boxes still
+    render (for chunk selection / bootstrap generation), items is empty."""
+    chunks, chunk_meta = read_chunks(chunk_run)
+    return {
+        "qa_file": None,
+        "chunk_run": chunk_run.name,
+        "items": [],
+        "chunks": chunks,
+        "chunk_metadata": chunk_meta,
+    }
+
+
+def resolve_chunk_run(doc_dir: Path, sel: str) -> Path | None:
+    """The chosen <stamp>_chunk_* directory (validated) or the latest when sel
+    is empty. 404s when sel names a missing/invalid chunk run."""
+    if not sel:
+        return latest_chunk_run(doc_dir)
+    p = doc_dir / check_segment(sel)
+    if not (p.is_dir() and "_chunk_" in p.name and (p / "chunked_text.json").is_file()):
+        abort(404, "no such chunk run")
+    return p
+
+
+def qa_file_for(doc_dir: Path, chunk_run: Path | None) -> Path | None:
+    """Newest qa_*.json inside a specific chunk run, or None."""
+    if chunk_run is None:
+        return None
+    qa_files = [f for f in chunk_run.iterdir()
+                if f.is_file() and QA_FILE.fullmatch(f.name)]
+    return max(qa_files, key=lambda f: f.name) if qa_files else None
+
+
+def qa_path_for_sel(doc_dir: Path, sel: str) -> Path | None:
+    """QA file for a selected chunk run, or (when sel is empty) the newest QA
+    across all runs — preserving the original latest-QA default behavior."""
+    if sel:
+        return qa_file_for(doc_dir, resolve_chunk_run(doc_dir, sel))
+    return latest_qa_file(doc_dir)
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/chunk-runs")
+def chunk_runs(dtype: str, run: str, name: str):
+    """Every <stamp>_chunk_* directory with a chunked_text.json, newest first,
+    each with its basename, chunk metadata, and any qa_*.json filenames."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    runs = [
+        d for d in doc_dir.iterdir()
+        if d.is_dir() and "_chunk_" in d.name and (d / "chunked_text.json").is_file()
+    ]
+    out = []
+    for d in sorted(runs, key=lambda d: d.name, reverse=True):
+        _chunks, meta = read_chunks(d)
+        qa_files = sorted(f.name for f in d.iterdir()
+                          if f.is_file() and QA_FILE.fullmatch(f.name))
+        out.append({"basename": d.name, "metadata": meta, "qa_files": qa_files})
+    return jsonify(out)
+
+
 @app.get("/api/documents/<dtype>/<run>/<name>/qa")
 def qa_data(dtype: str, run: str, name: str):
-    """Latest QA dataset generated from any chunk run of this document, or null."""
+    """QA dataset for the viewer. With ?chunk_run= (and optional ?qa_file=),
+    serve that run's QA (or a QA-less chunks-only payload when it has none).
+    Without a chunk_run, fall back to the latest QA file across all runs (or
+    null), preserving the original behavior."""
     doc_dir = qa_doc_dir(dtype, run, name)
+    sel = request.args.get("chunk_run", "")
+    if sel:
+        chunk_run = resolve_chunk_run(doc_dir, sel)
+        qa_arg = request.args.get("qa_file", "")
+        if qa_arg and QA_FILE.fullmatch(check_segment(qa_arg)):
+            qa_path = chunk_run / qa_arg
+            if not qa_path.is_file():
+                abort(404, "no such qa file")
+        else:
+            qa_path = qa_file_for(doc_dir, chunk_run)
+        if qa_path is None:
+            return jsonify(chunks_payload(doc_dir, chunk_run))
+        try:
+            return jsonify(qa_payload(doc_dir, qa_path))
+        except JobError as exc:
+            abort(500, str(exc))
     qa_path = latest_qa_file(doc_dir)
     if qa_path is None:
         return jsonify(None)
@@ -477,19 +559,21 @@ def qa_generate(dtype: str, run: str, name: str):
             and all(t in ("direct", "inference", "paraphrased") for t in types)):
         abort(400, "invalid question types")
 
-    if latest_qa_file(doc_dir) is None:
+    chunk_run = str(payload.get("chunk_run") or "")
+    if qa_path_for_sel(doc_dir, chunk_run) is None:
         abort(404, "no QA dataset to append to")
 
     return enqueue_job("qa_generate", {
         "dtype": dtype, "run": run, "name": name,
         "chunks": sorted(set(chunks)), "types": types,
+        "chunk_run": chunk_run,
     })
 
 
 @jobs.handler("qa_generate")
 def job_qa_generate(uid: int, params: dict) -> dict:
     doc_dir = job_doc_dir(uid, params)
-    qa_path = latest_qa_file(doc_dir)
+    qa_path = qa_path_for_sel(doc_dir, params.get("chunk_run", ""))
     if qa_path is None:
         raise JobError("no QA dataset to append to")
     code = run_and_stream([
@@ -520,18 +604,20 @@ def qa_generate_all(dtype: str, run: str, name: str):
     if num is not None and not (isinstance(num, int) and 0 < num <= MAX_QA_NUM):
         abort(400, f"num must be a positive integer up to {MAX_QA_NUM}")
 
-    if latest_chunk_run(doc_dir) is None:
+    chunk_run = str(payload.get("chunk_run") or "")
+    if resolve_chunk_run(doc_dir, chunk_run) is None:
         abort(404, "no chunk run to generate from; chunk the text first")
 
     return enqueue_job("qa_generate_all", {
         "dtype": dtype, "run": run, "name": name, "types": types, "num": num,
+        "chunk_run": chunk_run,
     })
 
 
 @jobs.handler("qa_generate_all")
 def job_qa_generate_all(uid: int, params: dict) -> dict:
     doc_dir = job_doc_dir(uid, params)
-    chunk_run = latest_chunk_run(doc_dir)
+    chunk_run = resolve_chunk_run(doc_dir, params.get("chunk_run", ""))
     if chunk_run is None:
         raise JobError("no chunk run to generate from; chunk the text first")
     cmd = [
@@ -544,7 +630,7 @@ def job_qa_generate_all(uid: int, params: dict) -> dict:
     code = run_and_stream(cmd, env=user_env(uid))
     if code != 0:
         raise JobError(f"generate_qa.py failed with exit code {code}")
-    qa_path = latest_qa_file(doc_dir)
+    qa_path = qa_file_for(doc_dir, chunk_run)
     if qa_path is None:
         raise JobError("generation produced no QA file")
     return qa_payload(doc_dir, qa_path)
@@ -610,11 +696,13 @@ def build_index(dtype: str, run: str, name: str):
     doc_dir = qa_doc_dir(dtype, run, name)
     payload = request.get_json(force=True) or {}
 
-    if latest_chunk_run(doc_dir) is None:
+    chunk_run = str(payload.get("chunk_run") or "")
+    if resolve_chunk_run(doc_dir, chunk_run) is None:
         abort(404, "no chunk run to index; chunk the text first")
 
     kind = payload.get("kind")
-    params = {"dtype": dtype, "run": run, "name": name, "kind": kind}
+    params = {"dtype": dtype, "run": run, "name": name, "kind": kind,
+              "chunk_run": chunk_run}
     if kind == "bm25":
         tokenizers = payload.get("tokenizers")
         if not (isinstance(tokenizers, list) and tokenizers
@@ -641,7 +729,7 @@ def build_index(dtype: str, run: str, name: str):
 @jobs.handler("index")
 def job_index(uid: int, params: dict) -> dict:
     doc_dir = job_doc_dir(uid, params)
-    chunk_run = latest_chunk_run(doc_dir)
+    chunk_run = resolve_chunk_run(doc_dir, params.get("chunk_run", ""))
     if chunk_run is None:
         raise JobError("no chunk run to index; chunk the text first")
     dataset = chunk_run.relative_to(PROJECT_ROOT).as_posix()
@@ -678,7 +766,12 @@ def list_indexes(dtype: str, run: str, name: str):
     flagged with whether each was built from the latest QA file's chunk run.
     matches is null when the chunk run couldn't be read (e.g. chromadb)."""
     doc_dir = qa_doc_dir(dtype, run, name)
-    qa_run = qa_chunk_run_rel(doc_dir)
+    sel = request.args.get("chunk_run", "")
+    if sel:
+        # flag indexes against the selected run rather than the latest QA's run
+        qa_run = resolve_chunk_run(doc_dir, sel).relative_to(PROJECT_ROOT).as_posix()
+    else:
+        qa_run = qa_chunk_run_rel(doc_dir)
 
     def sidecar_chunk_run(path: Path) -> str | None:
         sidecar = path.with_suffix(".json")
@@ -727,7 +820,8 @@ def run_eval(dtype: str, run: str, name: str):
     doc_dir = qa_doc_dir(dtype, run, name)
     payload = request.get_json(force=True) or {}
 
-    if latest_qa_file(doc_dir) is None:
+    chunk_run = str(payload.get("chunk_run") or "")
+    if qa_path_for_sel(doc_dir, chunk_run) is None:
         abort(404, "no QA dataset to evaluate; generate QA pairs first")
 
     db_sel = payload.get("db", "all")
@@ -759,14 +853,14 @@ def run_eval(dtype: str, run: str, name: str):
         "dtype": dtype, "run": run, "name": name,
         "db_arg": db_arg, "topk": topk, "ks": ks,
         "force": bool(payload.get("force")),
-        "rerank": rerank,
+        "rerank": rerank, "chunk_run": chunk_run,
     })
 
 
 @jobs.handler("eval")
 def job_eval(uid: int, params: dict) -> list:
     doc_dir = job_doc_dir(uid, params)
-    qa_path = latest_qa_file(doc_dir)
+    qa_path = qa_path_for_sel(doc_dir, params.get("chunk_run", ""))
     if qa_path is None:
         raise JobError("no QA dataset to evaluate; generate QA pairs first")
     cmd = [sys.executable, str(SCRIPT_DIR / "eval_retrieval.py"),
@@ -907,6 +1001,9 @@ def run_full_pipeline(dtype: str, run: str, name: str):
 
     return enqueue_job("pipeline", {
         "dtype": dtype, "run": run, "name": name,
+        # accepted for the uniform request contract; the pipeline cuts its own
+        # chunk runs from chunk_types, so it does not consume chunk_run.
+        "chunk_run": str(payload.get("chunk_run") or ""),
         "chunk_types": ",".join(dict.fromkeys(chunk_types)),
         "tokenizers": tokenizers, "retrievals": retrievals,
         "alphas": ",".join(f"{a:g}" for a in alphas),
