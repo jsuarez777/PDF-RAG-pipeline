@@ -416,7 +416,10 @@ def fixed_size_chunks(pages, size, overlap):
 
 def segment_sentences(full_text, cap):
     """Split full_text into (sentence_text, start_char, num_tokens) triples
-    using pysbd.
+    using pysbd in char_span mode, so offsets come straight from the segmenter.
+    (pysbd can alter sentence text even with clean=False — e.g. swapping a
+    comma and a space — so recovering offsets by substring search drifts and
+    can lock onto a duplicate far ahead, producing giant mis-sliced chunks.)
 
     Any single sentence longer than `cap` tokens (almost always a flattened
     table/chart with no real boundary) is hard-split into cap-sized token
@@ -425,26 +428,27 @@ def segment_sentences(full_text, cap):
     """
     import pysbd  # local import: only needed for the sentence method
 
-    seg = pysbd.Segmenter(language="en", clean=False)
+    seg = pysbd.Segmenter(language="en", clean=False, char_span=True)
     out = []
-    cursor = 0
-    for sent in seg.segment(full_text):
+    prev_end = 0
+    for span in seg.segment(full_text):
+        # pysbd spans occasionally overlap by a char or two; clamp so
+        # offsets stay monotonic and sentences never share text.
+        start = max(span.start, prev_end)
+        end = max(span.end, start)
+        prev_end = end
+        sent = full_text[start:end]
         if not sent.strip():
             continue
-        # Recover the char offset; clean=False keeps sentences as substrings.
-        idx = full_text.find(sent, cursor)
-        if idx == -1:  # defensive: fall back to current cursor
-            idx = cursor
-        cursor = idx + len(sent)
         tokens, starts = token_starts(sent)
         if len(tokens) <= cap:
-            out.append((sent, idx, len(tokens)))
+            out.append((sent, start, len(tokens)))
         else:
             for t in range(0, len(tokens), cap):
                 t_end = min(t + cap, len(tokens))
                 piece = sent[starts[t]:starts[t_end]]
                 if piece:
-                    out.append((piece, idx + starts[t], t_end - t))
+                    out.append((piece, start + starts[t], t_end - t))
     return out
 
 
