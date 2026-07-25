@@ -101,6 +101,34 @@
   .modal-eval-select span { font-weight: 600; }
   .modal-eval-select select { flex: 1; min-width: 0; font-size: 12px;
                               padding: 4px 6px; }
+  /* Visualization gallery: chart-set selector row + responsive PNG grid */
+  .viz-gallery { display: grid; gap: 14px; margin-top: 4px;
+                 grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  .viz-gallery figure { margin: 0; border: 1px solid #e0e0e0; border-radius: 8px;
+                        overflow: hidden; background: #fafafa; }
+  .viz-gallery img { display: block; width: 100%; height: auto; cursor: zoom-in; }
+  .viz-gallery figcaption { padding: 5px 8px; font-size: 11px; color: #52514e;
+                            border-top: 1px solid #eee; }
+  /* full-size overlay when a chart thumbnail is clicked */
+  #viz-zoom { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.8);
+              display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+  #viz-zoom[hidden] { display: none; }
+  #viz-zoom img { max-width: 96vw; max-height: 96vh; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+  /* Confirmation dialog (e.g. bulk rerank skipping already-reranked rows) */
+  .confirm-overlay { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.45);
+                     display: flex; align-items: center; justify-content: center; }
+  .confirm-box { background: #fff; border-radius: 12px; width: 480px;
+                 max-width: calc(100vw - 40px); max-height: 82vh; overflow-y: auto;
+                 padding: 16px 18px; box-shadow: 0 12px 48px rgba(0,0,0,.35); font-size: 13px; }
+  .confirm-box h3 { font-size: 15px; margin-bottom: 6px; }
+  .confirm-box > p { color: #52514e; margin-bottom: 12px; }
+  .confirm-sec { margin-bottom: 12px; }
+  .confirm-sec-head { font-weight: 600; margin-bottom: 4px; }
+  .confirm-box ul { margin: 0; padding-left: 18px; }
+  .confirm-box li { margin: 2px 0; overflow-wrap: anywhere; }
+  .confirm-empty { color: #8a8a8e; font-style: italic; }
+  .confirm-skip { color: #b23636; }
+  .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
   /* bulk rerank: label + compact dropdown + button, sized to content */
   .bulk-rerank { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .bulk-rerank span { font-weight: 600; }
@@ -412,7 +440,7 @@
   </div>
   <button id="qa-btn" style="display:none" disabled>View QA Pairs</button>
   <div class="menu-wrap">
-    <button id="eval-btn" style="display:none" disabled>Evaluate Top-k&hellip;</button>
+    <button id="eval-btn" style="display:none" disabled>Evaluate Top&#8209;k&hellip;</button>
     <div id="eval-menu" class="dropdown menu-form" hidden>
       <div class="sec-head"><small>Indexes to evaluate</small>
         <button type="button" class="info-btn" data-info="eval" title="About evaluation">i</button></div>
@@ -433,6 +461,7 @@
     </div>
   </div>
   <button id="eval-view-btn" style="display:none" disabled>View Evaluations&hellip;</button>
+  <button id="viz-btn" style="display:none" disabled>Generate Graphs&hellip;</button>
   <div class="menu-wrap">
     <button id="pipe-btn" style="display:none" disabled>Run Pipeline&hellip;</button>
     <div id="pipe-menu" class="dropdown menu-form" hidden>
@@ -528,6 +557,7 @@
     </div>
   </div>
   <button id="pipe-view-btn" style="display:none" disabled>Pipeline Results&hellip;</button>
+  <button id="viz-view-btn" style="display:none" disabled>View Graphs&hellip;</button>
   <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
   <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
   <span id="head-spacer"></span>
@@ -583,6 +613,8 @@
     <div id="modal-body"></div>
   </div>
 </div>
+
+<div id="viz-zoom" hidden><img alt="chart"></div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -1154,14 +1186,16 @@ function refreshGenButton() {
 function refreshPipelineButtons() {
   const show = current ? '' : 'none';
   for (const id of ['chunk-btn', 'index-btn', 'eval-btn', 'eval-view-btn',
-                    'pipe-btn', 'pipe-view-btn'])
+                    'viz-btn', 'pipe-btn', 'pipe-view-btn', 'viz-view-btn'])
     $(id).style.display = show;
   $('chunk-btn').disabled = generating;
   $('index-btn').disabled = generating;
   $('eval-btn').disabled = generating || !(qaData && qaData.qa_file);
   $('eval-view-btn').disabled = generating;
+  $('viz-btn').disabled = generating;
   $('pipe-btn').disabled = generating;
   $('pipe-view-btn').disabled = generating;
+  $('viz-view-btn').disabled = generating;
 }
 
 $('deselect-btn').onclick = () => {
@@ -1884,6 +1918,117 @@ $('eval-go').onclick = async () => {
    with the dropdown letting the user browse every past eval. */
 $('eval-view-btn').onclick = () => openEvalModal();
 
+/* ------------------------------------------------------- visualization gallery
+   The charts are matplotlib PNGs produced server-side by
+   generate_visualizations.py (project-required deliverable). Three entry points
+   feed the same generate+gallery flow: "Generate Graphs" charts the document's
+   evals (scope=data); the pipeline results modal charts a run or the ticked
+   evals; "View Graphs" browses previously generated chart sets. */
+let vizSets = [];  // [{viz_run, images}], newest first
+
+// Chart kinds offered in the "Generate Visualizations" selector; values match
+// generate_visualizations.py CHARTS keys ('all' omits --chart = every chart).
+const VIZ_CHART_OPTS = [
+  ['all', 'All charts'],
+  ['mrr', 'MRR comparison (bar)'],
+  ['scatter', 'Recall vs Precision (scatter)'],
+  ['retrieval', 'Retrieval method comparison (bar)'],
+  ['heatmap', 'Chunking × index heatmap'],
+  ['correlation', 'Metric correlation matrix'],
+  ['recall-curve', 'Recall@K curves'],
+  ['qtype', 'Metric by question type'],
+  ['time-quality', 'Time vs quality (Pareto)'],
+];
+
+/* Generate a chart set (POST via runPipeline's job flow), then open the gallery
+   focused on the new set. body is the {scope, ...} the endpoint expects. */
+async function generateGraphs(body, statusMsg) {
+  const doc = current;
+  const res = await runPipeline('visualizations', body, statusMsg);
+  if (!res || current !== doc) return;
+  await openVizGallery(res.viz_run);
+}
+
+$('viz-btn').onclick = () => generateGraphs({ scope: 'data' }, 'Generating graphs');
+
+/* View Graphs: browse the document's saved chart sets without regenerating. */
+$('viz-view-btn').onclick = () => openVizGallery();
+
+/* Fetch every saved chart set and open the gallery on focusRun (else newest).
+   Shows a hint when the document has no charts yet. */
+async function openVizGallery(focusRun) {
+  const doc = current;
+  if (!doc) return;
+  $('modal-title').textContent = 'Evaluation graphs';
+  $('modal').classList.add('wide');
+  const body = $('modal-body');
+  body.innerHTML = '<small>Loading graphs…</small>';
+  $('modal-overlay').hidden = false;
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/visualizations`);
+    if (!resp.ok) throw new Error(await resp.text());
+    if (current !== doc || $('modal-overlay').hidden) return;
+    vizSets = await resp.json();
+  } catch (err) {
+    body.innerHTML = '';
+    body.textContent = 'Failed to load graphs: ' + err.message;
+    return;
+  }
+  if (!vizSets.length) {
+    body.innerHTML = '';
+    body.append('No graphs yet for this document. ');
+    const gen = document.createElement('button');
+    gen.className = 'primary';
+    gen.textContent = 'Generate now';
+    gen.onclick = () => generateGraphs({ scope: 'data' }, 'Generating graphs');
+    body.appendChild(gen);
+    return;
+  }
+  const has = vizSets.some(s => s.viz_run === focusRun);
+  renderVizGallery(has ? focusRun : vizSets[0].viz_run);
+}
+
+/* Render one chart set (value = its viz_run). A selector switches between saved
+   sets; each PNG is a thumbnail that opens full-size on click. */
+function renderVizGallery(value) {
+  const body = $('modal-body');
+  body.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.className = 'modal-eval-select';
+  const label = document.createElement('span');
+  label.textContent = 'Chart set:';
+  const sel = document.createElement('select');
+  for (const s of vizSets)
+    sel.appendChild(new Option(
+      `${humanStamp(s.viz_run)} · ${s.images.length} charts`, s.viz_run));
+  sel.value = value;
+  sel.onchange = () => renderVizGallery(sel.value);
+  bar.append(label, sel);
+  body.appendChild(bar);
+
+  const set = vizSets.find(s => s.viz_run === value);
+  const grid = document.createElement('div');
+  grid.className = 'viz-gallery';
+  for (const name of set.images) {
+    const src = `/images/${current.type}/${current.run}/${current.name}` +
+                `/visualizations/${encodeURIComponent(value)}/${encodeURIComponent(name)}`;
+    const fig = document.createElement('figure');
+    const img = document.createElement('img');
+    img.src = src;
+    img.loading = 'lazy';
+    img.onclick = () => { $('viz-zoom').querySelector('img').src = src; $('viz-zoom').hidden = false; };
+    const cap = document.createElement('figcaption');
+    cap.textContent = name.replace(/\.png$/, '').replace(/_/g, ' ');
+    fig.append(img, cap);
+    grid.appendChild(fig);
+  }
+  body.appendChild(grid);
+}
+
+$('viz-zoom').onclick = () => { $('viz-zoom').hidden = true; };
+
 /* Run Pipeline: full grid config (chunking x embeddings x retrieval), with a
    live count of how many experiments the current selection will run. */
 setupMenu('pipe-btn', 'pipe-menu', updatePipeCount);
@@ -2045,9 +2190,13 @@ const INFO = {
          pick a provider. That single experiment is reranked immediately. Providers
          whose twin already exists are omitted from the dropdown.</p>
       <h4>Several at once</h4>
-      <p>Tick the checkbox at the left of each base row you want, then choose a
+      <p>Tick the checkbox at the left of each row you want, then choose a
          provider in <b>Rerank selected rows with:</b> above the table and click
          <b>Rerank</b>. Every ticked row is reranked in one batch.</p>
+      <p>The same checkboxes also pick which rows to <b>graph</b>. Because a row
+         that's already reranked can't be reranked again, if your selection
+         includes any such rows a confirmation lists what will be skipped and
+         what will be reranked before proceeding.</p>
       <p>Either way, each reranked row appears as a <code>…_rerank</code> twin
          alongside its baseline, with a signed delta on its metric cells.</p>`,
   },
@@ -2713,6 +2862,10 @@ function renderExperimentTable(container, experiments, opts) {
   // (only when the host modal allows initiating reranks)
   const canRerank = e => allowRerank && !e.rerank && e.eval_file &&
     (!twinOf(e, 'cohere') || !twinOf(e, 'local'));
+  // Any row with an eval file is selectable — the checkbox drives both graphing
+  // (every row) and bulk rerank (which skips rows canRerank rejects). This is
+  // why the column is no longer gated on canRerank.
+  const selectable = e => allowRerank && !!e.eval_file;
   // labels mirror DEFAULT_RERANK_MODELS in app/rerank.py
   const RERANK_OPTS = [
     ['cohere', 'Cohere (rerank-v3.5)'],
@@ -2842,10 +2995,35 @@ function renderExperimentTable(container, experiments, opts) {
   const bulkBtn = document.createElement('button');
   const bulkSel = document.createElement('select');
 
+  const anySelectable = experiments.some(selectable);
   const table = document.createElement('table');
   table.className = 'eval-table';
   const head = table.insertRow();
-  if (experiments.some(canRerank)) head.appendChild(document.createElement('th'));
+  const rowChecks = [];  // {cb, e} per selectable row, for the select-all header
+  let selAll = null;
+  const syncSelAll = () => {
+    if (!selAll) return;
+    const n = rowChecks.filter(r => r.cb.checked).length;
+    selAll.checked = n > 0 && n === rowChecks.length;
+    selAll.indeterminate = n > 0 && n < rowChecks.length;
+  };
+  if (anySelectable) {
+    const th = document.createElement('th');
+    selAll = document.createElement('input');
+    selAll.type = 'checkbox';
+    selAll.title = 'Select / deselect all rows';
+    selAll.onchange = () => {
+      for (const { cb, e } of rowChecks) {
+        cb.checked = selAll.checked;
+        if (selAll.checked) pipeSelectedEvals.add(e.eval_file);
+        else pipeSelectedEvals.delete(e.eval_file);
+      }
+      selAll.indeterminate = false;
+      bulkBtn.disabled = !pipeSelectedEvals.size;
+    };
+    th.appendChild(selAll);
+    head.appendChild(th);
+  }
   for (const c of cols) {
     const th = document.createElement('th');
     th.className = 'sortable draggable';
@@ -2879,19 +3057,21 @@ function renderExperimentTable(container, experiments, opts) {
   for (const e of experiments) {
     const tr = table.insertRow();
     tr.dataset.rgroup = groupKey(e);
-    if (experiments.some(canRerank)) {
+    if (anySelectable) {
       const selTd = tr.insertCell();
-      if (canRerank(e)) {
+      if (selectable(e)) {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
-        cb.title = 'Select for bulk rerank';
+        cb.title = 'Select for graphing / bulk rerank';
         cb.checked = pipeSelectedEvals.has(e.eval_file);
         cb.onchange = () => {
           if (cb.checked) pipeSelectedEvals.add(e.eval_file);
           else pipeSelectedEvals.delete(e.eval_file);
           bulkBtn.disabled = !pipeSelectedEvals.size;
+          syncSelAll();
         };
         selTd.appendChild(cb);
+        rowChecks.push({ cb, e });
       }
     }
     for (const c of cols) {
@@ -2903,6 +3083,7 @@ function renderExperimentTable(container, experiments, opts) {
       td.textContent = v == null ? '' : (c.fix ? v.toFixed(c.fix) : v);
     }
   }
+  syncSelAll();  // reflect any selection persisted across the re-render
   // Bulk rerank control sits above the table; compact dropdown + button.
   if (experiments.some(canRerank)) {
     const bulk = document.createElement('div');
@@ -2912,14 +3093,119 @@ function renderExperimentTable(container, experiments, opts) {
     for (const [v, t] of RERANK_OPTS) bulkSel.appendChild(new Option(t, v));
     bulkBtn.textContent = 'Rerank';
     bulkBtn.disabled = !pipeSelectedEvals.size;
-    bulkBtn.onclick = () => startRerank([...pipeSelectedEvals], bulkSel.value, opts.runIndex);
+    // Rerank only touches un-reranked base rows. Selection may now include rows
+    // that can't be reranked (already-reranked bases, rerank rows) because the
+    // checkbox also drives graphing — so filter, and if any are skipped, confirm.
+    bulkBtn.onclick = () => {
+      const selected = experiments.filter(e => e.eval_file && pipeSelectedEvals.has(e.eval_file));
+      const rerankable = selected.filter(canRerank);
+      const skipped = selected.filter(e => !canRerank(e));
+      const run = () => startRerank(rerankable.map(e => e.eval_file), bulkSel.value, opts.runIndex);
+      if (!skipped.length) { run(); return; }
+      confirmRerankSkips(skipped, rerankable, run);
+    };
     bulk.append(blabel, bulkSel, bulkBtn,
                 makeInfoBtn('rerank-select', 'How to select rows to rerank'));
     container.appendChild(bulk);
   }
 
+  // Generate Visualizations control: sits directly under the rerank options.
+  // Charts the ticked rows (or the whole run if none are ticked); the selector
+  // picks one chart or all. matplotlib PNGs open in the graph gallery.
+  if (opts.allowGraph) {
+    const viz = document.createElement('div');
+    viz.className = 'bulk-rerank';
+    const vlabel = document.createElement('span');
+    vlabel.textContent = 'Visualization:';
+    const vsel = document.createElement('select');
+    for (const [v, t] of VIZ_CHART_OPTS) vsel.appendChild(new Option(t, v));
+    const vbtn = document.createElement('button');
+    vbtn.textContent = 'Generate Visualizations…';
+    vbtn.title = 'Chart the ticked rows, or the whole run if none are ticked';
+    vbtn.onclick = () => {
+      const files = pipeSelectedEvals.size
+        ? [...pipeSelectedEvals]
+        : experiments.map(e => e.eval_file).filter(Boolean);
+      if (!files.length) { $('status').textContent = 'No evals to visualize'; return; }
+      const body = { scope: 'eval', files: files.map(f => f.split('/').pop()) };
+      if (vsel.value !== 'all') body.charts = [vsel.value];
+      generateGraphs(body, 'Generating visualizations');
+    };
+    viz.append(vlabel, vsel, vbtn);
+    container.appendChild(viz);
+  }
+
   container.appendChild(table);
   applyHighlight();  // re-light the group across sort/K re-renders
+}
+
+/* Confirm a bulk rerank when the selection includes rows rerank can't touch
+   (already reranked). Lists the rows that will be skipped (top) and those that
+   will actually be reranked (bottom); onConfirm runs only when accepted. */
+function confirmRerankSkips(skipped, rerankable, onConfirm) {
+  const reason = e => e.rerank
+    ? `already a ${e.rerank} rerank`
+    : 'base already reranked with both providers';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  const box = document.createElement('div');
+  box.className = 'confirm-box';
+  const close = () => overlay.remove();
+
+  const h = document.createElement('h3');
+  h.textContent = 'Some selected rows will be skipped';
+  const note = document.createElement('p');
+  note.textContent = 'Reranking only applies to un-reranked base experiments. '
+    + 'The rows already reranked will be skipped.';
+  box.append(h, note);
+
+  const section = (title, items, describe, cls) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'confirm-sec';
+    const head = document.createElement('div');
+    head.className = 'confirm-sec-head';
+    head.textContent = `${title} (${items.length})`;
+    wrap.appendChild(head);
+    if (!items.length) {
+      const em = document.createElement('div');
+      em.className = 'confirm-empty';
+      em.textContent = 'none';
+      wrap.appendChild(em);
+    } else {
+      const ul = document.createElement('ul');
+      for (const e of items) {
+        const li = document.createElement('li');
+        if (cls) li.className = cls;
+        li.textContent = describe(e);
+        ul.appendChild(li);
+      }
+      wrap.appendChild(ul);
+    }
+    return wrap;
+  };
+
+  box.append(
+    section('Will be skipped', skipped, e => `${expDesc(e)} — ${reason(e)}`, 'confirm-skip'),
+    section('Will be reranked', rerankable, e => expDesc(e)),
+  );
+
+  const actions = document.createElement('div');
+  actions.className = 'confirm-actions';
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Cancel';
+  cancel.onclick = close;
+  const ok = document.createElement('button');
+  ok.className = 'primary';
+  ok.textContent = rerankable.length ? `Rerank ${rerankable.length} row(s)` : 'Nothing to rerank';
+  ok.disabled = !rerankable.length;
+  ok.onclick = () => { close(); onConfirm(); };
+  actions.append(cancel, ok);
+  box.appendChild(actions);
+
+  overlay.appendChild(box);
+  overlay.onclick = ev => { if (ev.target === overlay) close(); };  // click backdrop to cancel
+  document.body.appendChild(overlay);
 }
 
 /* Pipeline results modal: run selector + ranked experiment table + best line.
@@ -2990,7 +3276,7 @@ function renderPipelineModal(runs, index, sort) {
   body.appendChild(info);
 
   renderExperimentTable(body, experiments, {
-    ks, selK, allowRerank: true, sort,
+    ks, selK, allowRerank: true, allowGraph: true, sort,
     runIndex: index,
     rerender: s => renderPipelineModal(runs, index, s),
   });

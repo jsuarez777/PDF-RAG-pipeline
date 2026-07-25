@@ -53,6 +53,11 @@ SERVABLE_PNG = re.compile(r"^page_\d+(?:_image_\d+)?\.png$")
 PLUMBER_PAGE = re.compile(r"^page_(\d+)\.json$")
 QA_FILE = re.compile(r"^qa_.*\.json$")
 EVAL_FILE = re.compile(r"^eval_(?!summary_).*\.json$")
+PIPELINE_FILE = re.compile(r"^pipeline_.*\.json$")
+VIZ_PNG = re.compile(r"^[\w-]+\.png$")  # chart names generate_visualizations.py writes
+# selectable chart kinds (generate_visualizations.py CHARTS keys); omit for all
+VIZ_CHARTS = {"mrr", "scatter", "heatmap", "retrieval", "correlation",
+              "recall-curve", "qtype", "time-quality"}
 
 DOC_TYPES = {"pdf2image": PAGE_FILE, "pdfplumber": PLUMBER_PAGE}
 
@@ -1105,6 +1110,116 @@ def pipeline_runs(dtype: str, run: str, name: str):
             except (OSError, json.JSONDecodeError):
                 continue
     return jsonify(out)
+
+
+@app.post("/api/documents/<dtype>/<run>/<name>/visualizations")
+def generate_visualizations(dtype: str, run: str, name: str):
+    """Render the project's evaluation charts (generate_visualizations.py) as
+    PNGs under the document's visualizations/<stamp>/ dir. Three scopes:
+      data     - every eval in the document's evaluations/ dir
+      pipeline - the experiments of one pipeline_runs/pipeline_*.json
+      eval     - an explicit list of eval file names (charts across runs)
+    """
+    doc_dir = qa_doc_dir(dtype, run, name)
+    payload = request.get_json(force=True) or {}
+
+    scope = payload.get("scope", "data")
+    params = {"dtype": dtype, "run": run, "name": name, "scope": scope}
+    if scope == "data":
+        if not (doc_dir / "evaluations").is_dir():
+            abort(404, "no evaluations to chart; evaluate retrieval first")
+    elif scope == "pipeline":
+        pf = str(payload.get("pipeline_file", ""))
+        if not PIPELINE_FILE.fullmatch(check_segment(pf)):
+            abort(400, "invalid pipeline_file")
+        if not (doc_dir / "pipeline_runs" / pf).is_file():
+            abort(404, "no such pipeline run")
+        params["pipeline_file"] = pf
+    elif scope == "eval":
+        files = payload.get("files")
+        if not (isinstance(files, list) and files
+                and all(isinstance(f, str) for f in files)):
+            abort(400, "files must be a non-empty list of eval file names")
+        names = []
+        for f in files:
+            base = Path(f).name
+            if not EVAL_FILE.fullmatch(base):
+                abort(400, f"not an eval file: {base}")
+            if not (doc_dir / "evaluations" / base).is_file():
+                abort(404, f"eval file not found: {base}")
+            names.append(base)
+        params["files"] = list(dict.fromkeys(names))
+    else:
+        abort(400, "scope must be 'data', 'pipeline', or 'eval'")
+
+    charts = payload.get("charts")
+    if charts is not None:
+        if not (isinstance(charts, list) and charts
+                and all(c in VIZ_CHARTS for c in charts)):
+            abort(400, "charts must be a non-empty list of: "
+                       + ", ".join(sorted(VIZ_CHARTS)))
+        params["charts"] = list(dict.fromkeys(charts))
+
+    return enqueue_job("visualize", params)
+
+
+@jobs.handler("visualize")
+def job_visualize(uid: int, params: dict) -> dict:
+    doc_dir = job_doc_dir(uid, params)
+    stamp = time.strftime("%Y%m%d_%H%M%S")
+    out_dir = doc_dir / "visualizations" / stamp
+    cmd = [sys.executable, str(SCRIPT_DIR / "generate_visualizations.py"),
+           "--no-show", "--out-dir", out_dir.relative_to(PROJECT_ROOT).as_posix()]
+    scope = params["scope"]
+    if scope == "data":
+        cmd += ["--data", doc_dir.relative_to(PROJECT_ROOT).as_posix()]
+    elif scope == "pipeline":
+        pf = doc_dir / "pipeline_runs" / params["pipeline_file"]
+        cmd += ["--pipeline", pf.relative_to(PROJECT_ROOT).as_posix()]
+    else:  # eval
+        rels = [(doc_dir / "evaluations" / f).relative_to(PROJECT_ROOT).as_posix()
+                for f in params["files"]]
+        cmd += ["--eval", ",".join(rels)]
+    if params.get("charts"):  # nargs="+"; last so it doesn't swallow other flags
+        cmd += ["--chart", *params["charts"]]
+
+    code = run_and_stream(cmd, env=user_env(uid))
+    if code != 0:
+        raise JobError(f"generate_visualizations.py failed with exit code {code}")
+    images = sorted(p.name for p in out_dir.glob("*.png")) if out_dir.is_dir() else []
+    if not images:
+        raise JobError("charts ran but produced no images")
+    return {"viz_run": stamp, "images": images}
+
+
+@app.get("/api/documents/<dtype>/<run>/<name>/visualizations")
+def list_visualizations(dtype: str, run: str, name: str):
+    """Past chart sets for this document (visualizations/<stamp>/), newest
+    first, each with its PNG filenames."""
+    doc_dir = qa_doc_dir(dtype, run, name)
+    viz_root = doc_dir / "visualizations"
+    out = []
+    if viz_root.is_dir():
+        for d in sorted(viz_root.iterdir(), reverse=True):
+            if not d.is_dir():
+                continue
+            images = sorted(p.name for p in d.glob("*.png"))
+            if images:
+                out.append({"viz_run": d.name, "images": images})
+    return jsonify(out)
+
+
+@app.get("/images/<dtype>/<run>/<name>/visualizations/<viz_run>/<filename>")
+def visualization_image(dtype: str, run: str, name: str, viz_run: str, filename: str):
+    if not VIZ_PNG.fullmatch(filename):
+        abort(404)
+    doc_dir = resolve_doc_dir(auth.current_uid(), dtype, run, name)
+    if doc_dir is None:
+        abort(404)
+    viz_dir = doc_dir / "visualizations" / check_segment(viz_run)
+    if not viz_dir.is_dir():
+        abort(404)
+    return send_from_directory(viz_dir, filename)
 
 
 @app.post("/api/documents/<run>/<name>/ocr/<int:page>")

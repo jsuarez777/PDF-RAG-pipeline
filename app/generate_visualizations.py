@@ -314,11 +314,20 @@ def _method_legend(ax, methods: list[str]) -> None:
     ax.legend(handles=handles, title="Retrieval method", frameon=False, fontsize=9)
 
 
+def _rel(p: Path) -> Path | str:
+    """Project-relative path for logging, or the absolute path when it lies
+    outside the repo (e.g. an --out-dir under /tmp)."""
+    try:
+        return p.relative_to(PROJECT_ROOT)
+    except ValueError:
+        return p
+
+
 def _save(fig, out_dir: Path, name: str, show: bool) -> None:
     fig.tight_layout()
     out_path = out_dir / f"{name}.png"
     fig.savefig(out_path, dpi=150)
-    log.info("  wrote %s", out_path.relative_to(PROJECT_ROOT))
+    log.info("  wrote %s", _rel(out_path))
     if show:
         plt.show()
     plt.close(fig)
@@ -781,7 +790,7 @@ def main() -> None:
     )
     log.info("Metric: %s, k=%d (evaluated ks: %s)", args.metric, k,
              ", ".join(map(str, ks_avail)))
-    log.info("Output: %s", out_dir.relative_to(PROJECT_ROOT))
+    log.info("Output: %s", _rel(out_dir))
     if renamed_from is not None:
         _warn_checkpoint_renamed(renamed_from, out_dir)
 
