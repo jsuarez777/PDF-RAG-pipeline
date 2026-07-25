@@ -118,9 +118,16 @@
   .eval-table th.drag-over { background: #dbe9ff; }
   /* dark-yellow highlight for a base experiment and its rerank twins */
   .eval-table tr.rerank-hl td { background: #f5f854; color: #1a1a1a; }
+  /* highlight-all mode paints each config group its own pastel via inline
+     style (rerank-grouped just marks the row so text stays dark on it) */
+  .eval-table tr.rerank-grouped td { color: #1a1a1a; }
   .rerank-link { color: inherit; text-decoration: underline;
                  text-underline-offset: 2px; cursor: pointer; }
-  .rerank-clear { margin: 4px 0 8px; font-size: 12px; }
+  .rerank-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+                  margin: 4px 0 8px; font-size: 12px; }
+  .rerank-tools button { font-size: 12px; padding: 3px 9px; }
+  .rerank-tools button.active { background: #0071e3; color: #fff;
+                                border-color: #0071e3; }
   /* delta-to-baseline shown after a reranked row's metric; the green/red
      magnitude tint is applied (via inline background) only while the row's
      group is highlighted — see applyHighlight/metricCell. */
@@ -168,9 +175,24 @@
   .page-row .img-col img { width: 100%; display: block;
                            box-shadow: 0 2px 12px rgba(0,0,0,.15); }
   .page-row .ocr-col { width: 50%; font-size: 13px; line-height: 1.6;
-                       white-space: pre-wrap; overflow-wrap: break-word; }
+                       white-space: pre-wrap; overflow-wrap: break-word;
+                       display: flex; flex-direction: column; }
+  /* ocr-col children are flow-ordered so the All-text section (where chunk
+     boxes are drawn) can jump above the structural sections when a page has
+     highlighted chunks (qa-focus), cutting the scroll to reach them. */
+  .page-row .ocr-col > h3 { order: 0; }
+  .page-row .ocr-col > .chunk-badges { order: 1; }
+  .page-row .ocr-col > .struct-sections { order: 3; }
+  .page-row .ocr-col > .alltext-section { order: 4; }
+  .page-row .ocr-col.qa-focus > .alltext-section { order: 2; }
   .page-row .ocr-col h3 { font-size: 12px; color: #6e6e73; font-weight: 600;
-                          margin-bottom: 8px; }
+                          margin-bottom: 8px; display: flex; align-items: center;
+                          gap: 6px; }
+  .struct-sections > summary { cursor: pointer; font-size: 11px; color: #6e6e73;
+                               font-weight: 600; text-transform: uppercase;
+                               letter-spacing: .04em; margin-bottom: 4px; }
+  .struct-sections[open] > summary { margin-bottom: 6px; }
+  .alltext-section { margin-top: 6px; }
   .page-row .ocr-col .no-ocr { color: #9a9a9e; font-style: italic; }
   .plumber-table { border-collapse: collapse; margin-top: 10px; font-size: 12px;
                    white-space: normal; }
@@ -206,9 +228,13 @@
   .chunk-gen { display: block; font-size: 11px; padding: 3px 8px; margin: 2px 0 6px; }
   /* span-less chunks (plumber-struct tables/images/gap-straddling prose):
      a badge strip at the top of the page, reusing the chunk-box widget. */
-  .chunk-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px;
-                  padding: 6px; background: rgba(0,0,0,.04); border-radius: 6px; }
+  .chunk-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+                  margin: 0 0 8px; padding: 6px;
+                  background: rgba(0,0,0,.04); border-radius: 6px; }
   .chunk-badges .chunk-box { display: inline-block; margin: 0; min-width: 96px; }
+  .chunk-badges-label { font-size: 10px; font-weight: 700; letter-spacing: .03em;
+                        text-transform: uppercase; color: #6e6e73;
+                        display: inline-flex; align-items: center; gap: 4px; }
   .chunk-src { display: inline-block; margin-left: 5px; padding: 0 4px;
                font-size: 9px; font-weight: 600; letter-spacing: .02em;
                color: #6e6e73; background: rgba(0,0,0,.08); border-radius: 3px;
@@ -792,23 +818,36 @@ async function openPlumberDocument(doc) {
       <div class="img-col"><img src="${url}" loading="lazy" onerror="this.style.display='none'"></div>
       <div class="ocr-col"><h3>Page ${p.page} — pdfplumber</h3></div>`;
     const col = row.querySelector('.ocr-col');
+    // Per-page "i": explains the two-form layout (why text repeats, what the
+    // top-of-page chunk badges are).
+    col.querySelector('h3').appendChild(
+      makeInfoBtn('page-layout', 'Why is text shown twice?'));
+
+    // Structured extraction (prose / tables / images) lives in a collapsible
+    // block so it can be tucked away — and so All text can slide above it when a
+    // page has highlighted chunks (see .ocr-col.qa-focus ordering).
+    const struct = document.createElement('details');
+    struct.className = 'struct-sections';
+    struct.open = true;
+    const structSummary = document.createElement('summary');
+    struct.appendChild(structSummary);
     const addHeading = label => {
       const h = document.createElement('h4');
       h.textContent = label;
-      col.appendChild(h);
+      struct.appendChild(h);
     };
     const addNone = label => {
       const span = document.createElement('span');
       span.className = 'none';
       span.textContent = label;
-      col.appendChild(span);
+      struct.appendChild(span);
     };
 
     addHeading('Prose');
     if (p.text) {
       const div = document.createElement('div');
       div.append(p.text);
-      col.appendChild(div);
+      struct.appendChild(div);
     } else addNone('(no prose on this page)');
 
     addHeading(`Tables (${p.tables.length})`);
@@ -820,7 +859,7 @@ async function openPlumberDocument(doc) {
         const tr = table.insertRow();
         for (const cell of cells) tr.insertCell().append(cell ?? '');
       }
-      col.appendChild(table);
+      struct.appendChild(table);
     }
 
     const images = p.images || [];
@@ -836,13 +875,16 @@ async function openPlumberDocument(doc) {
       const b = img.bbox;
       cap.textContent = `#${img.image_number} ${img.file} — bbox (${b.x0.toFixed(1)}, ${b.top.toFixed(1)}) → (${b.x1.toFixed(1)}, ${b.bottom.toFixed(1)}), source ${img.source_size[0]}×${img.source_size[1]}px`;
       fig.append(el, cap);
-      col.appendChild(fig);
+      struct.appendChild(fig);
     }
+    structSummary.textContent =
+      `Structured extraction — Prose · Tables (${p.tables.length}) · Images (${images.length})`;
+    col.appendChild(struct);
 
-    addHeading('All text');
     const details = document.createElement('details');
+    details.className = 'alltext-section';
     const summary = document.createElement('summary');
-    summary.textContent = 'Show full unfiltered extraction';
+    summary.textContent = 'All text (raw extraction — chunk boxes appear here)';
     const fullDiv = document.createElement('div');
     fullDiv.append(p.full_text || '(no text on this page)');
     pageTexts[p.page] = p.full_text || '';
@@ -996,6 +1038,10 @@ function renderChunkHighlights() {
     const el = pageTextEls[n];
     const col = el && el.closest('.ocr-col');
     if (!col) continue;
+    // Pages with inline chunk boxes float their All-text section above the
+    // structured sections (via .qa-focus ordering) so the boxes need no scroll.
+    col.classList.toggle('qa-focus',
+      !!(qaVisible && qaData && (perPage[n] || []).length));
     const prev = col.querySelector(':scope > .chunk-badges');
     if (prev) prev.remove();
     if (!(qaVisible && qaData)) continue;
@@ -1005,6 +1051,10 @@ function renderChunkHighlights() {
     if (!here.length) continue;
     const strip = document.createElement('div');
     strip.className = 'chunk-badges';
+    const label = document.createElement('span');
+    label.className = 'chunk-badges-label';
+    label.append('Structural chunks', makeInfoBtn('chunk-badges', 'Why are these here?'));
+    strip.appendChild(label);
     for (const c of here)
       strip.appendChild(makeChunkBox(c.chunk_index, qaChunks, c.source));
     col.prepend(strip);
@@ -2002,6 +2052,42 @@ const INFO = {
          pick specific indexes. <b>Force</b> lets you evaluate indexes built from
          a different chunk run (results may be meaningless).</p>`,
   },
+  'page-layout': {
+    title: 'How this page is shown',
+    html: `
+      <p>Each pdfplumber page is shown in two forms, so <b>the same words can
+         appear more than once — that's expected, not a bug</b>:</p>
+      <h4>Structured extraction</h4>
+      <p><b>Prose</b>, <b>Tables</b> and <b>Images</b> are pdfplumber's parsed
+         view: running text with tables and figures lifted out into their own
+         blocks. This is what the <code>pdfplumber-sections</code> chunker splits
+         on. It's collapsible if you want it out of the way.</p>
+      <h4>All text</h4>
+      <p>The raw, unfiltered text pdfplumber reads off the page, in reading
+         order. Chunk highlighting is drawn <i>here</i>, because a chunk's
+         character span refers to this continuous text — so a sentence you
+         already saw under Prose appears again here, now boxed as part of a
+         chunk. When a page has highlighted chunks, All text moves above the
+         structured sections so you don't have to scroll for it.</p>
+      <h4>Chunk boxes &amp; badges</h4>
+      <p>With the QA pane open, each retrieval chunk is outlined in All text.
+         Chunks that don't map to a single run of characters — whole tables,
+         images, or prose straddling a removed table — can't be boxed inline, so
+         they appear as <b>badges</b> at the top of the page instead.</p>`,
+  },
+  'chunk-badges': {
+    title: 'Structural chunks',
+    html: `
+      <p>These badges are chunks that cover this page but have no single stretch
+         of text to outline down in <b>All text</b> — a whole extracted
+         <b>table</b>, an <b>image</b> descriptor, or prose that straddled a gap
+         left by a removed table. That's why they sit up here, detached from the
+         running text.</p>
+      <p>The tag on each badge (<code>table</code> / <code>image</code> /
+         <code>text</code>) says which kind it came from. Click a badge to select
+         the chunk, see its QA pairs, or generate new ones — exactly like an
+         inline chunk box.</p>`,
+  },
 };
 function showInfo(anchor, key) {
   const info = INFO[key];
@@ -2010,6 +2096,19 @@ function showInfo(anchor, key) {
     body.classList.add('info-body');
     body.innerHTML = info.html;
   });
+}
+// A standalone "i" button (outside the header menus, e.g. on a page or a chunk
+// badge strip) that opens the same INFO popover. It carries its own click
+// handler since the delegated .dropdown listener doesn't reach it.
+function makeInfoBtn(key, title) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.dataset.info = key;
+  b.title = title || 'More info';
+  b.textContent = 'i';
+  b.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); showInfo(b, key); };
+  return b;
 }
 // One handler per header menu: click an "i" button to open its popover (kept
 // from closing the menu / toggling inputs), and close popovers if the menu
@@ -2387,6 +2486,8 @@ function expDesc(e) {
 let pipelineK = null;  // K cutoff selected in the pipeline results dialog
 let pipeSelectedEvals = new Set();  // eval_file paths ticked for bulk rerank
 let pipeHighlightGroup = null;  // config group whose base+rerank rows are lit up
+let pipeGroupRerank = false;    // keep each config's base+rerank rows contiguous
+let pipeHighlightAll = false;   // paint every config group its own pastel color
 
 /* Rerank existing eval file(s) in place (no retrieval/QA rerun) and reload
    the pipeline runs so the new twin rows appear in the same dialog. */
@@ -2462,14 +2563,43 @@ function renderExperimentTable(container, experiments, opts) {
   // Rows sharing a config (the un-reranked base plus its rerank twins) form one
   // highlight group; clicking any of their Rerank cells lights up all of them.
   const groupKey = e => JSON.stringify(CONFIG_KEYS.map(k => e[k] ?? null));
-  const applyHighlight = () => container.querySelectorAll('tr[data-rgroup]').forEach(tr => {
-    const on = pipeHighlightGroup != null && tr.dataset.rgroup === pipeHighlightGroup;
-    tr.classList.toggle('rerank-hl', on);
-    // green/red metric tint rides along with the highlight, not always on
-    tr.querySelectorAll('td[data-delta-bg]').forEach(td =>
-      td.style.background = on ? td.dataset.deltaBg : '');
-  });
+  // Config groups that actually pair a base with at least one rerank twin (a
+  // lone baseline isn't a "pair" and stays uncolored). Sorted for a stable
+  // color assignment independent of row sort order.
+  const pairGroups = [...new Set(experiments.map(groupKey))]
+    .filter(k => experiments.filter(e => groupKey(e) === k).length > 1)
+    .sort();
+  // Evenly-spaced pastel per pair group: max-separated hues, high lightness so
+  // dark text stays readable (see .rerank-grouped).
+  const groupColors = new Map(pairGroups.map((k, i) =>
+    [k, `hsl(${Math.round(i * 360 / pairGroups.length)}, 72%, 85%)`]));
+  // Repaint rows for the current highlight state. Highlight-all wins if on:
+  // every pair group gets its own pastel. Otherwise the single clicked group
+  // lights yellow. Either way, a reranked row's metric cells keep the green/red
+  // delta-to-baseline tint (it overrides the row color on those cells) so the
+  // per-metric win/loss reads the same as in single-highlight mode.
+  const paintDeltas = tr => tr.querySelectorAll('td[data-delta-bg]')
+    .forEach(td => td.style.background = td.dataset.deltaBg);
+  const applyHighlight = () => {
+    container.querySelectorAll('tr[data-rgroup]').forEach(tr => {
+      tr.classList.remove('rerank-hl', 'rerank-grouped');
+      tr.style.background = '';
+      tr.querySelectorAll('td[data-delta-bg]').forEach(td => td.style.background = '');
+      if (pipeHighlightAll) {
+        const color = groupColors.get(tr.dataset.rgroup);
+        if (color) { tr.style.background = color; tr.classList.add('rerank-grouped'); paintDeltas(tr); }
+        return;
+      }
+      const on = pipeHighlightGroup != null && tr.dataset.rgroup === pipeHighlightGroup;
+      tr.classList.toggle('rerank-hl', on);
+      if (on) paintDeltas(tr);
+    });
+    // keep the toolbar's toggle in sync when a single-group click turns it off
+    const allBtn = container.querySelector('.rerank-tools [data-role="hl-all"]');
+    if (allBtn) allBtn.classList.toggle('active', pipeHighlightAll);
+  };
   const toggleHighlight = key => {
+    pipeHighlightAll = false;  // single highlight and all-groups are exclusive
     pipeHighlightGroup = pipeHighlightGroup === key ? null : key;
     applyHighlight();
   };
@@ -2482,15 +2612,37 @@ function renderExperimentTable(container, experiments, opts) {
     a.onclick = ev => { ev.preventDefault(); toggleHighlight(key); };
     return a;
   };
-  // Clear-highlights control (only when some row can be highlighted).
-  if (experiments.some(e => e.rerank)) {
-    const clear = document.createElement('div');
-    clear.className = 'rerank-clear';
-    const btn = document.createElement('button');
-    btn.textContent = 'Clear highlights';
-    btn.onclick = () => { pipeHighlightGroup = null; applyHighlight(); };
-    clear.appendChild(btn);
-    container.appendChild(clear);
+  // Highlight/grouping toolbar (only when some row has a rerank twin to act on).
+  if (pairGroups.length) {
+    const tools = document.createElement('div');
+    tools.className = 'rerank-tools';
+    // Group: reorder so each config's base+rerank rows sit together (applied in
+    // the sort step below); needs a re-render since it changes row order.
+    const groupBtn = document.createElement('button');
+    groupBtn.textContent = 'Group base + reranks';
+    groupBtn.title = 'Keep each experiment and its rerank twins in adjacent rows';
+    groupBtn.classList.toggle('active', pipeGroupRerank);
+    groupBtn.onclick = () => { pipeGroupRerank = !pipeGroupRerank; opts.rerender(sort); };
+    // Highlight all: paint every base+rerank group its own color at once.
+    const allBtn = document.createElement('button');
+    allBtn.dataset.role = 'hl-all';
+    allBtn.textContent = 'Highlight all groups';
+    allBtn.title = 'Give every base+rerank group its own color';
+    allBtn.classList.toggle('active', pipeHighlightAll);
+    allBtn.onclick = () => {
+      pipeHighlightAll = !pipeHighlightAll;
+      if (pipeHighlightAll) pipeHighlightGroup = null;
+      applyHighlight();  // repaints rows and syncs this button's active state
+    };
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = 'Clear highlights';
+    clearBtn.onclick = () => {
+      pipeHighlightGroup = null;
+      pipeHighlightAll = false;
+      applyHighlight();
+    };
+    tools.append(groupBtn, allBtn, clearBtn);
+    container.appendChild(tools);
   }
   // still missing at least one provider's twin → offers a rerank control
   // (only when the host modal allows initiating reranks)
@@ -2606,6 +2758,19 @@ function renderExperimentTable(container, experiments, opts) {
     const cmp = sortCol.num ? va - vb : String(va).localeCompare(String(vb));
     return cmp * sort.dir;
   });
+  // Group mode: pull each config's base+rerank rows into one contiguous block so
+  // rows that highlight together also read together, even under a metric sort.
+  // Groups appear in the order their best-sorted row first surfaced; within a
+  // group the base row leads, then its rerank twins. (A plain config sort keeps
+  // them adjacent already, so this only reshuffles under metric sorts.)
+  if (pipeGroupRerank) {
+    const blocks = new Map();  // groupKey -> rows, first-seen order
+    for (const e of experiments) (blocks.get(groupKey(e)) ||
+      blocks.set(groupKey(e), []).get(groupKey(e))).push(e);
+    experiments = [...blocks.values()].flatMap(g =>
+      g.sort((a, b) => (a.rerank ? 1 : 0) - (b.rerank ? 1 : 0) ||
+        String(a.rerank || '').localeCompare(String(b.rerank || ''))));
+  }
 
   // Bulk rerank control (built before the table so row checkboxes can toggle
   // its button); appended after it. Selections live in pipeSelectedEvals.
@@ -2699,6 +2864,8 @@ function renderPipelineModal(runs, index, sort) {
   const body = $('modal-body');
   body.innerHTML = '';
   $('modal-overlay').hidden = false;
+  // Fresh open (no sort) starts clean; re-renders (sort/K/toggles) keep modes.
+  if (!sort) { pipeHighlightGroup = null; pipeHighlightAll = false; pipeGroupRerank = false; }
 
   if (runs.length > 1) {
     const bar = document.createElement('div');
@@ -2718,6 +2885,8 @@ function renderPipelineModal(runs, index, sort) {
     sel.onchange = () => {
       pipeSelectedEvals.clear();
       pipeHighlightGroup = null;
+      pipeHighlightAll = false;
+      pipeGroupRerank = false;
       renderPipelineModal(runs, parseInt(sel.value, 10));
     };
     bar.append(label, sel);
@@ -2862,6 +3031,10 @@ async function openEvalModal(defaultFile) {
     ? defaultFile : modalEvals[0].file;
   const ts = evalStamp(modalEvals.find(e => e.file === target));
   const grouped = modalEvals.filter(e => evalStamp(e) === ts).length > 1;
+  // Fresh open: don't inherit highlight/group modes from a prior modal.
+  pipeHighlightGroup = null;
+  pipeHighlightAll = false;
+  pipeGroupRerank = false;
   renderEvalModal(grouped ? 'group:' + ts : target);
 }
 
@@ -2879,7 +3052,6 @@ function evalStamp(e) {
 function renderEvalModal(value, sort) {
   const body = $('modal-body');
   body.innerHTML = '';
-  pipeHighlightGroup = null;  // don't carry a highlight in from the pipeline modal
 
   const groups = new Map();  // run timestamp -> its evals, insertion order
   for (const e of modalEvals) {
@@ -2913,7 +3085,12 @@ function renderEvalModal(value, sort) {
     sel.appendChild(opt);
   }
   sel.value = value;
-  sel.onchange = () => renderEvalModal(sel.value);
+  sel.onchange = () => {  // switching results starts fresh, not a re-render
+    pipeHighlightGroup = null;
+    pipeHighlightAll = false;
+    pipeGroupRerank = false;
+    renderEvalModal(sel.value);
+  };
   bar.append(label, sel);
 
   const shown = value.startsWith('group:')
