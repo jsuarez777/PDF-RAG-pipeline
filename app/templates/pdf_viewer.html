@@ -107,8 +107,8 @@
   .viz-gallery figure { margin: 0; border: 1px solid #e0e0e0; border-radius: 8px;
                         overflow: hidden; background: #fafafa; }
   .viz-gallery img { display: block; width: 100%; height: auto; cursor: zoom-in; }
-  .viz-gallery figcaption { padding: 5px 8px; font-size: 11px; color: #52514e;
-                            border-top: 1px solid #eee; }
+  .viz-gallery figcaption { padding: 7px 10px; font-size: 13px; font-weight: 600;
+                            color: #1a1a1a; border-bottom: 1px solid #eee; }
   /* full-size overlay when a chart thumbnail is clicked */
   #viz-zoom { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.8);
               display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
@@ -129,6 +129,23 @@
   .confirm-empty { color: #8a8a8e; font-style: italic; }
   .confirm-skip { color: #b23636; }
   .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  /* Generate-visualizations picker: chart selector + scrollable experiment list */
+  .viz-row { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+  .viz-row span { font-weight: 600; }
+  .viz-row select { flex: 0 0 auto; font-size: 12px; padding: 4px 6px; }
+  .viz-pick-head { display: flex; align-items: center; gap: 6px; font-weight: 600; margin-bottom: 4px; }
+  .viz-pick-scroll { max-height: 42vh; overflow-y: auto; border: 1px solid #e0e0e0;
+                     border-radius: 6px; padding: 6px 8px; }
+  .viz-pick-scroll label { display: flex; align-items: center; gap: 6px;
+                           padding: 2px 0; overflow-wrap: anywhere; }
+  /* Generate-visualizations dialog: resizeable, sized to its content by default
+     (capped to the viewport) so option rows don't wrap; the list flexes to fill
+     as the box is resized, scrolling both ways only when content overflows. */
+  .viz-generate-box { display: flex; flex-direction: column; overflow: hidden;
+                      width: fit-content; min-width: 520px; max-width: calc(100vw - 40px);
+                      height: auto; min-height: 280px; max-height: 82vh; resize: both; }
+  .viz-generate-box .viz-pick-scroll { flex: 1 1 auto; max-height: none; overflow: auto; }
+  .viz-generate-box .viz-pick-scroll label { white-space: nowrap; overflow-wrap: normal; }
   /* bulk rerank: label + compact dropdown + button, sized to content */
   .bulk-rerank { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .bulk-rerank span { font-weight: 600; }
@@ -461,7 +478,6 @@
     </div>
   </div>
   <button id="eval-view-btn" style="display:none" disabled>View Evaluations&hellip;</button>
-  <button id="viz-btn" style="display:none" disabled>Generate Graphs&hellip;</button>
   <div class="menu-wrap">
     <button id="pipe-btn" style="display:none" disabled>Run Pipeline&hellip;</button>
     <div id="pipe-menu" class="dropdown menu-form" hidden>
@@ -557,7 +573,8 @@
     </div>
   </div>
   <button id="pipe-view-btn" style="display:none" disabled>Pipeline Results&hellip;</button>
-  <button id="viz-view-btn" style="display:none" disabled>View Graphs&hellip;</button>
+  <button id="viz-btn" style="display:none" disabled>Generate Visualizations&hellip;</button>
+  <button id="viz-view-btn" style="display:none" disabled>View Visualizations&hellip;</button>
   <button id="gen-btn" style="display:none" disabled>Generate QA Pairs for Selected</button>
   <button id="deselect-btn" style="display:none" disabled>Deselect All</button>
   <span id="head-spacer"></span>
@@ -1921,9 +1938,9 @@ $('eval-view-btn').onclick = () => openEvalModal();
 /* ------------------------------------------------------- visualization gallery
    The charts are matplotlib PNGs produced server-side by
    generate_visualizations.py (project-required deliverable). Three entry points
-   feed the same generate+gallery flow: "Generate Graphs" charts the document's
-   evals (scope=data); the pipeline results modal charts a run or the ticked
-   evals; "View Graphs" browses previously generated chart sets. */
+   feed the same generate+gallery flow: "Generate Visualizations" (toolbar) opens
+   a picker of the document's experiments; the pipeline results modal charts a run
+   or the ticked rows; "View Visualizations" browses previously generated sets. */
 let vizSets = [];  // [{viz_run, images}], newest first
 
 // Chart kinds offered in the "Generate Visualizations" selector; values match
@@ -1949,9 +1966,116 @@ async function generateGraphs(body, statusMsg) {
   await openVizGallery(res.viz_run);
 }
 
-$('viz-btn').onclick = () => generateGraphs({ scope: 'data' }, 'Generating graphs');
+/* Generate Visualizations: open a picker of the document's experiments (all
+   ticked by default) + a chart selector, then chart the chosen ones. */
+$('viz-btn').onclick = () => openVizGeneratePicker();
 
-/* View Graphs: browse the document's saved chart sets without regenerating. */
+async function openVizGeneratePicker() {
+  const doc = current;
+  if (!doc) return;
+  let evals;
+  try {
+    const resp = await fetch(
+      `/api/documents/${doc.type}/${doc.run}/${doc.name}/evals`);
+    if (!resp.ok) throw new Error(await resp.text());
+    if (current !== doc) return;
+    evals = await resp.json();
+  } catch (err) {
+    $('status').textContent = 'Failed to load evaluations: ' + err.message;
+    return;
+  }
+  if (!evals.length) {
+    $('status').textContent = 'No evaluations to visualize yet — evaluate retrieval first.';
+    return;
+  }
+  vizGenerateDialog(evals);
+}
+
+/* Dialog: pick which experiments (eval files) and which chart to generate.
+   Every experiment is ticked by default; Generate charts the ticked ones. */
+function vizGenerateDialog(evals) {
+  const describe = e => {
+    const ts = (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+    return expDesc(evalToExperiment(e)) + (ts ? ' · ' + humanStamp(ts) : '');
+  };
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  const box = document.createElement('div');
+  box.className = 'confirm-box viz-generate-box';
+  const close = () => overlay.remove();
+
+  const h = document.createElement('h3');
+  h.textContent = 'Generate visualizations';
+  box.appendChild(h);
+
+  const chartRow = document.createElement('div');
+  chartRow.className = 'viz-row';
+  const clabel = document.createElement('span');
+  clabel.textContent = 'Visualization:';
+  const csel = document.createElement('select');
+  for (const [v, t] of VIZ_CHART_OPTS) csel.appendChild(new Option(t, v));
+  chartRow.append(clabel, csel);
+  box.appendChild(chartRow);
+
+  // select-all header + per-experiment checkboxes (all ticked initially)
+  const rows = [];
+  const selAll = document.createElement('input');
+  selAll.type = 'checkbox';
+  selAll.checked = true;
+  const headLabel = document.createElement('label');
+  headLabel.className = 'viz-pick-head';
+  const headText = document.createElement('span');
+  const syncHead = () => {
+    const n = rows.filter(r => r.cb.checked).length;
+    selAll.checked = n === rows.length;
+    selAll.indeterminate = n > 0 && n < rows.length;
+    headText.textContent = `Experiments to include (${n}/${rows.length})`;
+    ok.disabled = !n;
+  };
+  selAll.onchange = () => { for (const r of rows) r.cb.checked = selAll.checked; syncHead(); };
+  headLabel.append(selAll, headText);
+  box.appendChild(headLabel);
+
+  const list = document.createElement('div');
+  list.className = 'viz-pick-scroll';
+  for (const e of evals) {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = true;
+    cb.onchange = syncHead;
+    label.append(cb, document.createTextNode(' ' + describe(e)));
+    list.appendChild(label);
+    rows.push({ cb, file: e.file });
+  }
+  box.appendChild(list);
+
+  const actions = document.createElement('div');
+  actions.className = 'confirm-actions';
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Cancel';
+  cancel.onclick = close;
+  const ok = document.createElement('button');
+  ok.className = 'primary';
+  ok.textContent = 'Generate';
+  ok.onclick = () => {
+    const files = rows.filter(r => r.cb.checked).map(r => r.file);
+    if (!files.length) return;
+    close();
+    const body = { scope: 'eval', files };
+    if (csel.value !== 'all') body.charts = [csel.value];
+    generateGraphs(body, 'Generating visualizations');
+  };
+  actions.append(cancel, ok);
+  box.appendChild(actions);
+
+  syncHead();
+  overlay.appendChild(box);
+  overlay.onclick = ev => { if (ev.target === overlay) close(); };
+  document.body.appendChild(overlay);
+}
+
+/* View Visualizations: browse the document's saved chart sets without regenerating. */
 $('viz-view-btn').onclick = () => openVizGallery();
 
 /* Fetch every saved chart set and open the gallery on focusRun (else newest).
@@ -1959,10 +2083,15 @@ $('viz-view-btn').onclick = () => openVizGallery();
 async function openVizGallery(focusRun) {
   const doc = current;
   if (!doc) return;
-  $('modal-title').textContent = 'Evaluation graphs';
+  $('modal-title').textContent = 'Visualizations';
   $('modal').classList.add('wide');
+  // Give the modal a definite width so the gallery's auto-fit grid computes its
+  // columns on the FIRST render too. Under .wide's fit-content (indefinite)
+  // width, auto-fit collapses to one column until a later re-render. Cleared by
+  // closeModal; resize:both still lets the user widen it.
+  $('modal').style.width = 'min(1080px, calc(100vw - 40px))';
   const body = $('modal-body');
-  body.innerHTML = '<small>Loading graphs…</small>';
+  body.innerHTML = '<small>Loading visualizations…</small>';
   $('modal-overlay').hidden = false;
   try {
     const resp = await fetch(
@@ -1972,21 +2101,31 @@ async function openVizGallery(focusRun) {
     vizSets = await resp.json();
   } catch (err) {
     body.innerHTML = '';
-    body.textContent = 'Failed to load graphs: ' + err.message;
+    body.textContent = 'Failed to load visualizations: ' + err.message;
     return;
   }
   if (!vizSets.length) {
     body.innerHTML = '';
-    body.append('No graphs yet for this document. ');
+    body.append('No visualizations yet for this document. ');
     const gen = document.createElement('button');
     gen.className = 'primary';
     gen.textContent = 'Generate now';
-    gen.onclick = () => generateGraphs({ scope: 'data' }, 'Generating graphs');
+    gen.onclick = () => { closeModal(); openVizGeneratePicker(); };
     body.appendChild(gen);
     return;
   }
   const has = vizSets.some(s => s.viz_run === focusRun);
   renderVizGallery(has ? focusRun : vizSets[0].viz_run);
+}
+
+/* Turn a chart PNG filename into a readable title: drop the extension, split on
+   '_', title-case words, and fix up known acronyms/tokens. */
+function prettyChartTitle(name) {
+  const fix = { mrr: 'MRR', ndcg: 'NDCG', map: 'MAP', bm25: 'BM25',
+                qtype: 'Question Type', vs: 'vs', at: '@', k: 'K' };
+  return name.replace(/\.png$/, '').split('_')
+    .map(w => fix[w] || (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(' ');
 }
 
 /* Render one chart set (value = its viz_run). A selector switches between saved
@@ -2020,8 +2159,8 @@ function renderVizGallery(value) {
     img.loading = 'lazy';
     img.onclick = () => { $('viz-zoom').querySelector('img').src = src; $('viz-zoom').hidden = false; };
     const cap = document.createElement('figcaption');
-    cap.textContent = name.replace(/\.png$/, '').replace(/_/g, ' ');
-    fig.append(img, cap);
+    cap.textContent = prettyChartTitle(name);
+    fig.append(cap, img);  // title on top, then the chart
     grid.appendChild(fig);
   }
   body.appendChild(grid);
@@ -3213,6 +3352,7 @@ function confirmRerankSkips(skipped, rerankable, onConfirm) {
 function renderPipelineModal(runs, index, sort) {
   $('modal-title').textContent = 'Pipeline results';
   $('modal').classList.add('wide');
+  $('modal').style.width = '';  // drop any definite width the gallery set
   const body = $('modal-body');
   body.innerHTML = '';
   $('modal-overlay').hidden = false;
@@ -3358,6 +3498,7 @@ async function openEvalModal(defaultFile) {
   if (!doc) return;
   $('modal-title').textContent = 'Retrieval evaluation results';
   $('modal').classList.add('wide');  // the shared config+metrics table needs the full width
+  $('modal').style.width = '';  // drop any definite width the gallery set
   const body = $('modal-body');
   body.innerHTML = '<small>Loading evaluations…</small>';
   $('modal-overlay').hidden = false;
