@@ -323,6 +323,97 @@ def _rel(p: Path) -> Path | str:
         return p
 
 
+# General 2-D point labeler (greedy local placement). Each label is placed in
+# the nearest free direction around its OWN point, avoiding every data marker
+# and every already-placed label and staying inside the axes -- short leaders,
+# no shared column, so it holds up on arbitrary clouds. (The recall/precision
+# scatter uses its own column labeler instead, because its points are pinned to
+# a line and a shared column reads more cleanly there.)
+_LABEL_DIRS = [  # (unit dx, unit dy, ha, va, relpos): leader meets nearest edge
+    (1, 0, "left", "center", (0, 0.5)),        # right
+    (-1, 0, "right", "center", (1, 0.5)),      # left
+    (0.75, 0.75, "left", "bottom", (0, 0)),    # upper-right
+    (0.75, -0.75, "left", "top", (0, 1)),      # lower-right
+    (-0.75, 0.75, "right", "bottom", (1, 0)),  # upper-left
+    (-0.75, -0.75, "right", "top", (1, 1)),    # lower-left
+    (0, 1, "center", "bottom", (0.5, 0)),      # up
+    (0, -1, "center", "top", (0.5, 1)),        # down
+]
+_LABEL_LEADS = [24, 42, 64, 90]  # px; try progressively longer leaders
+
+
+def _label_box(ax_x, ax_y, w, h, ha, va, pad):
+    if ha == "left":
+        x0, x1 = ax_x, ax_x + w
+    elif ha == "right":
+        x0, x1 = ax_x - w, ax_x
+    else:
+        x0, x1 = ax_x - w / 2, ax_x + w / 2
+    if va == "bottom":
+        y0, y1 = ax_y, ax_y + h
+    elif va == "top":
+        y0, y1 = ax_y - h, ax_y
+    else:
+        y0, y1 = ax_y - h / 2, ax_y + h / 2
+    return (x0 - pad, y0 - pad, x1 + pad, y1 + pad)
+
+
+def _boxes_overlap(a, b):
+    return not (a[2] <= b[0] or a[0] >= b[2] or a[3] <= b[1] or a[1] >= b[3])
+
+
+def _label_points(fig, ax, rows, xy_all, marker_r=8, pad=2.0, fontsize=8):
+    """Annotate `rows` (list of (x, y, text)) avoiding every marker in `xy_all`
+    (list of (x, y) data coords) and every label already placed. Call after the
+    axes scale and limits are final, so the display transform is stable."""
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    trans, inv = ax.transData, ax.transData.inverted()
+
+    def text_size(s):
+        t = ax.text(0, 0, s, fontsize=fontsize)
+        bb = t.get_window_extent(renderer=renderer)
+        t.remove()
+        return bb.width, bb.height
+
+    marker_boxes = [
+        (mx - marker_r, my - marker_r, mx + marker_r, my + marker_r)
+        for mx, my in (trans.transform((x, y)) for x, y in xy_all)
+    ]
+    ab = ax.get_window_extent()
+    axes_box = (ab.x0, ab.y0, ab.x1, ab.y1)
+
+    placed_boxes: list = []
+    for x, y, text in sorted(rows, key=lambda r: r[1], reverse=True):
+        px, py = trans.transform((x, y))
+        w, h = text_size(text)
+        best = None
+        for lead in _LABEL_LEADS:
+            for di, (ux, uy, ha, va, relpos) in enumerate(_LABEL_DIRS):
+                ax_x, ax_y = px + ux * lead, py + uy * lead
+                box = _label_box(ax_x, ax_y, w, h, ha, va, pad)
+                score = 0
+                if not (box[0] >= axes_box[0] and box[1] >= axes_box[1]
+                        and box[2] <= axes_box[2] and box[3] <= axes_box[3]):
+                    score += 100  # outside the axes: strongly discouraged
+                score += sum(_boxes_overlap(box, m) for m in marker_boxes) * 10
+                score += sum(_boxes_overlap(box, b) for b in placed_boxes) * 10
+                cand = (score, lead, di, (ax_x, ax_y), ha, va, relpos, box)
+                if best is None or cand[:3] < best[:3]:
+                    best = cand
+            if best is not None and best[0] == 0:
+                break  # perfect spot found at this lead
+        _, _, _, (ax_x, ax_y), ha, va, relpos, box = best
+        placed_boxes.append(box)
+        lx, ly = inv.transform((ax_x, ax_y))
+        ax.annotate(text, xy=(x, y), xytext=(lx, ly), textcoords="data",
+                    annotation_clip=False, ha=ha, va=va, fontsize=fontsize,
+                    color="#0b0b0b",
+                    arrowprops={"arrowstyle": "-", "color": GRID_COLOR,
+                                "shrinkA": 2, "shrinkB": 1, "lw": 0.8,
+                                "relpos": relpos})
+
+
 def _save(fig, out_dir: Path, name: str, show: bool) -> None:
     fig.tight_layout()
     out_path = out_dir / f"{name}.png"
@@ -361,40 +452,117 @@ def plot_mrr(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -
 
 def plot_scatter(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -> None:
     """Required chart 2: Recall@K vs Precision@K, top-5 (by MRR) labeled.
-    With one gold chunk per question precision@k == recall@k / k, so points
-    fall on that line; drawn as a reference."""
+    With one gold chunk per question precision@k == recall@k / k, so every point
+    falls exactly on that line (drawn as a reference) -- the scatter is really
+    one-dimensional (recall), and configs at equal recall are fanned out along
+    the line so none hide behind another."""
     rc, pc = f"recall@{k}", f"precision@{k}"
-    d = _require(df, rc)
-    fig, ax = plt.subplots(figsize=(9, 7))
+    d = _require(df, rc).copy()
+    fig, ax = plt.subplots(figsize=(11, 7))
     ax.plot([0, 1], [0, 1 / k], color=GRID_COLOR, linestyle="--", linewidth=1, zorder=1)
-    ax.text(0.98, 1 / k, f"precision = recall/{k}\n(1 gold chunk cap)", ha="right", va="bottom", fontsize=8, color="#52514e")
+    ax.text(0.99, 1 / k, f"precision = recall/{k}\n(1 gold chunk cap)",
+            ha="right", va="bottom", fontsize=8, color="#52514e")
+
+    # spread configs with equal recall ALONG the cap line so all stay visible
+    d["_rx"], d["_py"] = d[rc], d[pc]
+    span = 0.05
+    for _, grp in d.groupby(rc):
+        idx = list(grp.index)
+        n = len(idx)
+        if n > 1:
+            for j, i in enumerate(idx):
+                off = -span / 2 + span * j / (n - 1)
+                d.at[i, "_rx"] = d.at[i, rc] + off
+                d.at[i, "_py"] = (d.at[i, rc] + off) / k
     for method in METHOD_COLORS:
         sub = d[d["method"] == method]
         if sub.empty:
             continue
-        ax.scatter(sub[rc], sub[pc], s=70, color=METHOD_COLORS[method], edgecolors="white", linewidths=1.5, zorder=3)
-    # stagger label offsets left/right of the point: top experiments cluster
-    # tightly on the cap line, straight offsets to one side collide
-    offsets = [(12, 12), (-12, -22), (12, -40), (-12, 30), (12, 48)]
-    for (_, r), off in zip(d.nlargest(5, "mrr").iterrows(), offsets):
-        ax.annotate(
-            r["experiment"],
-            (r[rc], r[pc]),
-            xytext=off,
-            textcoords="offset points",
-            ha="left" if off[0] > 0 else "right",
-            fontsize=7.5,
-            color="#0b0b0b",
-            arrowprops={"arrowstyle": "-", "color": GRID_COLOR, "shrinkB": 3},
-        )
-    ax.set_xlim(0, 1.02)
+        ax.scatter(sub["_rx"], sub["_py"], s=70, color=METHOD_COLORS[method],
+                   edgecolors="white", linewidths=1.3, alpha=0.9, zorder=3)
+
+    ax.set_xlim(0, 1.03)
     ax.set_ylim(0, 1 / k * 1.15)
+    ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ymax = 1 / k * 1.15
+    xmax, dx, gap = 1.03, 0.02, 0.0085
+
+    # The better an experiment, the closer its recall is to 1.0 -- i.e. it sits
+    # on the far right -- so a right-side label usually runs off the chart. The
+    # labels therefore form a right-aligned column just LEFT of the cluster (into
+    # the empty region above the line); we fall back to a column on the RIGHT
+    # only if they don't fit left, and to the figure gutter only if neither side
+    # does. Widths are measured from the rendered text, not guessed.
+    top = d.nlargest(5, "mrr").sort_values("_py")
+    fig.canvas.draw()  # need a renderer to measure text
+    renderer = fig.canvas.get_renderer()
+    inv = ax.transData.inverted()
+
+    def data_width(s):
+        t = ax.text(0, 0, s, fontsize=8)
+        bb = t.get_window_extent(renderer=renderer)
+        t.remove()
+        (x0, _), (x1, _) = inv.transform([(bb.x0, bb.y0), (bb.x1, bb.y0)])
+        return x1 - x0
+
+    wmax = max(data_width(s) for s in top["experiment"])
+    pxs = list(top["_rx"])
+    if max(pxs) + dx + wmax <= xmax:            # fits on the right
+        anchor_x, ha, relpos = max(pxs) + dx, "left", (0, 0.5)
+    elif min(pxs) - dx - wmax >= 0:             # otherwise prefer the left
+        anchor_x, ha, relpos = min(pxs) - dx, "right", (1, 0.5)
+    else:                                        # neither side fits -> gutter
+        anchor_x, ha, relpos = xmax + 0.03, "left", (0, 0.5)
+
+    # A label must never sit ON a data point. Points lie on the ascending line,
+    # so below a point is where the lower points live -- a label is only ever
+    # nudged UP. Working bottom-up, each takes the highest of (its own point's
+    # height, a gap above the label below it, a clearance above the tallest point
+    # under the column), so the upper labels rise to make room and no label lands
+    # below its own point.
+    clearance = 0.007
+    under = d[d["_rx"] <= anchor_x] if ha == "right" else d[d["_rx"] >= anchor_x]
+    lb = (under["_py"].max() + clearance) if not under.empty else 0.0
+    asc = top.sort_values("_py")
+    placed = []
+    for y in asc["_py"]:
+        y = max(y, lb)
+        placed.append(y)
+        lb = y + gap
+    if placed[-1] > ymax - 0.005:  # ran off the top -> slide the stack down
+        placed = [y - (placed[-1] - (ymax - 0.005)) for y in placed]
+
+    # Give every leader the SAME visual length: each label's vertical slot is
+    # fixed above, so we solve its horizontal offset from dx = sqrt(D^2 - dy^2),
+    # in display space (the axes aren't equal-aspect). D is sized from the
+    # largest vertical displacement plus a comfortable gap, so none is crammed.
+    trans = ax.transData
+    disp_pts = [trans.transform((r["_rx"], r["_py"])) for _, r in asc.iterrows()]
+    slot_dy = [trans.transform((0, s))[1] for s in placed]
+    max_dy = max(abs(sy - P[1]) for sy, P in zip(slot_dy, disp_pts))
+    lead = (120.0 ** 2 + max_dy ** 2) ** 0.5
+    sign = -1 if ha == "right" else 1  # labels sit left of the points (usually)
+    for (_, r), P, sy in zip(asc.iterrows(), disp_pts, slot_dy):
+        run = (lead ** 2 - (sy - P[1]) ** 2) ** 0.5
+        lx, ly = inv.transform((P[0] + sign * run, sy))
+        ax.annotate(r["experiment"], xy=(r["_rx"], r["_py"]), xytext=(lx, ly),
+                    textcoords="data", annotation_clip=False, ha=ha,
+                    va="center", fontsize=8, color="#0b0b0b",
+                    arrowprops={"arrowstyle": "-", "color": GRID_COLOR,
+                                "shrinkA": 2, "shrinkB": 0, "lw": 0.8,
+                                "relpos": relpos})
+
+    ax.text(1.0, 0.004, "configs at equal recall are spread along the line for visibility",
+            ha="right", va="bottom", fontsize=7, color="#8a8a8e", style="italic")
     ax.set_xlabel(f"Recall@{k}")
     ax.set_ylabel(f"Precision@{k}")
     ax.set_title(f"Recall@{k} vs Precision@{k} per Experiment\n(top 5 by MRR labeled)", fontsize=13)
     ax.grid(color=GRID_COLOR, linewidth=0.7)
     ax.set_axisbelow(True)
-    _method_legend(ax, [m for m in METHOD_COLORS if m in set(d["method"])])
+    handles = [Patch(color=METHOD_COLORS[m], label=_method_label(m))
+               for m in METHOD_COLORS if m in set(d["method"])]
+    ax.legend(handles=handles, title="Retrieval method", frameon=False,
+              fontsize=9, loc="upper left")
     _save(fig, out_dir, "recall_vs_precision_scatter", show)
 
 
@@ -601,19 +769,6 @@ def plot_time_quality(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
             continue
         ax.scatter(sub["ms"], sub["mrr"], s=70, color=METHOD_COLORS[method],
                    edgecolors="white", linewidths=1.5, zorder=3)
-    # selective labels: only the Pareto-optimal configurations, alternating sides
-    offsets = [(10, 8), (10, -14), (-10, 10), (10, 12), (-10, -18), (10, -8)]
-    for r, off in zip(frontier, offsets * (len(frontier) // len(offsets) + 1)):
-        ax.annotate(
-            r["experiment"],
-            (r["ms"], r["mrr"]),
-            xytext=off,
-            textcoords="offset points",
-            ha="left" if off[0] > 0 else "right",
-            fontsize=7.5,
-            color="#0b0b0b",
-            arrowprops={"arrowstyle": "-", "color": GRID_COLOR, "shrinkB": 3},
-        )
     ax.set_xscale("log")
     ax.set_ylim(0, 1.02)
     ax.set_xlabel("Avg retrieval time per query (ms, log scale)")
@@ -625,6 +780,14 @@ def plot_time_quality(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
     ax.grid(color=GRID_COLOR, linewidth=0.7)
     ax.set_axisbelow(True)
     _method_legend(ax, [m for m in METHOD_COLORS if m in set(d["method"])])
+    # label only the Pareto-optimal configs; this is a genuine 2-D cloud, so use
+    # the general local labeler (short leaders near each point, avoiding markers
+    # and other labels). Runs last, after the log scale/limits are final.
+    _label_points(
+        fig, ax,
+        [(r["ms"], r["mrr"], r["experiment"]) for r in frontier],
+        list(zip(d["ms"], d["mrr"])),
+    )
     _save(fig, out_dir, "time_vs_quality", show)
 
 
