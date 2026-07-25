@@ -254,6 +254,12 @@
   .qa-item { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px;
              margin-bottom: 10px; cursor: pointer; }
   .qa-item:hover { border-color: #0071e3; }
+  /* brief flash when a red (has-QA) chunk box is clicked and we scroll here */
+  .qa-item.qa-flash { animation: qaFlash 1.4s ease-out; }
+  @keyframes qaFlash {
+    0%, 20% { background: #fff3c4; border-color: #e3652b; }
+    100%    { background: #fff; border-color: #e0e0e0; }
+  }
   .qa-item-head { display: flex; justify-content: space-between; gap: 8px;
                   font-size: 13px; font-weight: 600; }
   .qa-item-head .qa-chunk { color: #e3652b; }
@@ -281,7 +287,7 @@
 
   /* Anchored popovers (eval full results, chunk preview): open next to the
      button that was clicked, like a context menu — no page dimming */
-  .popover { position: fixed; z-index: 100; background: #fff;
+  .popover { position: fixed; z-index: 300; background: #fff;
              border: 1px solid #ccc; border-radius: 10px; width: 380px;
              max-width: calc(100vw - 16px); max-height: 55vh;
              display: flex; flex-direction: column;
@@ -1110,8 +1116,23 @@ function makeChunkBox(idx, qaChunks, source) {  // caller appends the text conte
   box.onclick = () => {
     activeChunk = activeChunk === idx ? null : idx;
     renderChunkHighlights();
+    // a red (has-QA) chunk: reveal its pair in the QA pane and flash it
+    if (activeChunk === idx && qaChunks.has(idx)) flashQaItem(idx);
   };
   return box;
+}
+
+/* Scroll the QA pane to a chunk's QA item and briefly highlight it, so clicking
+   a red chunk box down in the text points you at its pair on the right. */
+function flashQaItem(idx) {
+  const item = document.querySelector(`#qa-pane .qa-item[data-chunk="${idx}"]`);
+  if (!item) return;
+  item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  item.classList.remove('qa-flash');
+  void item.offsetWidth;  // reflow so the animation restarts on a repeat click
+  item.classList.add('qa-flash');
+  item.addEventListener('animationend',
+    () => item.classList.remove('qa-flash'), { once: true });
 }
 
 function refreshGenButton() {
@@ -1300,6 +1321,7 @@ function buildQaPane() {
   head.textContent = 'QA pairs — ' + (qaData.qa_file
     ? humanStamp(`${qaData.chunk_run}/${qaData.qa_file.split('/').pop()}`)
     : `${qaData.chunk_run} (no QA pairs yet)`);
+  head.append(' ', makeInfoBtn('qa-pane', 'About the QA pairs panel'));
   pane.appendChild(head);
   // generate --add keeps the file sorted, but old files may predate that:
   // sort for display; itemIndex keeps each item's position in the file,
@@ -1309,6 +1331,7 @@ function buildQaPane() {
   for (const [item, itemIndex] of ordered) {
     const div = document.createElement('div');
     div.className = 'qa-item';
+    div.dataset.chunk = item.chunk_index;  // so a clicked chunk box can find it
     const pageLabel = item.start_page === item.end_page
       ? `Page ${item.start_page}` : `Pages ${item.start_page}–${item.end_page}`;
     const h = document.createElement('div');
@@ -1369,10 +1392,9 @@ function buildQaPane() {
       }
       div.appendChild(p);
     });
-    div.onclick = () => {
-      const row = $(`page-row-${item.start_page}`);
-      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+    // scroll to the chunk's own box (centered), not just its start page — the
+    // box can sit well into the page, or span pages, so the page top misaligns
+    div.onclick = () => scrollToChunk(item.chunk_index);
     pane.appendChild(div);
   }
 }
@@ -1973,6 +1995,28 @@ const INFO = {
          question reworded away from the chunk's wording, stressing semantic
          matching.</p>`,
   },
+  'qa-pane': {
+    title: 'QA pairs panel',
+    html: `
+      <p>The question/answer pairs generated from this document's chunks, grouped
+         by the <b>gold chunk</b> each pair was written from and labelled with its
+         page range. These are the questions retrieval is scored against — a pair
+         is a hit when its gold chunk is retrieved for its question.</p>
+      <h4>Jump to the gold chunk</h4>
+      <p>Click any QA pair to scroll the document to the gold chunk that pair came
+         from, so you can read the source text next to the question.</p>
+      <h4>Generating more pairs</h4>
+      <p><b>Generate QA Pairs for Selected</b> — tick the checkbox on one or more
+         chunk boxes (or badges) in the document, then click it to add direct,
+         inference, and paraphrased pairs for exactly those chunks to this file.</p>
+      <p><b>Generate QA Pairs…</b> (in the toolbar) opens a popup to draw a fresh
+         set: choose how many chunks to sample and which question types, useful
+         for bootstrapping a document that has none yet.</p>
+      <h4>Editing &amp; evals</h4>
+      <p><b>Delete QA Pair</b> removes one pair; <b>Delete Pairs</b> removes every
+         pair for a chunk. When an eval is selected above, each pair also shows
+         its retrieval <b>Rank</b> and a <b>View Full Results</b> button.</p>`,
+  },
   rerank: {
     title: 'Reranking',
     html: `
@@ -1989,6 +2033,23 @@ const INFO = {
          and again after, so one run reports both: reranked results appear as a
          separate <code>…_rerank</code> experiment/eval alongside its
          without-rerank twin. Retrieval and QA generation are not repeated.</p>`,
+  },
+  'rerank-select': {
+    title: 'Choosing what to rerank',
+    html: `
+      <p>Reranking is applied to a base (un-reranked) experiment's stored top-K,
+         so only base rows can be reranked — a row that already has a provider is
+         a rerank result. There are two ways to launch one:</p>
+      <h4>One at a time</h4>
+      <p>In a base row's <b>Rerank</b> column, open the <b>rerank…</b> dropdown and
+         pick a provider. That single experiment is reranked immediately. Providers
+         whose twin already exists are omitted from the dropdown.</p>
+      <h4>Several at once</h4>
+      <p>Tick the checkbox at the left of each base row you want, then choose a
+         provider in <b>Rerank selected rows with:</b> above the table and click
+         <b>Rerank</b>. Every ticked row is reranked in one batch.</p>
+      <p>Either way, each reranked row appears as a <code>…_rerank</code> twin
+         alongside its baseline, with a signed delta on its metric cells.</p>`,
   },
   topk: {
     title: 'Top-K',
@@ -2073,7 +2134,11 @@ const INFO = {
       <p>With the QA pane open, each retrieval chunk is outlined in All text.
          Chunks that don't map to a single run of characters — whole tables,
          images, or prose straddling a removed table — can't be boxed inline, so
-         they appear as <b>badges</b> at the top of the page instead.</p>`,
+         they appear as <b>badges</b> at the top of the page instead.</p>
+      <p><b style="color:#e3652b">Red-outlined</b> chunks have a QA pair — click
+         one to scroll the right-hand panel to its pair and flash it.
+         <b style="color:#34a853">Green-outlined</b> chunks have no QA pairs
+         associated with them yet.</p>`,
   },
   'chunk-badges': {
     title: 'Structural chunks',
@@ -2626,7 +2691,7 @@ function renderExperimentTable(container, experiments, opts) {
     // Highlight all: paint every base+rerank group its own color at once.
     const allBtn = document.createElement('button');
     allBtn.dataset.role = 'hl-all';
-    allBtn.textContent = 'Highlight all groups';
+    allBtn.textContent = 'Highlight rerank groups';
     allBtn.title = 'Give every base+rerank group its own color';
     allBtn.classList.toggle('active', pipeHighlightAll);
     allBtn.onclick = () => {
@@ -2848,7 +2913,8 @@ function renderExperimentTable(container, experiments, opts) {
     bulkBtn.textContent = 'Rerank';
     bulkBtn.disabled = !pipeSelectedEvals.size;
     bulkBtn.onclick = () => startRerank([...pipeSelectedEvals], bulkSel.value, opts.runIndex);
-    bulk.append(blabel, bulkSel, bulkBtn);
+    bulk.append(blabel, bulkSel, bulkBtn,
+                makeInfoBtn('rerank-select', 'How to select rows to rerank'));
     container.appendChild(bulk);
   }
 

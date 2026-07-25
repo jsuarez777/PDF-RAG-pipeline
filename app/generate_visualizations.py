@@ -163,6 +163,31 @@ def _pipeline_eval_files(arg: str) -> tuple[Path, list[Path]]:
     return dataset, eval_files
 
 
+def _eval_list_files(arg: str) -> tuple[Path, list[Path]]:
+    """Resolve --eval (a comma-separated list of eval_*.json paths) into
+    (dataset dir, eval files). Lets a caller chart an explicit set of evals
+    drawn from several runs — what the viewer's "graph selected" does — rather
+    than a whole evaluations/ dir (--data) or one pipeline run (--pipeline).
+    The dataset dir (evaluations/'s parent, used only for logging) must be
+    shared by every listed file."""
+    files, datasets = [], set()
+    for part in arg.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        p = Path(part) if Path(part).is_absolute() else PROJECT_ROOT / part
+        if not p.is_file():
+            sys.exit(f"Eval file not found: {part}")
+        files.append(p)
+        datasets.add(p.parent.parent)  # <dataset>/evaluations/<file>
+    if not files:
+        sys.exit("--eval listed no files")
+    if len(datasets) > 1:
+        sys.exit("--eval files must all come from the same dataset's evaluations/ dir")
+    log.info("Charting %d selected eval file(s)", len(files))
+    return datasets.pop(), files
+
+
 def _chunk_label(chunk_run: str) -> str:
     """'.../20260713_075540_chunk_fixed_size_256_50' -> 'fixed_size 256/50'."""
     name = Path(chunk_run).name
@@ -678,9 +703,25 @@ def main() -> None:
         "experiments instead of every eval in the dataset.",
     )
     parser.add_argument(
+        "--eval",
+        default=None,
+        metavar="FILES",
+        help="Comma-separated eval_*.json paths to chart, drawn from any runs "
+        "in one dataset's evaluations/ dir (instead of --data's whole dir or "
+        "--pipeline's single run).",
+    )
+    parser.add_argument(
         "--all-evals",
         action="store_true",
         help="Keep every eval file instead of only the latest per chunk config x index.",
+    )
+    parser.add_argument(
+        "--out-dir",
+        default=None,
+        metavar="DIR",
+        help="Write the PNGs straight into DIR (created if needed) instead of a "
+        "fresh visualizations/<ts>/ under the project root. Used by the viewer "
+        "to keep each user's charts inside their document dir.",
     )
     parser.add_argument("--no-show", action="store_true", help="Save PNGs without opening windows.")
     parser.add_argument(
@@ -693,7 +734,9 @@ def main() -> None:
     args = parser.parse_args()
 
     log_file = setup_logging("generate_visualizations")
-    if args.pipeline:
+    if args.eval:
+        dataset, eval_files = _eval_list_files(args.eval)
+    elif args.pipeline:
         dataset, eval_files = _pipeline_eval_files(args.pipeline)
     else:
         dataset = _pick_dataset(args.data)
@@ -714,7 +757,11 @@ def main() -> None:
                  f"with --ks including {args.k} to chart it)")
 
     renamed_from: Path | None = None
-    if args.checkpoint:
+    if args.out_dir:
+        out_dir = Path(args.out_dir) if Path(args.out_dir).is_absolute() \
+            else PROJECT_ROOT / args.out_dir
+        out_dir.mkdir(parents=True, exist_ok=True)
+    elif args.checkpoint:
         requested = PROJECT_ROOT / "visualizations" / args.checkpoint
         out_dir, renamed = _fresh_checkpoint_dir(requested)
         if renamed:
@@ -739,7 +786,8 @@ def main() -> None:
         _warn_checkpoint_renamed(renamed_from, out_dir)
 
     wanted = list(CHARTS) if "all" in args.chart else args.chart
-    show = not args.no_show and args.checkpoint is None  # checkpoints: save only
+    # checkpoints and an explicit --out-dir (the viewer's server context): save only
+    show = not args.no_show and args.checkpoint is None and args.out_dir is None
     failed: list[str] = []
     for name in wanted:
         try:
