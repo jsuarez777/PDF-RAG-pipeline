@@ -101,6 +101,57 @@
   .modal-eval-select span { font-weight: 600; }
   .modal-eval-select select { flex: 1; min-width: 0; font-size: 12px;
                               padding: 4px 6px; }
+  /* Metric-shaded eval picker: a custom dropdown (native <option> can't carry
+     the two metric swatches). Each item shows two small boxes before its text —
+     recall@K then MRR — tinted red <0.40, white 0.70–0.75, green >0.75, the same
+     white→red / white→green ramp the pipeline delta tints use. */
+  .eval-picker { position: relative; flex: 1; min-width: 0; }
+  .eval-picker-trigger { width: 100%; display: flex; align-items: center; gap: 8px;
+                         font-size: 12px; padding: 4px 8px;
+                         border: 1px solid #ccc; border-radius: 6px; background: #fff;
+                         cursor: pointer; text-align: left; }
+  .eval-picker-trigger .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .eval-picker-caret { flex: 0 0 auto; margin-left: auto; color: #6e6e73; }
+  .eval-swatches { flex: 0 0 auto; display: inline-flex; gap: 2px; vertical-align: middle; }
+  .eval-swatch { width: 11px; height: 11px; border-radius: 2px; flex: 0 0 auto;
+                 border: 1px solid rgba(0,0,0,.28); }
+  /* Value-bearing metric box (QA Pairs Eval picker): same colour ramp as
+     .eval-swatch but wide enough to print the Recall / MRR number inside. */
+  .eval-swatch-val { flex: 0 0 auto; display: inline-flex; align-items: center;
+                 justify-content: center; min-width: 30px; height: 15px; padding: 0 3px;
+                 border-radius: 3px; border: 1px solid rgba(0,0,0,.28);
+                 font-size: 10px; font-weight: 600; color: #1a1a1a;
+                 font-variant-numeric: tabular-nums; }
+  /* Fixed (not absolute) so the menu escapes the overflow-y:auto ancestors
+     (#qa-pane, #modal-body) and can grow past the trigger to show full lines;
+     placeEvalMenu() sets top/left/min-width on open and clamps to the viewport
+     so it never runs off-screen. */
+  .eval-picker-menu { position: fixed; z-index: 210;
+                      width: max-content; max-width: calc(100vw - 16px);
+                      max-height: 340px; overflow-y: auto; background: #fff;
+                      border: 1px solid #ccc; border-radius: 6px;
+                      box-shadow: 0 8px 32px rgba(0,0,0,.22); padding: 3px; }
+  .eval-picker-menu[hidden] { display: none; }
+  .eval-picker-cap { font-size: 11px; color: #6e6e73; padding: 3px 6px 5px; white-space: nowrap; }
+  .eval-picker-opt { display: flex; align-items: center; gap: 6px; font-size: 12px;
+                     padding: 4px 7px; border-radius: 4px; cursor: pointer;
+                     white-space: nowrap; overflow: hidden; border: 1px solid transparent; }
+  .eval-picker-opt .lbl { overflow: hidden; text-overflow: ellipsis; }
+  .eval-picker-opt:hover { border-color: #0071e3; }
+  .eval-picker-opt.sel { outline: 2px solid #0071e3; outline-offset: -2px; }
+  /* Legend under the Result picker: explains the two swatches + the score→colour
+     ramp (same white→red / white→green scale as metricBg / the pipeline deltas). */
+  .eval-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px;
+                 margin: -2px 0 12px; padding: 8px 10px; font-size: 11.5px;
+                 color: #444; background: #f5f5f7; border: 1px solid #e0e0e0;
+                 border-radius: 8px; }
+  .eval-legend .lg-item { display: inline-flex; align-items: center; gap: 6px; }
+  .eval-legend .lg-scale { display: inline-flex; align-items: center; gap: 6px; }
+  .eval-legend .lg-bar { width: 120px; height: 12px; border-radius: 3px;
+                 border: 1px solid rgba(0,0,0,.28);
+                 background: linear-gradient(to right, rgb(255,74,74) 0%,
+                   rgb(255,255,255) 50%, rgb(255,255,255) 58%, rgb(74,255,74) 100%); }
+  .eval-legend .lg-cap, .eval-legend .lg-note { font-size: 11px; color: #6e6e73; }
   /* Visualization gallery: chart-set selector row + responsive PNG grid */
   .viz-gallery { display: grid; gap: 14px; margin-top: 4px;
                  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
@@ -138,6 +189,19 @@
                      border-radius: 6px; padding: 6px 8px; }
   .viz-pick-scroll label { display: flex; align-items: center; gap: 6px;
                            padding: 2px 0; overflow-wrap: anywhere; }
+  /* Generate-visualizations facet filters: one row per type (chunking, retrieval,
+     …) of value checkboxes, with Show all / Clear all shortcuts. */
+  .viz-filters { border: 1px solid #e0e0e0; border-radius: 6px;
+                 padding: 6px 8px; margin-bottom: 10px; }
+  .viz-filter-head { display: flex; align-items: center; gap: 8px;
+                     font-weight: 600; margin-bottom: 6px; }
+  .viz-filter-btns { margin-left: auto; display: flex; gap: 6px; }
+  .viz-filter-btns button { font-size: 11px; padding: 2px 8px; }
+  .viz-filter-grp { display: flex; flex-wrap: wrap; align-items: baseline;
+                    gap: 3px 12px; padding: 2px 0; }
+  .viz-filter-lab { font-weight: 600; min-width: 82px; flex: 0 0 auto; }
+  .viz-filter-grp label { display: inline-flex; align-items: center; gap: 4px;
+                          white-space: nowrap; font-weight: normal; }
   /* Generate-visualizations dialog: resizeable, sized to its content by default
      (capped to the viewport) so option rows don't wrap; the list flexes to fill
      as the box is resized, scrolling both ways only when content overflows. */
@@ -265,6 +329,14 @@
   .chunk-box.active { border-color: #fff; background: #fff;
                       box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 2px 12px rgba(0,0,0,.28); }
   .chunk-box.active .chunk-box-label { color: #1d1d1f; }
+  /* brief flash when we scroll here from the QA pane or a popover chunk link;
+     started once the box is on screen (see flashChunkBox) so it isn't spent
+     during the smooth scroll toward it */
+  .chunk-box.chunk-flash { animation: chunkFlash 2.4s ease-out; }
+  @keyframes chunkFlash {
+    0%, 30% { background: #fff3c4; box-shadow: 0 0 0 4px rgba(227,101,43,.5); }
+    100%    { background: transparent; box-shadow: 0 0 0 4px rgba(227,101,43,0); }
+  }
   .chunk-box-head { display: flex; justify-content: space-between;
                     align-items: center; gap: 8px; }
   .chunk-box-label { display: block; font-size: 10px; font-weight: 700;
@@ -319,11 +391,15 @@
   .qa-a { color: #3a3a3c; margin-top: 2px; }
 
   /* Eval selector at the top of the QA pane + per-pair rank line */
-  #eval-bar { display: flex; align-items: center; gap: 8px; padding: 8px;
-              margin-bottom: 10px; background: #f5f5f7; border: 1px solid #e0e0e0;
-              border-radius: 8px; font-size: 12px; color: #6e6e73; }
+  #eval-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+              padding: 8px; margin-bottom: 10px; background: #f5f5f7;
+              border: 1px solid #e0e0e0; border-radius: 8px; font-size: 12px;
+              color: #6e6e73; }
   #eval-bar select { flex: 1; min-width: 0; font-size: 12px; padding: 4px 6px;
                      border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+  /* Chunk-sort selector sizes to its content instead of stretching like the
+     Chunking/Eval controls. */
+  #eval-bar .qa-sort { flex: 0 0 auto; }
   .qa-eval { display: flex; align-items: center; gap: 8px; margin-top: 4px;
              font-size: 11.5px; }
   .qa-eval .qa-rank { font-weight: 600; color: #0071e3; }
@@ -649,6 +725,7 @@ let generating = false;
 let evalList = [];       // eval files available for the loaded QA file
 let evalData = null;     // loaded eval file (questions + chunk_texts), or null
 let evalSelected = '';   // filename of the selected eval, '' = None
+let qaChunkOrder = 'chunk';  // QA-pane chunk list order: chunk | page | rank-{asc,desc}
 
 /* POST wrapper for long-running work: the server answers 202 {job: id} and
    this polls /api/jobs/<id> until the background worker finishes, then
@@ -995,7 +1072,7 @@ function selectPage(thumb, row) {
     .forEach(el => el.classList.remove('selected'));
   thumb.classList.add('selected');
   row.classList.add('selected');
-  row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  scrollTargetIntoView(row, 'start');
 }
 
 /* Chunk boxes: chunks were cut from the page texts joined with "\n" (see
@@ -1329,6 +1406,122 @@ function evalLookup(chunkIndex, pair) {
       || null;
 }
 
+/* A chunk's average gold rank across its retrieved QA pairs in the selected
+   eval (pairs whose gold chunk wasn't retrieved are skipped), or null when no
+   eval is loaded or none of its pairs were retrieved. Lower = better; used to
+   order the panel by retrieval quality across all of a chunk's questions rather
+   than by its single best-ranked one. */
+function qaChunkAvgRank(item) {
+  if (!evalData) return null;
+  let sum = 0, n = 0;
+  for (const pair of (item.qa_pairs || [])) {
+    const ev = evalLookup(item.chunk_index, pair);
+    if (ev && ev.gold_rank != null) { sum += ev.gold_rank; n++; }
+  }
+  return n ? sum / n : null;
+}
+
+/* Metric-shaded Eval selector for the QA pane. Native <option>s can't carry the
+   recall/MRR swatches, so this mirrors the modal's eval picker: a button + popup
+   menu where each eval is prefixed by two boxes (left = recall@maxK, right = MRR,
+   tinted by metricBg), plus a plain "None" entry. Picking one calls selectEval. */
+/* Position a (fixed) eval-picker menu under its trigger, then nudge it so the
+   whole menu stays on-screen: shift left if it would overflow the right edge,
+   flip above the trigger if it would overflow the bottom. min-width keeps it at
+   least as wide as the trigger, while width:max-content lets it grow to fit the
+   longest item so every line reads in full. */
+function placeEvalMenu(trigger, menu) {
+  const margin = 8;
+  const r = trigger.getBoundingClientRect();
+  menu.style.minWidth = r.width + 'px';
+  // Menu is already visible (hidden=false) so offsetWidth/Height are real.
+  const mw = menu.offsetWidth, mh = menu.offsetHeight;
+  let left = r.left;
+  if (left + mw > window.innerWidth - margin)
+    left = Math.max(margin, window.innerWidth - margin - mw);
+  let top = r.bottom + 3;
+  if (top + mh > window.innerHeight - margin && r.top - 3 - mh >= margin)
+    top = r.top - 3 - mh;  // not enough room below: open upward
+  menu.style.left = left + 'px';
+  menu.style.top = top + 'px';
+}
+
+function buildQaEvalPicker() {
+  const maxK = e => Math.max(...(((e.metadata && e.metadata.ks) || [10]).map(Number)));
+  const options = [{ value: '', text: 'None', recall: null, mrr: null }];
+  for (const e of evalList)
+    options.push({ value: e.file, text: evalLabel(e),
+                   recall: evalMetric(e, 'recall', maxK(e)), mrr: evalMetric(e, 'mrr', maxK(e)) });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'eval-picker';
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'eval-picker-trigger';
+  const lbl = document.createElement('span');
+  lbl.className = 'lbl';
+  const caret = document.createElement('span');
+  caret.className = 'eval-picker-caret';
+  caret.textContent = '▾';
+  trigger.append(lbl, caret);
+
+  const menu = document.createElement('div');
+  menu.className = 'eval-picker-menu';
+  menu.hidden = true;
+  if (evalList.length) {
+    const cap = document.createElement('div');
+    cap.className = 'eval-picker-cap';
+    cap.textContent = 'Swatches: left = Recall, right = MRR';
+    menu.appendChild(cap);
+  }
+
+  // 2 decimals, no leading zero (.85, not 0.85); 1.00 keeps its digit.
+  const fmtMetric = v => v == null ? '—' : v.toFixed(2).replace(/^0(?=\.)/, '');
+  const swatches = o => {  // two metric boxes printing Recall then MRR
+    const box = document.createElement('span');
+    box.className = 'eval-swatches';
+    for (const key of ['recall', 'mrr']) {
+      const sw = document.createElement('span');
+      sw.className = 'eval-swatch-val';
+      sw.style.background = metricBg(o[key]) || '#fff';
+      sw.textContent = fmtMetric(o[key]);
+      sw.title = key === 'recall' ? 'Recall' : 'MRR';
+      box.appendChild(sw);
+    }
+    return box;
+  };
+
+  const cur = options.find(o => o.value === evalSelected) || options[0];
+  lbl.textContent = cur.text;
+  if (cur.value) trigger.insertBefore(swatches(cur), lbl);
+
+  const close = () => { menu.hidden = true; document.removeEventListener('click', onDoc); };
+  const onDoc = ev => { if (!wrap.contains(ev.target)) close(); };
+  for (const o of options) {
+    const item = document.createElement('div');
+    item.className = 'eval-picker-opt' + (o.value === evalSelected ? ' sel' : '');
+    const txt = document.createElement('span');
+    txt.className = 'lbl';
+    txt.textContent = o.text;
+    if (o.value) item.append(swatches(o), txt);
+    else item.appendChild(txt);
+    item.onclick = () => { close(); selectEval(o.value); };
+    menu.appendChild(item);
+  }
+
+  trigger.onclick = ev => {
+    ev.stopPropagation();
+    if (menu.hidden) {
+      menu.hidden = false;
+      placeEvalMenu(trigger, menu);
+      setTimeout(() => document.addEventListener('click', onDoc), 0);
+    } else close();
+  };
+  wrap.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(); });
+  wrap.append(trigger, menu);
+  return wrap;
+}
+
 function buildQaPane() {
   const pane = $('qa-pane');
   pane.innerHTML = '';
@@ -1352,20 +1545,26 @@ function buildQaPane() {
   }
   const label = document.createElement('span');
   label.textContent = 'Eval:';
-  const sel = document.createElement('select');
-  const none = document.createElement('option');
-  none.value = '';
-  none.textContent = 'None';
-  sel.appendChild(none);
-  for (const e of evalList) {
-    const opt = document.createElement('option');
-    opt.value = e.file;
-    opt.textContent = evalLabel(e);
-    sel.appendChild(opt);
-  }
-  sel.value = evalSelected;
-  sel.onchange = () => selectEval(sel.value);
-  bar.append(label, sel);
+  // Metric-shaded picker (same two-swatch treatment as the View Evaluations
+  // popup) so each eval's recall/MRR reads at a glance here too.
+  bar.append(label, buildQaEvalPicker());
+
+  // Chunk sort: reorders the QA-pair chunks listed below only — it has no
+  // bearing on the Eval dropdown. Rank options key off the selected eval.
+  const slabel = document.createElement('span');
+  slabel.textContent = 'Sort:';
+  const ssel = document.createElement('select');
+  ssel.className = 'qa-sort';
+  ssel.title = 'Order the chunks listed in this panel';
+  for (const [v, t] of [
+    ['chunk', 'Chunk order'],
+    ['page', 'Page order'],
+    ['rank-asc', 'Rank: best → worst'],
+    ['rank-desc', 'Rank: worst → best'],
+  ]) ssel.appendChild(new Option(t, v));
+  ssel.value = qaChunkOrder;
+  ssel.onchange = () => { qaChunkOrder = ssel.value; buildQaPane(); };
+  bar.append(slabel, ssel, makeInfoBtn('qa-sort', 'How the sort orders work'));
   pane.appendChild(bar);
 
   const head = document.createElement('h2');
@@ -1376,9 +1575,17 @@ function buildQaPane() {
   pane.appendChild(head);
   // generate --add keeps the file sorted, but old files may predate that:
   // sort for display; itemIndex keeps each item's position in the file,
-  // which is what the delete endpoint addresses
-  const ordered = qaData.items.map((item, i) => [item, i])
-    .sort((a, b) => a[0].chunk_index - b[0].chunk_index);
+  // which is what the delete endpoint addresses. The Sort control picks the
+  // order: chunk index, page, or (with an eval selected) best retrieval rank.
+  const rankKey = item => qaChunkAvgRank(item) ?? Infinity;  // misses sort last
+  const byChunk = (a, b) => a[0].chunk_index - b[0].chunk_index;
+  const cmp = {
+    chunk: byChunk,
+    page: (a, b) => (a[0].start_page - b[0].start_page) || byChunk(a, b),
+    'rank-asc': (a, b) => (rankKey(a[0]) - rankKey(b[0])) || byChunk(a, b),
+    'rank-desc': (a, b) => (rankKey(b[0]) - rankKey(a[0])) || byChunk(a, b),
+  }[qaChunkOrder] || byChunk;
+  const ordered = qaData.items.map((item, i) => [item, i]).sort(cmp);
   for (const [item, itemIndex] of ordered) {
     const div = document.createElement('div');
     div.className = 'qa-item';
@@ -1558,12 +1765,72 @@ function showChunkPreview(idx, anchor) {
 
 function scrollToChunk(idx) {  // popovers stay open; the document scrolls behind them
   const box = document.querySelector(`.chunk-box[data-chunk="${idx}"]`);
-  if (box) return box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (box) { flashChunkBox(box); return scrollTargetIntoView(box, 'center'); }
   // no box rendered (e.g. page not extracted): fall back to the chunk's page
   const c = ((qaData && qaData.chunks) || []).find(c => c.chunk_index === idx)
     || (evalData && evalData.chunk_texts[idx]);
   const row = c && $(`page-row-${c.start_page}`);
-  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (row) scrollTargetIntoView(row, 'start');
+}
+
+/* Briefly highlight a chunk box we just scrolled to, so selecting its QA pair
+   (or a popover link) points you at the chunk in the text column. The flash is
+   held until the box is actually on screen — the smooth scroll (and lazy page
+   images re-anchoring it) can take a moment, and a flash fired now would be
+   spent before the box arrives. An IntersectionObserver starts it once the box
+   is mostly visible; a timeout is a safety net if it never crosses the threshold. */
+function flashChunkBox(box) {
+  const run = () => {
+    box.classList.remove('chunk-flash');
+    void box.offsetWidth;  // reflow so the animation restarts on a repeat call
+    box.classList.add('chunk-flash');
+    box.addEventListener('animationend',
+      () => box.classList.remove('chunk-flash'), { once: true });
+  };
+  let done = false;
+  const fire = () => { if (done) return; done = true; obs.disconnect();
+                       clearTimeout(timer); run(); };
+  const obs = new IntersectionObserver(entries => {
+    if (entries.some(e => e.isIntersecting && e.intersectionRatio >= 0.5)) fire();
+  }, { threshold: 0.5 });
+  obs.observe(box);
+  const timer = setTimeout(fire, 1200);  // fallback if it never reaches threshold
+}
+
+/* Scroll an element into view, waiting out the lazy page images ABOVE the
+   target. The preview's page images are loading="lazy" with no reserved height,
+   so an above-target image has ~0 height until it loads, then expands and pushes
+   the target down — leaving the first smooth scroll a page or two short (a second
+   click lands because those images are loaded by then). We force just the
+   above-target images to load now and re-anchor as each settles, so the scroll
+   locks onto the target on the first click. naturalWidth (0 until loaded) is used
+   instead of .complete, which is unreliable for deferred lazy images. */
+function scrollTargetIntoView(el, block) {
+  const scroll = () => el.scrollIntoView({ behavior: 'smooth', block });
+  scroll();
+  const pending = [...$('preview').querySelectorAll('img')].filter(i =>
+    (el.compareDocumentPosition(i) & Node.DOCUMENT_POSITION_PRECEDING) && !i.naturalWidth);
+  if (!pending.length) return;
+  for (const i of pending) i.loading = 'eager';  // kick deferred lazy loads now
+  let remaining = pending.length;
+  const onSettle = ev => {
+    const img = ev.currentTarget;
+    img.removeEventListener('load', onSettle);
+    img.removeEventListener('error', onSettle);
+    scroll();  // re-anchor after each above-target image expands
+    if (--remaining === 0) clearTimeout(timer);
+  };
+  for (const i of pending) {
+    i.addEventListener('load', onSettle);
+    i.addEventListener('error', onSettle);
+  }
+  // Safety net: drop listeners for any image that never settles.
+  const timer = setTimeout(() => {
+    for (const i of pending) {
+      i.removeEventListener('load', onSettle);
+      i.removeEventListener('error', onSettle);
+    }
+  }, 4000);
 }
 
 async function deleteQaPair(button, item, itemIndex, pair, pairIndex) {
@@ -2017,36 +2284,125 @@ function vizGenerateDialog(evals) {
   chartRow.append(clabel, csel);
   box.appendChild(chartRow);
 
-  // select-all header + per-experiment checkboxes (all ticked initially)
+  // Each experiment carries its parsed config so facet filters (chunking,
+  // retrieval, …) can narrow the list below to matching experiments.
+  const items = evals.map(e => ({ file: e.file, exp: evalToExperiment(e), desc: describe(e) }));
   const rows = [];
+  const facetVal = (exp, key) => {
+    const v = exp[key];
+    return v == null || v === '' ? '(none)' : String(v);
+  };
+
+  // select-all header + per-experiment checkboxes (all ticked initially).
+  // syncHead / the header act on the rows currently visible under the filters.
   const selAll = document.createElement('input');
   selAll.type = 'checkbox';
   selAll.checked = true;
   const headLabel = document.createElement('label');
   headLabel.className = 'viz-pick-head';
   const headText = document.createElement('span');
+  const visibleRows = () => rows.filter(r => rowVisible(r));
   const syncHead = () => {
-    const n = rows.filter(r => r.cb.checked).length;
-    selAll.checked = n === rows.length;
-    selAll.indeterminate = n > 0 && n < rows.length;
-    headText.textContent = `Experiments to include (${n}/${rows.length})`;
+    const vis = visibleRows();
+    const n = vis.filter(r => r.cb.checked).length;
+    selAll.checked = vis.length > 0 && n === vis.length;
+    selAll.indeterminate = n > 0 && n < vis.length;
+    headText.textContent = `Experiments to include (${n}/${vis.length})`;
     ok.disabled = !n;
   };
-  selAll.onchange = () => { for (const r of rows) r.cb.checked = selAll.checked; syncHead(); };
+  selAll.onchange = () => { for (const r of visibleRows()) r.cb.checked = selAll.checked; syncHead(); };
   headLabel.append(selAll, headText);
+
+  // Facet filters: one row per config type that actually varies across the
+  // experiments; ticking values narrows which experiments appear in the list.
+  const FACETS = [
+    ['chunk_type', 'Chunking'],
+    ['retrieval', 'Retrieval'],
+    ['embedding_model', 'Embedding'],
+    ['db', 'Index'],
+    ['tokenizer', 'Tokenizer'],
+    ['rerank', 'Rerank'],
+  ];
+  const facetBoxes = {};  // key -> [checkbox], each tagged with its value on _val
+  // A facet with no boxes ticked is inactive (doesn't constrain); otherwise the
+  // experiment's value for that facet must be among the ticked ones.
+  const rowVisible = r => FACETS.every(([key]) => {
+    const boxes = facetBoxes[key];
+    if (!boxes) return true;
+    const checked = boxes.filter(b => b.checked);
+    if (!checked.length) return true;
+    return checked.some(b => b._val === facetVal(r.exp, key));
+  });
+  const applyFilter = () => {
+    for (const r of rows) r.label.style.display = rowVisible(r) ? '' : 'none';
+    syncHead();
+  };
+  const allFilterBoxes = () => Object.values(facetBoxes).flat();
+  const setAllFilters = on => { for (const b of allFilterBoxes()) b.checked = on; applyFilter(); };
+
+  const filters = document.createElement('div');
+  filters.className = 'viz-filters';
+  const filterHead = document.createElement('div');
+  filterHead.className = 'viz-filter-head';
+  const filterTitle = document.createElement('span');
+  filterTitle.textContent = 'Filters';
+  const filterBtns = document.createElement('div');
+  filterBtns.className = 'viz-filter-btns';
+  const showAllBtn = document.createElement('button');
+  showAllBtn.type = 'button';
+  showAllBtn.textContent = 'Show all';
+  showAllBtn.onclick = () => setAllFilters(true);
+  const clearAllBtn = document.createElement('button');
+  clearAllBtn.type = 'button';
+  clearAllBtn.textContent = 'Clear all';
+  clearAllBtn.onclick = () => setAllFilters(false);
+  filterBtns.append(showAllBtn, clearAllBtn);
+  filterHead.append(filterTitle, filterBtns);
+  filters.appendChild(filterHead);
+
+  for (const [key, label] of FACETS) {
+    const vals = [];
+    for (const it of items) {
+      const v = facetVal(it.exp, key);
+      if (!vals.includes(v)) vals.push(v);
+    }
+    if (vals.length < 2) continue;  // nothing to filter on
+    const grp = document.createElement('div');
+    grp.className = 'viz-filter-grp';
+    const lab = document.createElement('span');
+    lab.className = 'viz-filter-lab';
+    lab.textContent = label + ':';
+    grp.appendChild(lab);
+    const boxes = [];
+    for (const v of vals) {
+      const l = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb._val = v;
+      cb.onchange = applyFilter;
+      l.append(cb, document.createTextNode(' ' + v));
+      grp.appendChild(l);
+      boxes.push(cb);
+    }
+    facetBoxes[key] = boxes;
+    filters.appendChild(grp);
+  }
+  if (Object.keys(facetBoxes).length) box.appendChild(filters);
+
   box.appendChild(headLabel);
 
   const list = document.createElement('div');
   list.className = 'viz-pick-scroll';
-  for (const e of evals) {
+  for (const it of items) {
     const label = document.createElement('label');
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.checked = true;
     cb.onchange = syncHead;
-    label.append(cb, document.createTextNode(' ' + describe(e)));
+    label.append(cb, document.createTextNode(' ' + it.desc));
     list.appendChild(label);
-    rows.push({ cb, file: e.file });
+    rows.push({ cb, file: it.file, exp: it.exp, label });
   }
   box.appendChild(list);
 
@@ -2059,7 +2415,7 @@ function vizGenerateDialog(evals) {
   ok.className = 'primary';
   ok.textContent = 'Generate';
   ok.onclick = () => {
-    const files = rows.filter(r => r.cb.checked).map(r => r.file);
+    const files = rows.filter(r => r.cb.checked && rowVisible(r)).map(r => r.file);
     if (!files.length) return;
     close();
     const body = { scope: 'eval', files };
@@ -2301,6 +2657,29 @@ const INFO = {
          pair for a chunk. When an eval is selected above, each pair also shows
          its retrieval <b>Rank</b> and a <b>View Full Results</b> button.</p>`,
   },
+  'qa-sort': {
+    title: 'Sorting the QA chunk list',
+    html: `
+      <p>Reorders only the chunks listed in this panel; it doesn't touch the
+         selected eval or the document view.</p>
+      <h4>Chunk order</h4>
+      <p>By ascending chunk index — the order the chunks appear in the document.</p>
+      <h4>Page order</h4>
+      <p>By the chunk's first page, then chunk index.</p>
+      <h4>Rank: best → worst / worst → best</h4>
+      <p>Available once an eval is selected above. Each chunk is keyed by its
+         <b>average gold rank</b> — the mean, across that chunk's QA pairs, of the
+         position its gold chunk reached for each question in the selected eval.
+         Lower is better: an average of 1 means the gold chunk was the top result
+         for every one of its questions, while a higher average means it landed
+         further down the list on average.</p>
+      <p>Averaging across all of a chunk's questions rewards consistent retrieval:
+         a chunk retrieved at rank 2 for both its questions (avg 2) sorts ahead of
+         one that hit rank 1 on one question but 8 on another (avg 4.5).</p>
+      <p>Pairs whose gold chunk was never retrieved are left out of the average. A
+         chunk with no retrieved pairs (or no eval data) has no rank and always
+         sorts to the bottom, whichever direction you pick.</p>`,
+  },
   rerank: {
     title: 'Reranking',
     html: `
@@ -2400,6 +2779,31 @@ const INFO = {
          index built from the same chunks the QA was generated from; untick it to
          pick specific indexes. <b>Force</b> lets you evaluate indexes built from
          a different chunk run (results may be meaningless).</p>`,
+  },
+  'eval-results': {
+    title: 'Reading these results',
+    html: `
+      <p>Every evaluation run for this document is available here, scored on the
+         same QA questions so their retrieval configs compare directly.</p>
+      <h4>Result picker</h4>
+      <p>Switches which run is shown. Each entry is prefixed by <b>two colour
+         boxes — left = Recall@K, right = MRR</b> — so you can spot the strong and
+         weak runs without opening them. A run that produced several evals also
+         offers an <b>All (N)</b> grouped view that stacks them together.</p>
+      <h4>Swatch colours</h4>
+      <p>The boxes (and the metric cells in the table) share one scale:
+         <b style="color:#c0392b">red</b> below ~70%,
+         <b>white</b> around 70–75%, <b style="color:#1e8e3e">green</b> above 75%
+         — the deeper the tint, the further from that neutral band.</p>
+      <h4>metrics @ K</h4>
+      <p>When a run reports several cutoffs, this selector fixes which Recall@K the
+         swatches and table columns use.</p>
+      <h4>Results table</h4>
+      <p>One row per shown experiment: its chunking / index / retrieval config on
+         the left, then Recall / MRR / NDCG / MAP and average query time. Click a
+         column header to sort; reranked experiments show a signed <b>delta</b>
+         against their without-rerank twin. A per-question-type breakdown
+         (direct / inference / paraphrased) sits below each eval.</p>`,
   },
   'page-layout': {
     title: 'How this page is shown',
@@ -2824,6 +3228,26 @@ function fmtRunDate(iso) {
       hour: 'numeric', minute: '2-digit' });
 }
 
+/* Hybrid evals fuse bm25 with one vector store, but the raw config only says
+   'hybrid' — the backend lives in a filename (vector_db / experiment_id /
+   eval_file). Given any such string, label it "hybrid (bm25+chromadb|milvus)"
+   so chroma and milvus hybrids read distinctly in the DB and Retrieval columns
+   (and their facet filters). Shared by both experiment tables. */
+function hybridRetrievalLabel(src) {
+  const s = String(src || '').toLowerCase();
+  const backend = s.includes('chroma') ? 'chromadb'
+    : s.includes('milvus') ? 'milvus' : 'embedding';
+  return `hybrid (bm25+${backend})`;
+}
+
+/* Copy of a raw pipeline-run experiment with hybrid db/retrieval expanded to
+   the backend-specific label (leaves bm25/vector rows untouched). */
+function labelHybridExperiment(e) {
+  if (e.retrieval !== 'hybrid') return e;
+  const label = hybridRetrievalLabel(`${e.experiment_id || ''} ${e.eval_file || ''}`);
+  return { ...e, db: label, retrieval: label };
+}
+
 /* Short human description of one experiment's configuration */
 function expDesc(e) {
   const parts = [e.retrieval || '?'];
@@ -3023,8 +3447,7 @@ function renderExperimentTable(container, experiments, opts) {
     { key: 'embedding', label: 'Embedding', get: e => e.embedding_model },
     { key: 'db', label: 'DB', get: e => e.db === 'bm25' ? null : e.db },
     { key: 'tokenizer', label: 'BM25 Tokenizer', get: e => e.tokenizer },
-    { key: 'retrieval', label: 'Retrieval Type',
-      get: e => e.retrieval === 'hybrid' ? 'hybrid (bm25+embedding)' : e.retrieval },
+    { key: 'retrieval', label: 'Retrieval Type', get: e => e.retrieval },
     { key: 'alpha', label: 'α', get: e => e.alpha, num: true },
   ].filter(c => experiments.some(e => c.get(e) != null));
   // Rerank column: twin rows show their provider; base rows get a dropdown
@@ -3390,7 +3813,7 @@ function renderPipelineModal(runs, index, sort) {
   const ks = String(meta.ks || '10').split(',').map(s => parseInt(s, 10));
   const maxk = Math.max(...ks);
   const selK = ks.includes(pipelineK) ? pipelineK : maxk;
-  const experiments = [...(run.experiments || [])];
+  const experiments = (run.experiments || []).map(labelHybridExperiment);
 
   const info = document.createElement('div');
   info.className = 'eval-db-head';
@@ -3424,7 +3847,7 @@ function renderPipelineModal(runs, index, sort) {
   if (run.best_by_mrr) {
     const best = document.createElement('div');
     best.className = 'eval-db-head';
-    best.textContent = `Best by MRR: ${expDesc(run.best_by_mrr)} ` +
+    best.textContent = `Best by MRR: ${expDesc(labelHybridExperiment(run.best_by_mrr))} ` +
       `(MRR=${((run.best_by_mrr.metrics || {}).mrr || 0).toFixed(3)})`;
     body.appendChild(best);
   }
@@ -3473,13 +3896,17 @@ function evalToExperiment(e) {
   const m = e.metadata || {};
   const base = s => String(s || '').split('/').pop();
   const dt = m.db_type;
+  // db_type is just 'hybrid' for hybrid evals; the vector backend is only in
+  // the index filename. hybridRetrievalLabel expands it to a backend-specific
+  // label for the DB and Retrieval Type columns (and their facet filters).
+  const hybridLabel = dt === 'hybrid' ? hybridRetrievalLabel(m.vector_db) : null;
   return {
     chunk_type: humanizeChunkRun(base(m.chunk_run)),
     embedding_model: m.embedding_model || null,
-    db: dt === 'bm25' ? 'bm25' : (dt || base(m.db)),
+    db: dt === 'bm25' ? 'bm25' : dt === 'hybrid' ? hybridLabel : (dt || base(m.db)),
     tokenizer: m.tokenizer || null,
     alpha: m.alpha ?? null,
-    retrieval: dt === 'bm25' ? 'bm25' : dt === 'hybrid' ? 'hybrid' : 'embedding',
+    retrieval: dt === 'bm25' ? 'bm25' : dt === 'hybrid' ? hybridLabel : 'embedding',
     rerank: m.rerank || null,
     metrics: (e.aggregates || {}).overall || {},
     eval_file: e.file,
@@ -3488,6 +3915,35 @@ function evalToExperiment(e) {
 
 let modalEvals = [];  // eval entries ({file, metadata, aggregates}) in the dialog
 let evalK = null;      // K cutoff selected in the individual eval view
+// Result-picker order. The user-facing sort control was moved to the QA pane (it
+// now sorts chunks, not this list), so this stays 'newest'; buildEvalPicker still
+// honours the {mrr,recall}-{asc,desc} values should a sort return here.
+let evalListOrder = 'newest';
+
+/* Absolute metric → background color for the eval picker. Recall and MRR are
+   both higher-is-better, so: full red at ≤0.40, white across the 0.70–0.75
+   neutral band, full green at ≥1.00, lerping toward white in between. Uses the
+   same [255,74,74]/[74,255,74] endpoints as the pipeline delta tints. */
+function metricBg(v) {
+  if (v == null || isNaN(v)) return '';
+  if (v >= 0.70 && v <= 0.75) return 'rgb(255,255,255)';
+  let t, rgb;
+  if (v < 0.70) { t = Math.min(1, (0.70 - v) / (0.70 - 0.40)); rgb = [255, 74, 74]; }
+  else { t = Math.min(1, (v - 0.75) / (1.00 - 0.75)); rgb = [74, 255, 74]; }
+  const mix = c => Math.round(255 + t * (c - 255));  // lerp white → endpoint
+  return `rgb(${mix(rgb[0])},${mix(rgb[1])},${mix(rgb[2])})`;
+}
+
+/* An eval's recall@K (falling back to its largest available K) or MRR, read
+   from its overall aggregates; null when absent. */
+function evalMetric(e, key, selK) {
+  const o = (e.aggregates && e.aggregates.overall) || {};
+  if (key === 'mrr') return o.mrr ?? null;
+  if (o[`recall@${selK}`] != null) return o[`recall@${selK}`];
+  const ks = ((e.metadata && e.metadata.ks) || []).map(Number).sort((a, b) => b - a);
+  for (const k of ks) if (o[`recall@${k}`] != null) return o[`recall@${k}`];
+  return null;
+}
 
 /* Fetch every eval for the current document and open the results dialog,
    focused on defaultFile's run if given (else the newest). A dropdown at the
@@ -3537,6 +3993,137 @@ function evalStamp(e) {
     || (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
 }
 
+/* Custom result dropdown for the eval modal. Native <option>s can't render the
+   split recall|MRR shading, so this is a button + popup menu: each item's left
+   half is tinted by recall@selK, its right half by MRR (see metricBg), and the
+   list is ordered per evalListOrder. currentValue is the eval file or
+   "group:<ts>" now shown; picking one re-opens the modal on it. */
+function buildEvalPicker(currentValue, selK, groups) {
+  const fileStamp = e => (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
+  const avg = xs => {
+    const v = xs.filter(x => x != null);
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
+  };
+  // One entry per individual eval, plus a grouped "All (N)" entry per multi-eval
+  // run (shaded by the group's average recall/MRR).
+  const options = [];
+  for (const [ts, evs] of groups) {
+    if (evs.length < 2) continue;  // a single-eval run's group would just dupe it
+    const stamp = fileStamp(evs[0]) || ts;
+    options.push({ stamp, sub: 0, value: 'group:' + ts,
+                   text: `${humanStamp(stamp)} · All (${evs.length})`,
+                   recall: avg(evs.map(e => evalMetric(e, 'recall', selK))),
+                   mrr: avg(evs.map(e => evalMetric(e, 'mrr', selK))) });
+  }
+  for (const e of modalEvals)
+    options.push({ stamp: fileStamp(e), sub: 1, value: e.file, text: evalLabel(e),
+                   recall: evalMetric(e, 'recall', selK), mrr: evalMetric(e, 'mrr', selK) });
+
+  if (evalListOrder === 'newest') {
+    // newest first; a grouped view sits just above its own evals
+    options.sort((a, b) => b.stamp.localeCompare(a.stamp) || a.sub - b.sub);
+  } else {
+    const [metric, dir] = evalListOrder.split('-');
+    const sign = dir === 'asc' ? 1 : -1;  // asc = worst→best (higher is better)
+    options.sort((a, b) => {
+      const av = a[metric], bv = b[metric];
+      if (av == null && bv == null) return b.stamp.localeCompare(a.stamp);
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return sign * (av - bv) || b.stamp.localeCompare(a.stamp);
+    });
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'eval-picker';
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'eval-picker-trigger';
+  const lbl = document.createElement('span');
+  lbl.className = 'lbl';
+  const caret = document.createElement('span');
+  caret.className = 'eval-picker-caret';
+  caret.textContent = '▾';
+  trigger.append(lbl, caret);
+
+  const menu = document.createElement('div');
+  menu.className = 'eval-picker-menu';
+  menu.hidden = true;
+  const cap = document.createElement('div');
+  cap.className = 'eval-picker-cap';
+  cap.textContent = `Swatches: left = Recall@${selK}, right = MRR`;
+  menu.appendChild(cap);
+
+  const pct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+  const num = v => v == null ? '—' : v.toFixed(3);
+  // Two metric boxes (recall@K, then MRR) shown before the text, like icons.
+  const swatches = o => {
+    const box = document.createElement('span');
+    box.className = 'eval-swatches';
+    for (const key of ['recall', 'mrr']) {
+      const sw = document.createElement('span');
+      sw.className = 'eval-swatch';
+      sw.style.background = metricBg(o[key]) || '#fff';
+      box.appendChild(sw);
+    }
+    return box;
+  };
+
+  const cur = options.find(o => o.value === currentValue);
+  lbl.textContent = cur ? cur.text : currentValue;
+  if (cur) trigger.insertBefore(swatches(cur), lbl);
+
+  const close = () => { menu.hidden = true; document.removeEventListener('click', onDoc); };
+  const onDoc = ev => { if (!wrap.contains(ev.target)) close(); };
+  const pick = v => {  // switching results starts fresh, not a re-render
+    close();
+    pipeHighlightGroup = null;
+    pipeHighlightAll = false;
+    pipeGroupRerank = false;
+    renderEvalModal(v);
+  };
+  for (const o of options) {
+    const item = document.createElement('div');
+    item.className = 'eval-picker-opt' + (o.value === currentValue ? ' sel' : '');
+    const txt = document.createElement('span');
+    txt.className = 'lbl';
+    txt.textContent = o.text;
+    item.append(swatches(o), txt);
+    item.title = `${o.text}\nRecall@${selK}: ${pct(o.recall)} · MRR: ${num(o.mrr)}`;
+    item.onclick = () => pick(o.value);
+    menu.appendChild(item);
+  }
+
+  trigger.onclick = ev => {
+    ev.stopPropagation();
+    if (menu.hidden) {
+      menu.hidden = false;
+      placeEvalMenu(trigger, menu);
+      setTimeout(() => document.addEventListener('click', onDoc), 0);
+    } else close();
+  };
+  wrap.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(); });
+  wrap.append(trigger, menu);
+  return wrap;
+}
+
+/* Legend for the Result picker: what its two swatches mean and how score maps
+   to colour (the same white→red / white→green ramp metricBg paints). */
+function buildEvalLegend(selK) {
+  const lg = document.createElement('div');
+  lg.className = 'eval-legend';
+  lg.innerHTML =
+    `<span class="lg-item"><span class="eval-swatches">`
+    + `<span class="eval-swatch"></span><span class="eval-swatch"></span></span>`
+    + `<span>Two boxes before each result — <b>left</b> = Recall@${selK}, `
+    + `<b>right</b> = MRR.</span></span>`
+    + `<span class="lg-item"><span>Colour = score:</span>`
+    + `<span class="lg-scale"><span class="lg-cap">poor</span>`
+    + `<span class="lg-bar"></span><span class="lg-cap">strong</span></span>`
+    + `<span class="lg-note">red &lt;70% · white 70–75% · green &gt;75%</span></span>`;
+  return lg;
+}
+
 /* Render one eval file (value = its filename) or a whole run's evals stacked
    together (value = "group:<timestamp>", reproducing the original popup).
    The shown evals render in the shared experiment table (config columns, MAP,
@@ -3552,53 +4139,29 @@ function renderEvalModal(value, sort) {
     (groups.get(ts) || groups.set(ts, []).get(ts)).push(e);
   }
 
+  const shown = value.startsWith('group:')
+    ? (groups.get(value.slice(6)) || [])
+    : modalEvals.filter(e => e.file === value);
+
+  // K selector (metrics/@K), from the shown evals' cutoffs; also fixes which
+  // recall@K the picker shades and sorts on.
+  const ks = ((shown[0] && shown[0].metadata.ks) || [10]).map(Number);
+  const maxk = Math.max(...ks);
+  const selK = ks.includes(evalK) ? evalK : maxk;
+
   const bar = document.createElement('div');
   bar.className = 'modal-eval-select';
   const label = document.createElement('span');
   label.textContent = 'Result:';
-  const sel = document.createElement('select');
-  // Compact YYYYMMDD_HHMMSS stamp (sorts chronologically); shared by an eval
-  // and its grouped view so both order together in the list.
-  const fileStamp = e => (e.file.match(/^eval_(\d{8}_\d{6})_/) || [])[1] || '';
-  const options = [];
-  for (const [ts, evs] of groups) {
-    if (evs.length < 2) continue;  // a single-eval run's group would just dupe it
-    const stamp = fileStamp(evs[0]) || ts;
-    options.push({ stamp, sub: 0, value: 'group:' + ts,
-                   text: `${humanStamp(stamp)} · All (${evs.length})` });
-  }
-  for (const e of modalEvals)
-    options.push({ stamp: fileStamp(e), sub: 1, value: e.file, text: evalLabel(e) });
-  // newest first; a grouped view sits just above its own evals
-  options.sort((a, b) => b.stamp.localeCompare(a.stamp) || a.sub - b.sub);
-  for (const o of options) {
-    const opt = document.createElement('option');
-    opt.value = o.value;
-    opt.textContent = o.text;
-    sel.appendChild(opt);
-  }
-  sel.value = value;
-  sel.onchange = () => {  // switching results starts fresh, not a re-render
-    pipeHighlightGroup = null;
-    pipeHighlightAll = false;
-    pipeGroupRerank = false;
-    renderEvalModal(sel.value);
-  };
-  bar.append(label, sel);
+  bar.append(label, buildEvalPicker(value, selK, groups),
+             makeInfoBtn('eval-results', 'About these results'));
 
-  const shown = value.startsWith('group:')
-    ? (groups.get(value.slice(6)) || [])
-    : modalEvals.filter(e => e.file === value);
   if (!shown.length) {
     body.appendChild(bar);
     body.append(document.createTextNode('Evaluation not found.'));
     return;
   }
 
-  // K selector (metrics/@K), from the shown evals' cutoffs.
-  const ks = (shown[0].metadata.ks || [10]).map(Number);
-  const maxk = Math.max(...ks);
-  const selK = ks.includes(evalK) ? evalK : maxk;
   if (ks.length > 1) {
     const klabel = document.createElement('span');
     klabel.textContent = ' · metrics @ K = ';
@@ -3609,6 +4172,7 @@ function renderEvalModal(value, sort) {
     bar.append(klabel, ksel);
   }
   body.appendChild(bar);
+  body.appendChild(buildEvalLegend(selK));
 
   // Shared ranked table across the shown evals (base-vs-rerank deltas fall out
   // of the config matching); reranking cannot be initiated from this view.
