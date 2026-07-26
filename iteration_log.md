@@ -133,6 +133,30 @@ Structured log of major experiments and pipeline changes, per the format in `scr
 - **Known imperfection**: spanning header cells occasionally split across columns (e.g. `'Size of e nterp' | 'rise'` on UK page 13) — cosmetic, since the data rows are clean.
 - **Next step**: Re-run plumber-struct chunking + a pipeline eval on the freshly extracted UK doc, now that its real tables are available as table chunks, and compare against the earlier fixed_size baseline.
 
+### Iteration 9: Cross-experiment results analysis, Cohere rerank fill-in, QA repair (KEEP)
+- **Date**: 2026-07-25
+- **Change**: Aggregated all ~440 eval artifacts across the 5 documents into one table
+  (`scratch/results_writeup/aggregate_evals.py`), wrote the conclusions doc (`RESULTS.md`) with 7
+  analysis charts (`visualizations/20260725_results_writeup/`). Filled the main data gap by
+  generating Cohere rerank twins (via `rerank_eval.py`, no retrieval re-run) for 18 selected base
+  evals of the `20260725_01` AI Agents grid — giving a paired none/local/cohere three-way on
+  bm25 + vector-3-small + hybrid-α0.3-3-large for all 6 chunk configs. Audited QA quality by
+  finding questions missed by *every* experiment: repaired 4 pairs in `20260725_01` (2 chunks
+  hand-rewritten after regeneration reproduced the same flaws) and deleted 5 index-page pairs in
+  `20260725_02`; superseded evals moved to `evaluations/superseded_qaedit_20260725/`, affected
+  configs re-evaluated and their rerank twins regenerated.
+- **Hypothesis**: Cohere rerank should beat the local cross-encoder and lift vector most; the
+  universal-miss questions are benchmark defects, not retrieval failures.
+- **Result**: Confirmed. Cohere > local on every matched pair (mean ΔMRR +0.19 vs +0.16 on vector,
+  +0.08 vs +0.03 on BM25); best overall config is now hybrid α=0.3 · 3-large · 512/50 + Cohere at
+  **MRR 0.958 / R@5 1.000**. Post-repair re-evals moved affected configs up modestly (e.g.
+  plumber-struct hybrid 0.775→0.816 on `_02`). Headline conclusions in `RESULTS.md`: document type
+  decides BM25-vs-embeddings; 512-char chunks optimal, 1024 always worst; plumber-struct wins on
+  table-heavy reports; bge-base-en-v1.5 (local) matches 3-small; α should lean toward the stronger
+  signal; reranking can hurt an already-strong ranking (housing 0.933→0.854).
+- **Decision**: Keep. `RESULTS.md` is the project's results deliverable.
+- **Next step**: Multi-chunk gold labels; filter index/TOC pages before QA sampling; per-corpus α.
+
 ### Iteration 8: Prompt v4 — stop rejecting mechanically truncated chunks (KEEP)
 - **Date**: 2026-07-18
 - **Component**: prompts (`prompts/generate_qa/v4/qa_system.prompt`, `qa_user.template`)
