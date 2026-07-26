@@ -529,6 +529,11 @@ def load_plumber_pages(ds):
         pages.append({
             "page": n,
             "text": data["text"],
+            # Raw (unfiltered) page text: prose char spans are reported in this
+            # coordinate system so they line up with the viewer, which renders
+            # full_text. Falls back to the filtered text if an older dataset
+            # predates the full_text field.
+            "full_text": data.get("full_text") or data["text"],
             "tables": data.get("tables") or [],
             "images": data.get("images") or [],
         })
@@ -590,10 +595,15 @@ def plumber_struct_chunks(pages, n_per_chunk):
     chunks = []
     total_chars = 0
 
-    # Build the document-level joined text once, in the same coordinate system
-    # as fixed_size/sentence chunks, so prose chunks can record document-level
-    # char offsets. bases[page] is where each page's text starts in full_text.
-    text_pairs = [(p["page"], p["text"]) for p in pages]
+    # Build the document-level joined text once from the RAW page text, the
+    # same coordinate system fixed_size/sentence chunks use (and the text the
+    # viewer renders), so prose chunks record document-level char offsets that
+    # line up on screen. bases[page] is where each page's text starts in
+    # full_text. (Using the table-filtered 'text' here instead would shift every
+    # prose span left by the removed table chars, closing boxes before the
+    # sentence ends.)
+    raw_text = {p["page"]: p.get("full_text") or p["text"] for p in pages}
+    text_pairs = [(p["page"], raw_text[p["page"]]) for p in pages]
     full_text, page_at = build_full_text(text_pairs)
     bases, _pos = {}, 0
     for _i, (_n, _txt) in enumerate(text_pairs):
@@ -620,16 +630,16 @@ def plumber_struct_chunks(pages, n_per_chunk):
         if prose:
             groups, _ = sentence_chunks([(p["page"], prose)], n_per_chunk, 0, min_tokens=floor)
             # Locate each prose chunk's exact extracted text within this page's
-            # slice of full_text (a running cursor keeps repeated sentences from
+            # RAW full_text (a running cursor keeps repeated sentences from
             # matching the wrong copy). On a hit, record a document-level char
             # span; on a miss (the chunk straddled a removed-table gap so it is
-            # not a contiguous substring) leave the span unset. Searching the
-            # extracted substring — not a pysbd re-segmentation — avoids offset
-            # drift.
+            # not a contiguous substring of full_text) leave the span unset.
+            # Searching the extracted substring — not a pysbd re-segmentation —
+            # avoids offset drift.
             cursor = 0
             for g in groups:
                 extra = {"num_sentences": g.get("num_sentences")}
-                lo = p["text"].find(g["text"], cursor)
+                lo = raw_text[p["page"]].find(g["text"], cursor)
                 if lo != -1:
                     start = bases[p["page"]] + lo
                     end = start + len(g["text"])

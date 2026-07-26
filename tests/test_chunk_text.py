@@ -395,3 +395,31 @@ def test_plumber_struct_chunks_sources():
     (image_chunk,) = by_source["image"]
     assert "Im0" in image_chunk["text"] and "page_1_image_1.png" in image_chunk["text"]
     assert all(c["start_page"] == 1 for c in chunks)  # page 2 had no content
+
+
+def test_plumber_struct_prose_spans_index_into_full_text():
+    # A page whose raw full_text carries a table block ahead of the prose, so the
+    # table-filtered 'text' is shorter and starts further left. The prose chunk's
+    # char span must index into full_text (what the viewer renders), not the
+    # filtered text — otherwise the box closes before the sentence ends.
+    prose = "First prose line here. Second prose line follows."
+    table_block = "Row1 col1 | Row1 col2\n"
+    full_text = table_block + prose
+    pages = [{
+        "page": 1,
+        "text": prose,
+        "full_text": full_text,
+        "tables": [[["c1", "c2"], ["Row1 col1", "Row1 col2"]]],
+        "images": [],
+    }]
+    chunks, _ = chunk_text.plumber_struct_chunks(pages, n_per_chunk=5)
+    prose_chunks = [c for c in chunks if c["source"] == "text"]
+    assert prose_chunks
+    for c in prose_chunks:
+        assert c.get("start_char") is not None
+        # The recorded span must reproduce the chunk text out of full_text.
+        assert full_text[c["start_char"]:c["end_char"]] == c["text"]
+    # The prose starts after the table block, so its span is shifted right by
+    # exactly that many chars — proof the offsets are in full_text coordinates,
+    # not the shorter filtered text (where it would start at 0).
+    assert prose_chunks[0]["start_char"] == len(table_block)
