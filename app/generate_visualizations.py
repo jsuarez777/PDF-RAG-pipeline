@@ -88,6 +88,22 @@ INDEX_COLORS = {
     ("hybrid", "small"): C_VIOLET,
     ("hybrid", "large"): C_VIOLET_D,
 }
+# Any BM25 tokenizer beyond the two pinned above (e.g. porter) draws from this
+# warm ramp, one distinct shade each, so BM25 variants never share a color in a
+# per-index legend.
+BM25_EXTRA_SHADES = ["#d9822b", "#a86c00", "#f2c14e", "#7a5000"]
+
+
+def _bm25_color_map(models) -> dict[str, str]:
+    """Distinct color per BM25 tokenizer present: word/simple keep their
+    INDEX_COLORS pins, every other tokenizer takes the next free shade
+    (assigned in sorted order, so a given tokenizer is stable across runs)."""
+    pinned = {"word": C_YELLOW, "simple": C_YELLOW_D}
+    free = [c for c in BM25_EXTRA_SHADES if c not in pinned.values()]
+    out = {}
+    for tok in sorted(set(models)):
+        out[tok] = pinned.get(tok) or (free.pop(0) if free else C_YELLOW)
+    return out
 
 
 def _method_label(method: str) -> str:
@@ -314,6 +330,15 @@ def _method_legend(ax, methods: list[str]) -> None:
     ax.legend(handles=handles, title="Retrieval method", frameon=False, fontsize=9)
 
 
+def _doc_suptitle(fig, df: pd.DataFrame) -> None:
+    """Name the source document across the very top of every chart, bold and
+    above the chart's own title. tight_layout (called in _save) reserves the
+    space. df.attrs["document"] is set by main() from the dataset dir name."""
+    document = df.attrs.get("document")
+    if document:
+        fig.suptitle(document, fontsize=12, fontweight="bold", color="#0b0b0b")
+
+
 def _rel(p: Path) -> Path | str:
     """Project-relative path for logging, or the absolute path when it lies
     outside the repo (e.g. an --out-dir under /tmp)."""
@@ -414,8 +439,9 @@ def _label_points(fig, ax, rows, xy_all, marker_r=8, pad=2.0, fontsize=8):
                                 "relpos": relpos})
 
 
-def _save(fig, out_dir: Path, name: str, show: bool) -> None:
-    fig.tight_layout()
+def _save(fig, out_dir: Path, name: str, show: bool, tight: bool = True) -> None:
+    if tight:  # multi-panel charts set their own rect'd layout; don't clobber it
+        fig.tight_layout()
     out_path = out_dir / f"{name}.png"
     fig.savefig(out_path, dpi=150)
     log.info("  wrote %s", _rel(out_path))
@@ -443,6 +469,7 @@ def plot_mrr(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -
     ax.set_ylim(0, 1.0)
     ax.set_ylabel("MRR")
     ax.set_title("MRR by Experiment Configuration\n(chunk config x index, best first)", fontsize=13)
+    _doc_suptitle(fig, df)
     ax.set_xticks(range(len(d)))
     ax.set_xticklabels(d["experiment"], rotation=30, ha="right", fontsize=8)
     _style(ax)
@@ -557,6 +584,7 @@ def plot_scatter(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: in
     ax.set_xlabel(f"Recall@{k}")
     ax.set_ylabel(f"Precision@{k}")
     ax.set_title(f"Recall@{k} vs Precision@{k} per Experiment\n(top 5 by MRR labeled)", fontsize=13)
+    _doc_suptitle(fig, df)
     ax.grid(color=GRID_COLOR, linewidth=0.7)
     ax.set_axisbelow(True)
     handles = [Patch(color=METHOD_COLORS[m], label=_method_label(m))
@@ -590,6 +618,7 @@ def plot_heatmap(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: in
     label = _metric_label(metric, k)
     fig.colorbar(im, ax=ax, label=label, shrink=0.8)
     ax.set_title(f"{label} by Chunking Config and Index\n(embedding model / BM25 per column)", fontsize=12)
+    _doc_suptitle(fig, df)
     ax.set_xlabel("Index (vector DB · embedding model, or BM25)")
     ax.set_ylabel("Chunking config (method size/overlap)")
     _save(fig, out_dir, f"chunking_strategy_heatmap_{col.replace('@', '_at_')}", show)
@@ -602,12 +631,14 @@ def plot_retrieval(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: 
     chunks = sorted(d["chunk"].unique())
     present = sorted(d["index"].unique())
     width = 0.8 / len(present)
+    bm25_colors = _bm25_color_map(d.loc[d["method"] == "bm25", "model"])
     fig, ax = plt.subplots(figsize=(max(8, 2.2 * len(chunks) * len(present) * width + 4), 6))
     for j, idx in enumerate(present):
         sub = d[d["index"] == idx].set_index("chunk").reindex(chunks)
-        color = INDEX_COLORS.get(
-            (sub["method"].dropna().iloc[0], sub["model"].dropna().iloc[0]), C_YELLOW
-        )
+        method = sub["method"].dropna().iloc[0]
+        model = sub["model"].dropna().iloc[0]
+        color = (bm25_colors.get(model, C_YELLOW) if method == "bm25"
+                 else INDEX_COLORS.get((method, model), C_YELLOW))
         pos = [
             (i + (j - (len(present) - 1) / 2) * width, v)
             for i, v in enumerate(sub[col])
@@ -622,6 +653,7 @@ def plot_retrieval(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: 
     ax.set_xticks(range(len(chunks)))
     ax.set_xticklabels(chunks)
     ax.set_title(f"Retrieval Method Comparison: {label} per Chunking Config", fontsize=13)
+    _doc_suptitle(fig, df)
     _style(ax)
     ax.legend(title="Index", frameon=False, fontsize=9)
     _save(fig, out_dir, f"retrieval_method_comparison_{col.replace('@', '_at_')}", show)
@@ -650,6 +682,7 @@ def plot_correlation(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k
         f"IR Metric Correlation Across {len(df)} Experiments\n(MAP omitted: equals MRR with one gold chunk)",
         fontsize=12,
     )
+    _doc_suptitle(fig, df)
     _save(fig, out_dir, "metric_correlation_matrix", show)
 
 
@@ -700,9 +733,14 @@ def plot_recall_curve(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
         frameon=False,
         fontsize=9,
     )
-    fig.suptitle("Recall@K vs K per Index, by Chunking Config", fontsize=13)
-    fig.tight_layout(rect=(0, 0.09, 1, 1))
-    _save(fig, out_dir, "recall_at_k_curves", show)
+    # Multi-panel: document (bold) tops the figure, descriptive title just below.
+    # Own the layout (rect reserves the header + bottom legend) and tell _save not
+    # to re-run tight_layout over it.
+    _doc_suptitle(fig, df)
+    fig.text(0.5, 0.90, "Recall@K vs K per Index, by Chunking Config",
+             ha="center", fontsize=12)
+    fig.tight_layout(rect=(0, 0.09, 1, 0.93))
+    _save(fig, out_dir, "recall_at_k_curves", show, tight=False)
 
 
 def plot_qtype(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int) -> None:
@@ -734,6 +772,7 @@ def plot_qtype(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, k: int)
     ax.set_ylim(0, 1.0)
     ax.set_ylabel(label)
     ax.set_title(f"{label} by Question Type per Experiment\n(experiments ordered by overall MRR)", fontsize=13)
+    _doc_suptitle(fig, df)
     ax.set_xticks(range(len(data)))
     ax.set_xticklabels(data["experiment"], rotation=30, ha="right", fontsize=8)
     _style(ax)
@@ -777,6 +816,7 @@ def plot_time_quality(df: pd.DataFrame, out_dir: Path, show: bool, metric: str, 
         "Response Time vs Quality Trade-off\n(Pareto-optimal configurations labeled)",
         fontsize=13,
     )
+    _doc_suptitle(fig, df)
     ax.grid(color=GRID_COLOR, linewidth=0.7)
     ax.set_axisbelow(True)
     _method_legend(ax, [m for m in METHOD_COLORS if m in set(d["method"])])
@@ -917,6 +957,9 @@ def main() -> None:
         if not eval_files:
             sys.exit(f"No eval_*.json files under {dataset / 'evaluations'}")
     df = load_experiments(eval_files, args.all_evals)
+    # Title every chart with the source doc, matching the viewer header's
+    # "<run>/<document>" (e.g. 20260725_01/AI_Agents...).
+    df.attrs["document"] = f"{dataset.parent.name}/{dataset.name}"
 
     ks_avail = df.attrs["ks"]
     if args.k is None:
