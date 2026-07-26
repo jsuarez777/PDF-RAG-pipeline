@@ -1,6 +1,17 @@
 # Iteration Log
 
-Structured log of major experiments and pipeline changes, per the format in `scratch/project_goals` (Iteration Logs section).
+Structured log of major experiments and pipeline changes, per the format in `scratch/project_goals` (Iteration Logs section). Entries are in chronological order (by the date the work landed in git); numbered Iterations are experiments, "Tooling:" entries are supporting infrastructure.
+
+### Tooling: QA overlay, editing, and targeted generation in the PDF viewer
+- **Date**: 2026-07-12
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`), `app/generate_qa.py`
+- **Purpose**: Close the loop on QA quality review — previously fixing a bad question meant re-running the whole generator or hand-editing the QA JSON; the viewer now surfaces and fixes QA pairs in place.
+- **Change**:
+  - Viewer serves the newest `qa_*.json` across a document's chunk runs (`GET .../qa`) and overlays its questions plus chunk boxes on the page images.
+  - Select one or more chunk boxes to generate new QA pairs for just those chunks (`POST .../qa/generate`), which shells out to `generate_qa.py` and merges the result into the existing QA file, replacing any prior items for the same chunks.
+  - Delete a single QA pair or an entire item's pairs (`POST .../qa/delete-pair`); a stale-view guard (409) blocks deletes if the chunk/question-type at that index no longer matches what the client loaded.
+  - `generate_qa.py` gained `--chunks` (exact chunk indices, no resampling), `--types` (restrict to a subset of direct/inference/paraphrased), and `--add` (merge into an existing QA file instead of writing a new one) to support the targeted, from-the-viewer generation flow.
+- **Next step**: This is the editing counterpart to the eval overlay below — together they let a bad question be spotted (via eval miss or spot-check) and fixed without leaving the viewer.
 
 ### Iteration 1: Baseline retrieval evaluation on attitudes_to_housing (60 synthetic QA pairs)
 - **Date**: 2026-07-13
@@ -49,34 +60,6 @@ Structured log of major experiments and pipeline changes, per the format in `scr
 - **Decision**: Keep. Use `qa_20260713_130754` / the new prompt for future benchmarks; always pass `--seed` when sampling.
 - **Next step**: Retrieval quality itself is still far below targets (best R@5 0.667 vs target ≥ 0.90). Next levers: chunking strategy (table-aware chunking; many misses are near-identical survey-table chunks indistinguishable from question text alone), hybrid BM25+embedding retrieval, and/or reranking.
 
-### Iteration 4: Prompt v3 — metadata-free direct, anchored inference/paraphrased; controlled A/B (KEEP)
-- **Date**: 2026-07-15
-- **Change**: Copied `prompts/generate_qa/v2/` → `v3/` and split the anchoring rules by question type, driven by a failure analysis of all `eval_20260713*` misses (gold chunk not in top-5) on `attitudes_to_housing` and `uk_knowledge_and_innovation_analysis`:
-  - **direct**: must ask about substantive chunk content, never document metadata — chapter/section titles, table/figure numbers-as-labels, page numbers/headers, data source or survey provider (e.g. "Ipsos MORI"), base/sample sizes, reference-list entries, captions. No bare pointers ("the table/data/source").
-  - **inference / paraphrased**: must retain at least one distinctive anchor (named entity, specific figure, or the concrete subject) and never use vague anaphora ("this practice", "the survey"); prefer rejecting a chunk whose only fact is boilerplate that recurs elsewhere.
-  - Pipeline: added parallel API calls (`ThreadPoolExecutor`, `--parallel`, default 20, resampling preserved) mirroring miniproject2; added `--prompt-version` to pin a prompt for A/B; changed `DEFAULT_MODEL` to `gpt-4.1-mini`.
-- **Why the split**: direct misses were almost all metadata questions that recur across chunks. Inference/paraphrased misses were mostly **not** metadata (~25%); the dominant causes were (a) the two types stripping the chunk's distinctive wording by design, so retrieval loses its anchors — gold absent from top-**10** in 76% of inference / 92% of paraphrased misses; and (b) overlapping fixed-size chunks (256/50) duplicating the gold fact into a neighbor, so a ±2-index neighbor outranks gold in 18% of misses (a chunking artifact, not a question flaw).
-- **Hypothesis**: Anchoring questions to distinctive chunk content should raise retrievability, most for lexical (BM25) and weak-embedding retrievers that suffer when anchors are removed.
-- **Result** — controlled A/B holding chunking, model (`gpt-4.1-mini`), the 19 shared chunks, and the 5 indexes constant; only the prompt differs (v2 vs v3), 57 questions each, top-k=5 (`eval_20260715_222840` vs `eval_20260715_221153`). v3 wins or ties everywhere; nothing regresses:
-  - BM25/word: MRR 0.501→0.577 (+0.077), R@5 0.614→0.702 (+0.088), NDCG@5 +0.080 — the largest gain, confirming the anchor rule matters most for keyword search.
-  - 3-large (chromadb/milvus identical): MRR 0.738→0.777 (+0.038), R@5 0.877→0.895 (+0.018), NDCG@5 +0.032.
-  - 3-small: R@5 0.842→0.877 (+0.035), NDCG@5 +0.008, MRR flat (−0.001).
-  - Regenerating v3 over the earlier failed-question chunks rejected ~half of them as insufficient (TOC/fragment/duplicate chunks) — expected, since those failures are the chunking strategy under test, not prompt bugs.
-  - Note: an earlier uncontrolled comparison (20260715 vs 20260713 runs) showed similar gains but confounded prompt with the `gpt-5.4-mini`→`gpt-4.1-mini` model swap and even a spurious R@5 dip on 3-large; the controlled run removes that confound and the dip disappears.
-- **Decision**: Keep. Use v3 for future benchmarks.
-- **Next step**: Retrieval is still below targets and ~half of failures are structural. Move to **chunking strategy** — table/structure-aware chunking to stop emitting fragment/TOC chunks and to stop duplicating a fact across overlapping neighbors — and/or relabel the eval gold set to credit any chunk containing the fact. (`--prompt-version` now supports rerunning this A/B on any future prompt.)
-
-### Tooling: QA overlay, editing, and targeted generation in the PDF viewer
-- **Date**: 2026-07-12
-- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`), `app/generate_qa.py`
-- **Purpose**: Close the loop on QA quality review — previously fixing a bad question meant re-running the whole generator or hand-editing the QA JSON; the viewer now surfaces and fixes QA pairs in place.
-- **Change**:
-  - Viewer serves the newest `qa_*.json` across a document's chunk runs (`GET .../qa`) and overlays its questions plus chunk boxes on the page images.
-  - Select one or more chunk boxes to generate new QA pairs for just those chunks (`POST .../qa/generate`), which shells out to `generate_qa.py` and merges the result into the existing QA file, replacing any prior items for the same chunks.
-  - Delete a single QA pair or an entire item's pairs (`POST .../qa/delete-pair`); a stale-view guard (409) blocks deletes if the chunk/question-type at that index no longer matches what the client loaded.
-  - `generate_qa.py` gained `--chunks` (exact chunk indices, no resampling), `--types` (restrict to a subset of direct/inference/paraphrased), and `--add` (merge into an existing QA file instead of writing a new one) to support the targeted, from-the-viewer generation flow.
-- **Next step**: This is the editing counterpart to the later eval overlay below — together they let a bad question be spotted (via eval miss or spot-check) and fixed without leaving the viewer.
-
 ### Tooling: Retrieval eval overlay in the PDF viewer
 - **Date**: 2026-07-13
 - **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`)
@@ -100,6 +83,23 @@ Structured log of major experiments and pipeline changes, per the format in `scr
   - QA pane now opens automatically when a document with QA pairs is opened (and after generation) instead of waiting for a click.
   - All runs stream to the log pane and share one busy-lock so only one script runs at a time.
 - **Next step**: The viewer can now execute the Iteration 3 "next levers" (new chunking strategies, index variants, re-evals) without the CLI; candidates for later are exposing `--num-chunks`/`--seed`/question types on the generate button and a side-by-side eval comparison view.
+
+### Iteration 4: Prompt v3 — metadata-free direct, anchored inference/paraphrased; controlled A/B (KEEP)
+- **Date**: 2026-07-15
+- **Change**: Copied `prompts/generate_qa/v2/` → `v3/` and split the anchoring rules by question type, driven by a failure analysis of all `eval_20260713*` misses (gold chunk not in top-5) on `attitudes_to_housing` and `uk_knowledge_and_innovation_analysis`:
+  - **direct**: must ask about substantive chunk content, never document metadata — chapter/section titles, table/figure numbers-as-labels, page numbers/headers, data source or survey provider (e.g. "Ipsos MORI"), base/sample sizes, reference-list entries, captions. No bare pointers ("the table/data/source").
+  - **inference / paraphrased**: must retain at least one distinctive anchor (named entity, specific figure, or the concrete subject) and never use vague anaphora ("this practice", "the survey"); prefer rejecting a chunk whose only fact is boilerplate that recurs elsewhere.
+  - Pipeline: added parallel API calls (`ThreadPoolExecutor`, `--parallel`, default 20, resampling preserved) mirroring miniproject2; added `--prompt-version` to pin a prompt for A/B; changed `DEFAULT_MODEL` to `gpt-4.1-mini`.
+- **Why the split**: direct misses were almost all metadata questions that recur across chunks. Inference/paraphrased misses were mostly **not** metadata (~25%); the dominant causes were (a) the two types stripping the chunk's distinctive wording by design, so retrieval loses its anchors — gold absent from top-**10** in 76% of inference / 92% of paraphrased misses; and (b) overlapping fixed-size chunks (256/50) duplicating the gold fact into a neighbor, so a ±2-index neighbor outranks gold in 18% of misses (a chunking artifact, not a question flaw).
+- **Hypothesis**: Anchoring questions to distinctive chunk content should raise retrievability, most for lexical (BM25) and weak-embedding retrievers that suffer when anchors are removed.
+- **Result** — controlled A/B holding chunking, model (`gpt-4.1-mini`), the 19 shared chunks, and the 5 indexes constant; only the prompt differs (v2 vs v3), 57 questions each, top-k=5 (`eval_20260715_222840` vs `eval_20260715_221153`). v3 wins or ties everywhere; nothing regresses:
+  - BM25/word: MRR 0.501→0.577 (+0.077), R@5 0.614→0.702 (+0.088), NDCG@5 +0.080 — the largest gain, confirming the anchor rule matters most for keyword search.
+  - 3-large (chromadb/milvus identical): MRR 0.738→0.777 (+0.038), R@5 0.877→0.895 (+0.018), NDCG@5 +0.032.
+  - 3-small: R@5 0.842→0.877 (+0.035), NDCG@5 +0.008, MRR flat (−0.001).
+  - Regenerating v3 over the earlier failed-question chunks rejected ~half of them as insufficient (TOC/fragment/duplicate chunks) — expected, since those failures are the chunking strategy under test, not prompt bugs.
+  - Note: an earlier uncontrolled comparison (20260715 vs 20260713 runs) showed similar gains but confounded prompt with the `gpt-5.4-mini`→`gpt-4.1-mini` model swap and even a spurious R@5 dip on 3-large; the controlled run removes that confound and the dip disappears.
+- **Decision**: Keep. Use v3 for future benchmarks.
+- **Next step**: Retrieval is still below targets and ~half of failures are structural. Move to **chunking strategy** — table/structure-aware chunking to stop emitting fragment/TOC chunks and to stop duplicating a fact across overlapping neighbors — and/or relabel the eval gold set to credit any chunk containing the fact. (`--prompt-version` now supports rerunning this A/B on any future prompt.)
 
 ### Iteration 5: Hybrid retrieval (min-max normalized BM25 + vector fusion) (KEEP)
 - **Date**: 2026-07-16
@@ -133,7 +133,106 @@ Structured log of major experiments and pipeline changes, per the format in `scr
 - **Known imperfection**: spanning header cells occasionally split across columns (e.g. `'Size of e nterp' | 'rise'` on UK page 13) — cosmetic, since the data rows are clean.
 - **Next step**: Re-run plumber-struct chunking + a pipeline eval on the freshly extracted UK doc, now that its real tables are available as table chunks, and compare against the earlier fixed_size baseline.
 
-### Iteration 9: Cross-experiment results analysis, Cohere rerank fill-in, QA repair (KEEP)
+### Tooling: Multi-user web app conversion — signup auth + job queue (KEEP)
+- **Date**: 2026-07-18
+- **Component**: viewer (`app/auth.py`, `app/db.py`, `app/jobs.py`, `app/pdf_viewer.py`, `app/templates/login.html`, plus a `PDF_DATA_DIR` seam across every pipeline script)
+- **Purpose**: The viewer was single-user and ran pipeline scripts synchronously inside the request; to share it (and later deploy it) it needed authenticated per-user workspaces and long-running jobs that don't block the request.
+- **Change**:
+  - Session auth (`app/auth.py`): open signup, login/logout, werkzeug password hashing; login page and a header user chip / logout.
+  - SQLite users/jobs store (`app/db.py`) and a DB-backed background worker (`app/jobs.py`): long endpoints return `202` and the frontend polls via `jobFetch()`, with per-user SSE log routing.
+  - Per-user data isolation under `data/users/<id>` via a `PDF_DATA_DIR` env seam threaded through all pipeline scripts.
+  - Embedding batches parallelized (`ThreadPoolExecutor`, 8 workers); 50 MB upload limit and parameter caps.
+- **Next step**: Harden for a real deployment (reverse proxy + process manager, budget/ops guardrails) so the benchmark loop is usable by multiple people from a browser.
+
+### Iteration 8: Prompt v4 — stop rejecting mechanically truncated chunks (KEEP)
+- **Date**: 2026-07-18
+- **Component**: prompts (`prompts/generate_qa/v4/qa_system.prompt`, `qa_user.template`)
+- **Purpose**: In the 2026-07-18 runs, `generate_qa` rejections frequently cited "incomplete/fragmented sentences" — a criterion v3 never states. Sentence chunking (5/1) cuts most chunks mid-sentence by construction, so the model was rejecting chunks that do contain usable facts. Test case: UK doc `chunk_sentence_5_1` chunks 95/96 (page 11) — 96 states two complete facts (2013 survey wording fix; 1 Jan 2010–31 Dec 2012 reference period) yet was rejected in three separate runs.
+- **Change**: Copied `v3/` → `v4/` and added a headed system-prompt section ("TRUNCATED EDGES ARE NORMAL — never reject for them"): truncated edges are mechanical, "incomplete/fragmented/cut off" is not an acceptable rejection reason, discard the cut-off edge fragments and judge only the readable remainder, with a worked mid-sentence example. Also appended a one-line reminder to `qa_user.template`.
+- **Hypothesis**: v3's existing "a borderline chunk with one concrete fact still gets its three questions" rule is being overridden by the model's prior that truncated text = insufficient; naming the failure mode explicitly should flip chunks like 96 to accepted without reopening the door to genuinely empty fragments.
+- **Result** (gpt-4.1-mini, temp 0.7, `--chunks 95,96`):
+  - A first, weaker v4 — one appended sentence restating the rule — changed nothing: 8/8 rejections across 4 runs, still citing "incomplete sentences". The headed section + example + per-message template reminder was required.
+  - Final v4: chunk 96 accepted **3/3** with correct grounded questions (e.g. direct: "What period did the 2013 survey questions about businesses' innovation activities refer to?" → "1 January 2010 to 31 December 2012"). Chunk 95 accepted 1/3 — defensible either way: its only substantive complete fact is Figure 2 volatility, and on its one acceptance the model padded the other slots with forbidden unweighted-base (metadata) questions.
+- **Decision**: Keep. v4 is now the default (latest) version; pin `--prompt-version v3` to reproduce older runs.
+- **Known imperfection**: single-fact chunks can't honestly fill three question types without drifting into metadata questions (chunk 95). If such chunks matter, the fix is allowing fewer than three pairs, not further loosening rejection.
+- **Next step**: Re-run QA generation + eval on the sentence-chunk datasets with v4 and compare rejection rates (v3 saw 9/20 and 17/20 sampled-chunk rejections on the sentence runs) and downstream retrieval metrics; optionally a controlled v3-vs-v4 A/B via `--prompt-version` on the same sampled chunks.
+
+### Iteration 9: Local embedding models — minilm / bge via sentence-transformers (KEEP)
+- **Date**: 2026-07-19
+- **Change**: Added two no-API-cost local embedding backends, selectable everywhere the OpenAI `text-embedding-3` models are (embed_chunks, the retriever, run_pipeline sweeps, both viewer dialogs): `all-MiniLM-L6-v2` (`minilm`, 384-d) and `bge-base-en-v1.5` (`bge`, 768-d). New `app/embedding_backends.py` holds a model registry with per-model query/passage prefixes (bge needs a prefix on queries, not on chunks), process-cached model loading, and L2-normalization so the stores' existing inner-product metric still yields true cosine similarity. `embed_chunks.py` embeds local models in passage mode and only constructs the OpenAI client when an OpenAI model is chosen; `retriever_topk.embed_query` mirrors it in query mode (eval inherits this). Gotcha: faiss must be imported before torch in the local backend — milvus-lite pulls faiss in lazily when the client opens, and importing it after torch segfaults on macOS (duplicate OpenMP runtimes).
+- **Hypothesis**: A strong open embedding model can match OpenAI 3-small on these corpora at zero API cost, adding a free retrieval variant the earlier "next levers" repeatedly called for.
+- **Result**: Capability added with pipeline-grid coverage; no standalone A/B at commit time, so the head-to-head lives in the later cross-document grid. Measured in Iteration 15 / `RESULTS.md`: **`bge-base-en-v1.5` matches `text-embedding-3-small`** on retrieval quality, confirming the hypothesis.
+- **Decision**: Keep. Local models are first-class retrieval options alongside the OpenAI ones.
+- **Next step**: Fold local models into the full cross-document grid and compare cost/quality (done in Iteration 15).
+
+### Iteration 10: Token-based chunk sizing (cl100k_base) (KEEP)
+- **Date**: 2026-07-19
+- **Change**: `fixed_size` specs and the sentence-method cap/floor now count tiktoken `cl100k_base` tokens instead of characters, matching the embedding models' units. Token windows are mapped back to exact char offsets so the viewer's chunk boxes still draw correctly, and each chunk record gains `num_tokens`; viewer labels/validation now say "tokens".
+- **Hypothesis**: Sizing chunks in the tokenizer's own units (not characters) makes a "512" chunk mean the same amount of model-visible content across documents regardless of character density, so chunk-size comparisons are apples-to-apples.
+- **Result**: Infrastructure change — it shifts every chunk boundary, re-baselining all downstream metrics, so it is not a standalone A/B. All subsequent chunk runs are sized in tokens; the chunk-size comparison itself is reported in Iteration 15.
+- **Decision**: Keep. Token sizing is the standard for all later runs.
+- **Next step**: Use consistent token sizes across the cross-document grid (Iteration 15).
+
+### Iteration 11: Semantic chunking via embedding-distance breakpoints (KEEP)
+- **Date**: 2026-07-19
+- **Change**: New chunk method `semantic:<max>[:<percentile>]` in `app/chunk_text.py`: embeds each sentence (`text-embedding-3-small`) and closes a chunk where the cosine distance between consecutive sentences reaches the given percentile of all distances (default 90th), or before the next sentence would overflow `<max>` tokens. Chunks carry the same char offsets / token counts as the other methods; tests mock the embedding call.
+- **Hypothesis**: Splitting at semantic shifts rather than fixed boundaries should keep each chunk topically coherent and reduce the near-duplicate-neighbor problem that Iteration 4 traced to overlapping fixed-size chunks.
+- **Result**: Capability added with unit tests; no dedicated A/B at commit time. In the later cross-document grid (Iteration 15) the standout chunkers were fixed-size 512 and `plumber-struct` — semantic chunking did not lead on the tested corpora.
+- **Decision**: Keep as an available chunking method.
+- **Next step**: Compare semantic against fixed-size and plumber-struct in the full grid (Iteration 15).
+
+### Iteration 12: Cohere reranking as a second retrieval stage (KEEP)
+- **Date**: 2026-07-19
+- **Change**: New `app/rerank.py` wraps Cohere's rerank API (`rerank-v3.5`): retrieve top-k with bm25/vector/hybrid as before, then reorder those k chunks by cross-encoder relevance. `--rerank cohere` on `retriever_topk.py`, `eval_retrieval.py`, and `run_pipeline.py`; a single eval run captures metrics *before and after* reranking, so every experiment gains a `*_rerank` twin without repeating retrieval or QA. Viewer eval/pipeline dialogs get a rerank checkbox and label reranked evals. Needs `COHERE_API_KEY` (one rerank call per question).
+- **Hypothesis**: A cross-encoder reranking the retrieved top-k should lift ranking metrics (MRR especially) over first-stage retrieval — the reranking lever named as far back as Iteration 3.
+- **Result**: Capability added; the controlled comparison was run later. Measured in Iteration 15: Cohere rerank beats the local cross-encoder on every matched pair and produces the best overall config (hybrid α=0.3 · 3-large · 512/50 + Cohere → **MRR 0.958 / R@5 1.000**), though it can *hurt* an already-strong ranking (housing 0.933→0.854).
+- **Decision**: Keep. See Iteration 15 for the full rerank results.
+- **Next step**: Run the paired none/local/cohere comparison across the grid (done in Iteration 15).
+
+### Iteration 13: Local cross-encoder reranking + post-hoc rerank of stored evals (KEEP)
+- **Date**: 2026-07-19
+- **Change**: Extended `rerank.py` to a shared `rerank_results()` interface with two providers — `cohere` and `local` (sentence-transformers `CrossEncoder`) — each with a default model, plus Cohere 429 backoff; `--rerank`/`--rerank-model` thread the choice through eval / retriever / run_pipeline and experiment matching. Added `app/rerank_eval.py` and a `/rerank-evals` viewer endpoint + job that rerank an existing eval file's stored top-k *in place*, without rerunning retrieval or QA. Also hardened `pdfplumber_to_text` to skip embedded images that fail to rasterize (e.g. sub-pixel gradient tiles) instead of crashing the conversion job.
+- **Hypothesis**: A local cross-encoder gives a no-API-cost reranking path, and post-hoc reranking of stored top-k lets every past eval gain a rerank twin cheaply.
+- **Result**: Both paths work. The local-vs-Cohere comparison is in Iteration 15 (Cohere > local: mean ΔMRR +0.19 vs +0.16 on vector, +0.08 vs +0.03 on BM25), and the post-hoc `rerank_eval` path is exactly what Iteration 15 used to backfill the rerank grid without re-running retrieval.
+- **Decision**: Keep. Two reranking providers plus a cheap post-hoc path.
+- **Next step**: Use the post-hoc path to fill in rerank twins across existing evals (done in Iteration 15).
+
+### Iteration 14: pysbd offset-drift fix + single-crop captioned figures (KEEP)
+- **Date**: 2026-07-19
+- **Component**: chunking/extraction (`app/chunk_text.py`, `app/pdfplumber_to_text.py`)
+- **Change**:
+  - `chunk_text`: pysbd rewrites sentence text even with `clean=False`, so `find()`-based offset recovery drifted and mis-sliced chunks up to 29k tokens (which drew 400s from the embeddings API). Offsets now come from `char_span=True`, with rare overlaps clamped.
+  - `pdfplumber_to_text`: union caption-anchored figure bands (axes, labels, legend, fragmented image XObjects) into one crop per "Figure N.M", and cluster leftover adjacent slivers instead of writing broken 0-px images.
+  - Viewer: don't close popovers/menus when a drag starts inside and ends outside.
+- **Hypothesis**: Taking offsets from pysbd's own `char_span` (instead of re-finding rewritten text) eliminates the drift, and anchoring figure crops to captions yields one clean image per figure instead of shards.
+- **Result**: Fixed — chunk slicing is correct again (no more oversized chunks or embedding-API 400s), and captioned figures extract as single crops. An extraction/chunking-correctness fix in the spirit of Iteration 7.
+- **Decision**: Keep.
+- **Next step**: None specific; unblocks clean sentence-chunk and figure extraction for later runs.
+
+### Tooling: Viewer rerank grouping, rich eval view, and chunk-run switching (KEEP)
+- **Date**: 2026-07-19 – 2026-07-20
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`)
+- **Purpose**: Surface the new reranking and multi-chunk-run capabilities in the UI, so rerank twins and plumber-struct runs can be inspected and compared without dropping to the CLI.
+- **Change**:
+  - Charts can focus on a single pipeline run and adapt to whatever ks were evaluated (`23ebe75`).
+  - Rerank highlight groups and delta-to-baseline metric cells in the pipeline dialog (`cd077b3`).
+  - plumber-struct chunk highlighting, a rich per-question eval view, and switching between a document's chunk runs (`c19177b`).
+  - Eval views show the retrieval *config* rather than filenames, with deltas hung to the left of the metric values (`036b549`).
+- **Next step**: Viewer visualization work continues in the entry below, feeding the results writeup.
+
+### Tooling: Server-rendered eval graphs, visualization UX, and plumber prose reflow (KEEP)
+- **Date**: 2026-07-25
+- **Component**: viewer (`app/pdf_viewer.py`, `app/templates/pdf_viewer.html`), extraction/chunking (`app/pdfplumber_to_text.py`, `app/chunk_text.py`)
+- **Purpose**: Turn the viewer into the place where eval results are graphed and compared for the results writeup, and fix plumber-struct highlight alignment.
+- **Change**:
+  - Server-rendered evaluation graphs and row-select graphing in the viewer, plus a picker dialog, naming, and grid fixes (`cf4b2e8`, `7049209`).
+  - Rerank grouping / multi-highlight and a reworked plumber page layout; improved QA-chunk navigation and info panels (`ed1c5c1`, `c0b9f24`).
+  - Scatter/Pareto label placement reworked to avoid overlaps (`e5b8c40`).
+  - Plumber page text reflowed into paragraphs before chunking, with prose char spans indexed into `full_text` so highlights align (`d50fe3a`, `0224d4a`).
+  - Charts titled by document with BM25 variants colored and multi-panel layout fixed; eval pickers metric-shaded, with chunk sort and facet filters (`b274c5a`, `c858151`).
+- **Next step**: These graphs and the aligned highlights feed the cross-experiment analysis and `RESULTS.md` (Iteration 15).
+
+### Iteration 15: Cross-experiment results analysis, Cohere rerank fill-in, QA repair (KEEP)
 - **Date**: 2026-07-25
 - **Change**: Aggregated all ~440 eval artifacts across the 5 documents into one table
   (`scratch/results_writeup/aggregate_evals.py`), wrote the conclusions doc (`RESULTS.md`) with 7
@@ -156,16 +255,3 @@ Structured log of major experiments and pipeline changes, per the format in `scr
   signal; reranking can hurt an already-strong ranking (housing 0.933→0.854).
 - **Decision**: Keep. `RESULTS.md` is the project's results deliverable.
 - **Next step**: Multi-chunk gold labels; filter index/TOC pages before QA sampling; per-corpus α.
-
-### Iteration 8: Prompt v4 — stop rejecting mechanically truncated chunks (KEEP)
-- **Date**: 2026-07-18
-- **Component**: prompts (`prompts/generate_qa/v4/qa_system.prompt`, `qa_user.template`)
-- **Purpose**: In the 2026-07-18 runs, `generate_qa` rejections frequently cited "incomplete/fragmented sentences" — a criterion v3 never states. Sentence chunking (5/1) cuts most chunks mid-sentence by construction, so the model was rejecting chunks that do contain usable facts. Test case: UK doc `chunk_sentence_5_1` chunks 95/96 (page 11) — 96 states two complete facts (2013 survey wording fix; 1 Jan 2010–31 Dec 2012 reference period) yet was rejected in three separate runs.
-- **Change**: Copied `v3/` → `v4/` and added a headed system-prompt section ("TRUNCATED EDGES ARE NORMAL — never reject for them"): truncated edges are mechanical, "incomplete/fragmented/cut off" is not an acceptable rejection reason, discard the cut-off edge fragments and judge only the readable remainder, with a worked mid-sentence example. Also appended a one-line reminder to `qa_user.template`.
-- **Hypothesis**: v3's existing "a borderline chunk with one concrete fact still gets its three questions" rule is being overridden by the model's prior that truncated text = insufficient; naming the failure mode explicitly should flip chunks like 96 to accepted without reopening the door to genuinely empty fragments.
-- **Result** (gpt-4.1-mini, temp 0.7, `--chunks 95,96`):
-  - A first, weaker v4 — one appended sentence restating the rule — changed nothing: 8/8 rejections across 4 runs, still citing "incomplete sentences". The headed section + example + per-message template reminder was required.
-  - Final v4: chunk 96 accepted **3/3** with correct grounded questions (e.g. direct: "What period did the 2013 survey questions about businesses' innovation activities refer to?" → "1 January 2010 to 31 December 2012"). Chunk 95 accepted 1/3 — defensible either way: its only substantive complete fact is Figure 2 volatility, and on its one acceptance the model padded the other slots with forbidden unweighted-base (metadata) questions.
-- **Decision**: Keep. v4 is now the default (latest) version; pin `--prompt-version v3` to reproduce older runs.
-- **Known imperfection**: single-fact chunks can't honestly fill three question types without drifting into metadata questions (chunk 95). If such chunks matter, the fix is allowing fewer than three pairs, not further loosening rejection.
-- **Next step**: Re-run QA generation + eval on the sentence-chunk datasets with v4 and compare rejection rates (v3 saw 9/20 and 17/20 sampled-chunk rejections on the sentence runs) and downstream retrieval metrics; optionally a controlled v3-vs-v4 A/B via `--prompt-version` on the same sampled chunks.
