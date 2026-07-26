@@ -12,6 +12,11 @@ rows for each detected table), `full_text` (the unfiltered
 extraction, kept as a fallback since table detection is heuristic),
 and `images` (metadata for embedded images, each crop-rendered to
 page_<n>_image_<m>.png alongside the JSON).
+
+`text` and `full_text` are paragraph-reflowed (see reflow_text): margin
+line-wraps are joined into running paragraphs and de-hyphenated, and
+layout gaps become blank-line paragraph breaks, so a wrapped sentence
+reads as one sentence to the downstream segmenter instead of many.
 """
 
 import json
@@ -159,7 +164,7 @@ def extract_page(page) -> dict:
     the unfiltered extraction as a safety net, since table detection is
     heuristic.
     """
-    full_text = page.extract_text() or ""
+    full_text = reflow_text(page)
 
     found = [
         (t.bbox, rows)
@@ -189,7 +194,7 @@ def extract_page(page) -> dict:
         )
 
     return {
-        "text": page.filter(outside_tables).extract_text() or "",
+        "text": reflow_text(page.filter(outside_tables)),
         "tables": [rows for _, rows in found],
         "full_text": full_text,
     }
@@ -272,6 +277,47 @@ def page_text_lines(page, y_tol: float = 2, x_gap: float = 20) -> list[dict]:
         if seg:
             lines.append(seg)
     return sorted(lines, key=lambda l: l["top"])
+
+
+def reflow_text(page) -> str:
+    """Paragraph-aware prose text for a page (or filtered page).
+
+    Thin wrapper: extracts positioned, column-split lines and hands them to
+    reflow_lines, which does the actual paragraph reconstruction.
+    """
+    return reflow_lines(page_text_lines(page))
+
+
+def reflow_lines(lines: list[dict]) -> str:
+    """Join positioned text lines into paragraph-reflowed prose.
+
+    pdfplumber's extract_text() joins every visual line with a single '\\n',
+    so one sentence wrapped across N lines reads as N sentences to pysbd and
+    words broken at the margin keep their soft hyphen ('ques-\\ntions'). Given
+    lines (dicts with 'text'/'top'/'bottom', as page_text_lines returns), we
+    join consecutive lines into a running paragraph (de-hyphenating a word
+    split by a trailing '-'), and emit a vertical gap noticeably larger than
+    the page's line spacing as a blank-line paragraph break ('\\n\\n'), so
+    headings and paragraphs stay separated instead of collapsing into one
+    run-on line. Only a letter+'-' at a line end is treated as a soft hyphen,
+    so number ranges ('2010-\\n2012') and mid-line compounds are left intact.
+    """
+    if not lines:
+        return ""
+    gaps = [b["top"] - a["bottom"] for a, b in zip(lines, lines[1:])]
+    positive = sorted(g for g in gaps if g > 0)
+    base = positive[len(positive) // 2] if positive else 0.0  # median line gap
+    para_gap = base * 1.6 + 1.0
+    parts = [lines[0]["text"]]
+    for prev, ln in zip(lines, lines[1:]):
+        text = ln["text"]
+        if ln["top"] - prev["bottom"] > para_gap:
+            parts.append("\n\n" + text)
+        elif re.search(r"[A-Za-z]-$", parts[-1]):
+            parts[-1] = parts[-1][:-1] + text  # join a word split across lines
+        else:
+            parts.append(" " + text)
+    return "".join(parts)
 
 
 def find_captions(lines: list[dict], min_gap: float = 6) -> list[dict]:
