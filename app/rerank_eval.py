@@ -14,7 +14,9 @@ The twin is bit-for-bit equivalent to what a live --rerank run would produce
 (same inputs, same math). Any pipeline_runs/pipeline_*.json that references
 the base eval gains a matching twin experiment row (metrics, rerank provider,
 updated num_experiments and best_by_mrr) so the viewer's results table shows
-it. Twins that already exist are skipped, so re-running is harmless.
+it, and any eval_summary_*.json that lists the base eval gains a matching
+twin index row. Twins that already exist are skipped (but their summary and
+pipeline rows are still backfilled), so re-running is harmless.
 """
 
 import argparse
@@ -103,6 +105,41 @@ def rerank_eval_file(path, provider, model):
     return out_path
 
 
+def update_eval_summaries(base_path, twin_path, provider, model):
+    """Insert a twin index row after the base row in every eval_summary file
+    that references the base eval file."""
+    try:
+        twin = json.loads(twin_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return
+    aggregates = twin.get("aggregates", {})
+
+    for f in sorted(base_path.parent.glob("eval_summary_*.json")):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        rows = data.get("indexes", [])
+        base_idx = next((i for i, r in enumerate(rows)
+                         if r.get("eval_file") == base_path.name), None)
+        if base_idx is None:
+            continue
+        if any(r.get("eval_file") == twin_path.name for r in rows):
+            continue  # twin row already recorded
+        twin_row = {
+            **{k: v for k, v in rows[base_idx].items()
+               if k not in ("eval_file", "overall", "by_question_type")},
+            "rerank": provider,
+            "rerank_model": model,
+            "eval_file": twin_path.name,
+            "overall": aggregates.get("overall", {}),
+            "by_question_type": aggregates.get("by_question_type", {}),
+        }
+        rows.insert(base_idx + 1, twin_row)
+        f.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        log.info(f"    added {twin_path.name} to {f.name}")
+
+
 def update_pipeline_runs(base_path, twin_path, provider):
     """Insert a twin experiment row after the base row in every pipeline run
     results file that references the base eval file."""
@@ -179,6 +216,7 @@ def main():
             twin = rerank_eval_file(path, provider, model)
             if twin is not None:
                 update_pipeline_runs(path, twin, provider)
+                update_eval_summaries(path, twin, provider, model)
 
     log.info(f"\nDone: {len(paths)} eval file(s) x {len(providers)} provider(s)")
 

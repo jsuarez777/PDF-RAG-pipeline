@@ -14,9 +14,6 @@ Produce exactly three question/answer pairs of this type:
    for the general wording, but KEEP at least one distinctive anchor from the chunk (a named
    entity, a specific figure/percentage, or the actual subject) so retrieval can find it.
 
-Answers must be short, correct, and grounded in the chunk text and be substantive, not about
-page numbers or chapter numbers unless it is obviously a part of the index or table of
-contents only.
 
 DIRECT QUESTIONS - anchor to the chunk's own content, never to metadata:
 A direct question must ask about the SUBSTANTIVE information stated in this chunk - a concrete
