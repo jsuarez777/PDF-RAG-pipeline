@@ -95,3 +95,6 @@ data/
 # Run logs
 logs/
 scratch/
+
+# Copyrighted source PDFs — keep local, never commit
+pdfs/*.pdf
