@@ -7,17 +7,18 @@ quality** over real-world report PDFs. It extracts a PDF's text, tables, and
 images, splits the text into chunks with several competing strategies, uses an
 LLM to synthesize grounded QA pairs that serve as a retrieval benchmark, builds
 BM25 and vector indexes, and scores every configuration on standard IR metrics
-(Recall@K, Precision@K, MRR, MAP, NDCG@K). A grid runner sweeps whole
-experiment matrices in one command, and a multi-user Flask viewer drives the
-same pipeline from the browser with chunk-box, QA, and eval-miss overlays.
+(Recall@K, Precision@K, MRR, MAP, NDCG@K). A pipeline runner allows quick creation 
+of experiment permutations in one command and a Flask based viewer allows the user
+to pick and chose which chunking strategies, bm25 indexing type, embedding and vector DBs, 
+and retrievals strategies to use.
 
 **Key capabilities:**
 - **Extract** per-page text, tables, and embedded images from PDFs with
-  pdfplumber — including a fill guard that drops chart-frame false-positive
-  tables and a rule-rect detector that recovers open-style (horizontal-ruled)
-  tables. Alternate path: render pages to PNG (pdf2image) and OCR with EasyOCR.
-- **Chunk** with five strategies: `fixed_size` (token windows), `sentence`,
-  `sentence-dynamic-min` (floors short table fragments), `plumber-struct`
+  pdfplumber — including a fill guard that drops chart frame false-positive
+  tables and a rule-rect detector that recovers open-style (horizontal-ruled with no
+  lines) tables. Alternate path: render pages to PNG (pdf2image) and OCR with EasyOCR.
+- **Chunk** with five strategies: `fixed_size` (token windows with overlap), `sentence`,
+  `sentence-dynamic-min` (chunk to `n` sentences or more if a token min hasn't been met), `plumber-struct`
   (structure-aware: prose sentences + header-labeled table rows + image
   descriptors), and `semantic` (embedding-based topic-shift cuts).
 - **Generate** a grounded QA benchmark with the `instructor` library — three
@@ -26,19 +27,18 @@ same pipeline from the browser with chunk-box, QA, and eval-miss overlays.
 - **Index** chunks as BM25 pickles (simple / word / porter tokenizers) and as
   vector stores (OpenAI `text-embedding-3-small`/`-large`, or local
   `all-MiniLM-L6-v2` / `bge-base-en-v1.5`) in Milvus Lite or ChromaDB.
-- **Retrieve** with BM25, pure vector, or **hybrid** fusion (per-list min-max
-  normalized `alpha·vector + (1−alpha)·bm25`), optionally **reranked** by a
-  second-stage cross-encoder (Cohere rerank API or a local CrossEncoder).
+- **Retrieve** with BM25, pure vector, or **hybrid** fusion (`alpha·vector + (1−alpha)·bm25`), optionally **reranked** by a second-stage cross-encoder (Cohere rerank API or a local CrossEncoder).
 - **Evaluate** every index against the QA gold chunks, reporting metrics overall
-  and per question type, with per-question retrieval timing.
+  and per question type, and retrieval timing.
 - **Orchestrate** the whole grid (chunking × embeddings × retrieval) in one
   command and collect every experiment's metrics with the best config by MRR.
 - **Visualize** the grid with 8 chart types (MRR bars, recall/precision scatter,
   heatmaps, recall@K curves, metric correlation, per-question-type, and a
   time-vs-quality Pareto chart).
-- **Inspect** everything in a multi-user Flask viewer: run each stage from the
-  header, overlay chunk boxes and QA questions on page images, and trace why a
-  gold chunk missed the top-k.
+- **Orchestrate and View** everything in a multi-user Flask viewer: run each stage from the
+  header, overlay chunk boxes onto PDF images, quickly navigate QA questions on page images, 
+  regenerate QA pairs at your discretion, and trace why a gold chunk missed the top-k by viewing
+  which chunks were actually retrieved to compare to expected golden chunk.
 
 The pipeline is designed for iterative improvement: extract → chunk → generate
 QA → index → evaluate → visualize → refine chunking/prompts → repeat.
@@ -141,7 +141,7 @@ All stage scripts in this pipeline follow a consistent pattern:
 - **Automatic output management**: every run logs to `logs/` (timestamped) and
   writes artifacts into the dataset's own folder tree with timestamped names.
 
-Generated data (`data/`), run logs (`logs/`), `scratch/`, and rendered
+Generated data (`data/`), run logs (`logs/`), and rendered
 `visualizations/` are gitignored, but a reference dataset **is committed** — the
 `data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis` run with its
 QA files and `evaluations/` (including `eval_summary_*.json`) — so the headline
@@ -152,13 +152,24 @@ before/after numbers below can be inspected without regenerating anything.
 **Run the whole grid with one command** (extract → chunk → QA → index →
 evaluate), from an already-extracted dataset or straight from a PDF:
 ```bash
+# Starting from raw PDF
 python app/run_pipeline.py \
-  --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis \
+  --pdf <path to pdf doc> \
   --chunk-types "fixed_size:256:50,fixed_size:512:100,sentence:5:1" \
   --embeddings small,large --retrievals bm25,vector,hybrid --qa-num 20 --seed 7
-# -> <title>/pipeline_runs/pipeline_<ts>.json  (every experiment's metrics + best config by MRR)
+# -> data/pdfplumber/<date>/<normalized title>/pipeline_runs/pipeline_<ts>.json  (every experiment's metrics + best detected config by MRR)
 
-python app/run_pipeline.py --pdf docs/report.pdf --method pdfplumber --dry-run  # print the grid & count
+# Run pipeline on existing dataset (pdf already extracted, maybe you want a second run with different parameters)
+python app/run_pipeline.py \
+  --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis \
+  --chunk-types "fixed_size:1000:10%,fixed_size:700:20%,sentence:7:2" \
+  --embeddings small,large --retrievals bm25,vector,hybrid --qa-num 20 --seed 7
+# -> <dataset-dir>/pipeline_runs/pipeline_<ts>.json  (every experiment's metrics + best detected config by MRR)
+
+# Below uses defaults, equivalent to passing: --chunk-types fixed_size:256:50,fixed_size:512:100,sentence:5:1, --embeddings small,large, --vector-db milvus, --tokenizers word, --retrievals bm25,vector,hybrid, --alpha 0.7
+python app/run_pipeline.py --pdf docs/report.pdf --method pdfplumber --dry-run  # print the default experiment grid & count
+
+# Run below on existing dataset to rerank its results using cohere 
 python app/run_pipeline.py --dataset <dir> --rerank cohere --alpha 0.5,0.7,0.9  # add a rerank pass / alpha sweep
 ```
 The runner shells out to the stage scripts, snapshots each stage's new
@@ -166,6 +177,12 @@ artifacts, wires them into the next stage, prints a Rich summary table, and
 writes the full results file.
 
 Or run the stages individually:
+
+> [!NOTE]
+> Every flag below is optional — run a stage script with no arguments and it drops
+> into an interactive menu of the discovered PDFs / datasets / chunk runs / indexes
+> / QA files (`run_pipeline.py` is the exception: it requires `--pdf` or `--dataset`).
+
 
 1. **Configure the API key** (if not already done):
    ```bash
@@ -227,27 +244,30 @@ python -m pytest tests/test_chunk_text.py -v
 ```
 
 **Test coverage:**
-- **test_chunk_text.py** (36 tests): CLI boundary tests for `chunk_text.py` —
+- **[test_chunk_text.py](tests/test_chunk_text.py)** (63 tests): CLI boundary tests for `chunk_text.py` —
   type parsing (`fixed_size`/`sentence`/`sentence-dynamic-min`/`plumber-struct`/
   `semantic`), token-window↔char-offset mapping, overlap-as-percent, table/short-
   fragment handling, and file I/O against static fixture datasets copied to
   `tmp_path`.
-- **test_reflow_text.py** (8 tests): resilience of the pdfplumber paragraph
+- **[test_reflow_text.py](tests/test_reflow_text.py)** (8 tests): resilience of the pdfplumber paragraph
   reflow (joining margin-wrapped lines, de-hyphenation, layout-gap paragraph
   breaks) so a wrapped sentence reads as one sentence to the pysbd segmenter.
-- **test_metrics.py** (9 tests): the IR metrics in `eval_retrieval.py`
+- **[test_metrics.py](tests/test_metrics.py)** (9 tests): the IR metrics in `eval_retrieval.py`
   (`gold_rank`, and `aggregate` → Recall@K / Precision@K / MRR / MAP / NDCG@K)
   checked against hand-computed values.
-- **test_hybrid.py** (12 tests): the hybrid retrieval score fusion in
+- **[test_hybrid.py](tests/test_hybrid.py)** (12 tests): the hybrid retrieval score fusion in
   `retriever_topk.py` (`minmax_normalize`, `combine_hybrid`).
-- **test_run_pipeline.py** (14 tests): the grid-configuration logic in
+- **[test_run_pipeline.py](tests/test_run_pipeline.py)** (14 tests): the grid-configuration logic in
   `run_pipeline.py` (chunk/embedding/retrieval/alpha expansion, config parsing).
+- **[test_rerank_eval.py](tests/test_rerank_eval.py)** (3 tests): the summary/pipeline backfill logic in
+  `rerank_eval.py` (inserting a rerank twin row after its base row, idempotent
+  re-runs, leaving unrelated summaries untouched).
 
-All **79** tests pass with the current codebase. Tests use temporary directories
-and static fixtures under `tests/datasets/` so runs never pollute the repo.
+All **109** tests pass with the current codebase. Tests use temporary directories
+and static fixtures under [tests/datasets/](tests/datasets/) so runs never pollute the repo.
 
-There are also **live LLM tests** under `tests/` named `live_*.py` (e.g.
-`live_test_bad_chunks.py`) that make real API calls and cost money; they are
+There are also **live LLM tests** under [tests/](tests/) named `live_*.py` (e.g.
+[live_test_bad_chunks.py](tests/live_test_bad_chunks.py)) that make real API calls and cost money; they are
 deliberately named so pytest does **not** collect them — run them by hand. See
 [tests/README.md](tests/README.md).
 
@@ -261,7 +281,15 @@ ruff format .
 
 ### 1. Inputs — PDFs, prompts & the on-disk layout
 
-- **PDFs** live under `pdfs/`; extraction writes datasets under
+- **PDFs** can live anywhere — every stage script takes a path. `pdfs/` is an
+  optional starting point holding a few freely redistributable government
+  reports to try the pipeline on (`uk_knowledge_and_innovation_analysis.pdf` and
+  `attitudes_to_housing.pdf`, UK Crown copyright under the
+  [Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/);
+  `fy10syb.pdf`, a US DOJ EOIR statistical yearbook, US federal government work
+  in the public domain). Viewer uploads are staged under
+  `data/users/<id>/uploads/` and deleted once extraction finishes — the page
+  JSON/images are the kept artifact. Extraction writes datasets under
   `data/<extractor>/<YYYYMMDD_NN>/<title>/`, where `<extractor>` is `pdfplumber`
   (text + tables + images) or `pdf2image` (page PNGs, later OCR'd).
 - **QA-generation prompts** live under `prompts/generate_qa/v*/`
@@ -317,11 +345,45 @@ viewer can highlight it) and, for `plumber-struct`, a `source` kind
     shifts (cosine distance above `<percentile>`, default 90) or the token cap
     `<max>` is hit (needs an OpenAI key).
 
+  **When the `sentence-dynamic-min` floor helps:** pysbd counts a *line* of a
+  flattened table or chart as a "sentence", so plain `sentence:5` faithfully
+  emits five of them — and a chart's y-axis ticks are five sentences totalling
+  10 tokens. On the UK innovation doc (29 pages), `sentence:5` produces **219
+  chunks, 37 of them under 40 tokens**; the same page 14 figure comes out as:
+
+  ```text
+  sentence:5              -> [101]  10 tok, 5 "sentences"
+      "70%\n60%\n50%\n40%\n30%\n"
+  ```
+
+  Nothing in that chunk says what the percentages measure, so it can never be
+  retrieved — and it displaces a real chunk from the top-k when it happens to
+  match. The floor (`n × 15 words × 1.3` ≈ **97 tokens** for `n=5`) keeps
+  absorbing sentences past `n` until the chunk carries enough signal, which
+  reassembles the whole figure plus the prose that explains it:
+
+  ```text
+  sentence-dynamic-min:5  -> [54]  110 tok, 18 "sentences"
+      "80%\n2011 Survey 2013 Survey\n70%\n60%\n50%\n40%\n30%\n20%\n10%\n0%\n
+       UK regional UK national Other Europe All other countries\n
+       Unweighted base = 13,055\n4.2 Largest market in terms of turnover\n
+       A new question was added which asked businesses what their 'largest
+       market' was in terms of turnover. ..."
+  ```
+
+  Across the whole document that turns 219 chunks (median 56 tokens) into **117
+  chunks (median 101 tokens), with just 1 under 40 tokens**. The token *cap*
+  (`n × 35 × 1.3 × 1.2` ≈ 273 for `n=5`) still wins over the floor, so a genuine
+  table blob can't inflate a chunk without bound.
+
   **Parameters:** `--type <spec>`, `--dataset <path|list#>` (menu if omitted).
 
   **Example:**
   ```bash
   python app/chunk_text.py --type "fixed_size:256:50" \
+    --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
+
+  python app/chunk_text.py --type "sentence-dynamic-min:5" \
     --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
   ```
 
@@ -365,12 +427,57 @@ in metadata).
 Builds a self-contained BM25 pickle (holds the `BM25Okapi`, tokenizer name, and
 the chunks) from a chunk run.
 
+  **Tokenizers.** BM25 is purely lexical — it only ever matches tokens that come
+  out *identical* on both sides — so the tokenizer decides what counts as "the
+  same word". All three lowercase first; they differ in how aggressively they
+  normalize. On the sentence
+  `Innovation-active businesses' R&D spending rose 12%, with 13,055 firms surveyed.`:
+
+  - **`simple`** — `text.lower().split()`, whitespace only. Punctuation stays
+    glued to the token:
+    ```text
+    ['innovation-active', "businesses'", 'r&d', 'spending', 'rose', '12%,',
+     'with', '13,055', 'firms', 'surveyed.']
+    ```
+    Keeps `r&d` and `13,055` intact, so exact acronym/figure lookups work — but
+    a query for `surveyed` will *not* match `surveyed.`, which makes it brittle
+    on ordinary prose.
+  - **`word`** — `\w+` regex, so punctuation is dropped entirely (**the default**,
+    and what every committed eval uses):
+    ```text
+    ['innovation', 'active', 'businesses', 'r', 'd', 'spending', 'rose', '12',
+     'with', '13', '055', 'firms', 'surveyed']
+    ```
+    Robust to trailing punctuation and hyphenation, at the cost of shattering
+    `r&d` → `r`,`d` and `13,055` → `13`,`055`. Safe general default.
+  - **`porter`** — `word` plus NLTK Porter stemming, which strips morphological
+    endings:
+    ```text
+    ['innov', 'activ', 'busi', 'r', 'd', 'spend', 'rose', '12', 'with', '13',
+     '055', 'firm', 'survey']
+    ```
+    Stems are not real words — that's fine, since the query is stemmed the same
+    way. It buys recall on paraphrased questions (a query saying *"innovative
+    firms"* now matches a chunk saying *"innovation … firm"*, since both reduce
+    to `innov`/`firm`), at the cost of precision: `survey` and `surveyed` collapse
+    to one token, so on a document whose every page header reads "UK Innovation
+    Survey 2013" that term stops discriminating between chunks.
+
+  A rule of thumb: `word` for a general default, `porter` when questions
+  paraphrase rather than quote the source, `simple` only when exact codes,
+  acronyms or formatted numbers are the thing being looked up. The tokenizer name
+  is stored in the pickle, so retrieval always tokenizes queries the same way the
+  corpus was indexed.
+
   **Parameters:** `--tokenizer simple|word|porter` (comma-separated),
   `--dataset <chunk dir>`, `--all-options` (every tokenizer).
 
   **Example:**
   ```bash
   python app/index_bm25.py --tokenizer word --dataset <chunk dir>
+
+  # build all three and let eval_retrieval.py score them against each other
+  python app/index_bm25.py --all-options --dataset <chunk dir>
   ```
 
   **Output:** `<title>/bm25/bm25_<ts>_<tokenizer>.pkl` (+ `.json` metadata sidecar).
@@ -519,10 +626,11 @@ experiment — the change, hypothesis, before/after metrics, and keep/reject
 decision. The reference targets throughout are **MRR ≥ 0.85** and
 **Recall@5 ≥ 0.90**. The reference dataset committed to the repo
 (`data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis`) lets the
-key numbers below be re-inspected from the committed `evaluations/` files. (The
-rendered charts referenced below live under `visualizations/` and are gitignored
-local artifacts, not committed — regenerate them with
-`generate_visualizations.py`.)
+key numbers below be re-inspected from the committed `evaluations/` files.
+(`visualizations/` is gitignored, so the generated chart *sets* named below are
+local artifacts — regenerate them with `generate_visualizations.py`. The
+individual images embedded in this file and in [RESULTS.md](RESULTS.md) are the
+exception: they are committed deliberately so the writeups render.)
 
 ### The QA benchmark had to be fixed before the metrics meant anything
 
@@ -530,11 +638,33 @@ The very first full evaluation (Iteration 1, 60 QA pairs on `attitudes_to_housin
 came out terrible across the board — **Recall@5 ≤ 0.65 everywhere**, best-case
 `text-embedding-3-large` at MRR 0.43 / R@5 0.60, and BM25 collapsing to MRR 0.06
 / R@5 0.10 on paraphrased questions
-(`visualizations/first_run_terrible_results/`). The diagnosis was that the
-*benchmark itself* was broken: many generated questions asked about "the chunk"
-rather than naming a topic (*"What is the base sample size reported in the
-chunk?"*), and others were forced out of table-of-contents / page-number
-fragments with no answerable content (`visualizations/using_viewer_find_bad_questions/Example_bad_questions.png`).
+([full eval output](visualizations/first_run_terrible_results/attitudes_to_housing_chunked-256-50_qa-60-3.png)).
+
+The diagnosis was that the *benchmark itself* was broken. Reading the generated
+pairs in the viewer showed two failure modes. Many questions asked about "the
+chunk" or "the table" instead of naming a topic — nothing in them identifies
+*which* of 400+ chunks is meant, so no retriever could possibly find the right
+one:
+
+![Generated QA pairs asking "What is the base sample size reported in the chunk?"
+and "Which age group appears to have the largest count in the data shown?" — no
+topic named](visualizations/first_run_terrible_results/bad_question_2.png)
+
+Others were forced out of table-of-contents and heading fragments that contain no
+answerable content at all, producing questions about chapter titles and section
+numbers:
+
+![Generated QA pairs asking "What is the chapter title shown in the chunk?" and
+"What heading is given for people who live in public housing?"](visualizations/first_run_terrible_results/bad_question_1.png)
+
+The cost is visible when the same pairs are scored against an eval. Below,
+`Chunk_336`'s chunk-referencing questions rank **not in top 10**, while the
+well-anchored questions on `Chunk_318` — which name the North region and social
+housing — come back at rank 1 and 2 against the same index:
+
+![Viewer showing per-question gold-chunk ranks: chunk-referencing questions miss
+the top 10 while topic-anchored questions rank 1 and 2](visualizations/using_viewer_find_bad_questions/Example_bad_questions.png)
+
 Such questions can't be matched to a source chunk, so the scores measured prompt
 noise, not retrieval.
 
@@ -595,16 +725,36 @@ project targets. The grid that produced these comparisons is charted by
 UK doc pdfplumber's default `lines` strategy failed at both ends: it flagged
 chart axis-frames as huge near-empty "tables" and missed the real
 horizontal-ruled, whitespace-columned data tables — **10 detected tables, all
-chart false positives, 0 real tables**
-(`visualizations/Enhanced_nonbordered_table_detection_pdfplumber/Before_enhancements_table_not_detected.png`).
+chart false positives, 0 real tables**.
+
+**Before** — page 24 of the UK doc in the viewer. The page plainly contains
+Tables 7 and 8, but the extraction pane reports `TABLES (0) — (none)`: because
+neither table has vertical rules, the `lines` strategy sees no grid at all, and
+the numbers instead leak into the prose stream as flattened lines
+(`Graphic artists/ layout/ advertising 27 44 27`) with no header labels attached
+— exactly the low-signal fragments that pysbd then shreds into tiny chunks.
+
+![Before: viewer showing page 24 with TABLES (0) — both real tables missed, their
+cells flattened into the prose stream](visualizations/Enhanced_nonbordered_table_detection_pdfplumber/Before_enhancements_table_not_detected.png)
+
 Iteration 7 added a **fill guard** (drop any detected table under 25% non-empty
 cells; chart frames run 0–10% filled, genuine tables 50–100%) and a **rule-rect
 detector** that reconstructs open-style tables from the page's thin rule-rects
-and word baselines. The UK doc went from **10 fake / 0 real** to **0 fake / 8
-real tables** (`After_enhancements.png`); a regression diff on the 180-page
-`attitudes_to_housing` extraction changed only 8 pages, every one an all-empty
-junk grid being dropped, with no content-bearing table altered — additive where
-default detection already worked.
+and word baselines.
+
+**After** — the same page now reports `TABLES (2)`, with both tables recovered
+as structured grids: header row (`Listed skills … | 10-250 | 250+ employees |
+All (10+ employees)`) over aligned data rows. That structure is what
+`plumber-struct` turns into one header-labeled chunk per row, and the prose
+stream no longer carries the table bodies.
+
+![After: the same page reporting TABLES (2), both tables reconstructed as
+structured header-plus-rows grids](visualizations/Enhanced_nonbordered_table_detection_pdfplumber/After_enhancements.png)
+
+The UK doc went from **10 fake / 0 real** to **0 fake / 8 real tables**; a
+regression diff on the 180-page `attitudes_to_housing` extraction changed only 8
+pages, every one an all-empty junk grid being dropped, with no content-bearing
+table altered — additive where default detection already worked.
 
 ### The viewer as a diagnostic tool
 
@@ -635,12 +785,13 @@ reranker, the best configuration per document was:
 
 Four of the five documents clear both project targets (**MRR ≥ 0.85,
 Recall@5 ≥ 0.90**); the FY10 yearbook row is the retired first-run baseline kept
-as the "before" picture. Headline conclusions:
+as the "before" picture — its `200/20` sizes are *characters*, since those runs
+predate the switch to token-based sizing (`cl100k_base`). Headline conclusions:
 
 - **Document type decides the retriever** — BM25 wins on technical books whose
   vocabulary the questions reuse; embeddings win on paraphrase-heavy statistical
   and survey reports.
-- **512-char chunks were the sweet spot**; 1024-char chunks hurt vector search
+- **512-token chunks were the sweet spot**; 1024-token chunks hurt vector search
   badly, and structure-aware `plumber-struct` chunking is the clear winner on
   table-heavy documents.
 - **Hybrid fusion is insurance** — best or near-best everywhere, with α tuned

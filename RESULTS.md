@@ -34,7 +34,8 @@ Precision@K is capped at 1/K and MRR / Recall@K / NDCG@K are the meaningful metr
 | FY10 Yearbook | fixed 200/20 · vector · 3-large | 0.581 | 0.700 | ❌ (early run) |
 
 Four of five documents clear both targets. The FY10 yearbook was only used in the very first runs
-(tiny 100–256-char chunks, v1 QA prompts that produced unanswerable questions) and was retired; its
+(tiny 100–256-char chunks — those pre-date token-based sizing — plus v1 QA prompts that produced
+unanswerable questions) and was retired; its
 row is kept as the "before" picture of what the later methodology fixes bought.
 
 ---
@@ -65,18 +66,19 @@ will echo the document's own vocabulary, BM25 is a ~1 ms/query baseline that emb
 
 On the largest controlled grid (AI Agents, 40 questions per config, all else held fixed):
 
-| Chunking (chars/overlap) | # chunks | BM25 | Vector 3-small | Hybrid α=0.3 3-large |
+| Chunking (tokens/overlap) | # chunks | BM25 | Vector 3-small | Hybrid α=0.3 3-large |
 |---|---|---|---|---|
 | fixed 256/30 | 928 | 0.70 | 0.59 | 0.76 |
 | **fixed 512/50** | 454 | **0.90** | **0.73** | **0.92** |
 | fixed 1024/120 | 232 | 0.72 | 0.46 | 0.69 |
 
-- **512 chars was the sweet spot** on both technical books (PDL's best config is also 512-char).
-- **1024-char chunks lose everywhere, and worst for embeddings** (vector drops to 0.46): a single
+- **512 tokens was the sweet spot** on both technical books (PDL's best config is also 512-token).
+- **1024-token chunks lose everywhere, and worst for embeddings** (vector drops to 0.46): a single
   vector averaging several concepts matches none of them well. BM25 degrades more gracefully —
   term frequency still works in a long chunk.
-- The very small chunks of the first runs (100–200 chars on FY10) were the other failure mode:
-  fragments too small to carry an answerable fact.
+- The very small chunks of the first runs (100–200 *chars* on FY10 — those runs predate the switch
+  to token-based sizing) were the other failure mode: fragments too small to carry an answerable
+  fact.
 - Caveat: a repeat grid with a fresh QA sample (run `20260725_02`) put 256/30 ahead of 512/50 for
   BM25 (0.85 vs. 0.76). With n=40 questions the 256-vs-512 ordering is within sampling noise; the
   robust conclusions are *mid-size beats large* and *1024+ actively hurts vector search*.
