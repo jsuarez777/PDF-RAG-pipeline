@@ -617,3 +617,37 @@ place — which is how the table-lookalike misses and the chunk-referencing bad
 questions were first seen. It can also run every stage (chunk, index, QA,
 eval) from its header, so the whole iterate-and-re-eval loop happens without
 leaving the browser.
+
+## Results
+
+Across **~440 evaluated experiments on 5 PDFs**, sweeping chunking strategy,
+embedding model, vector store, retrieval method, hybrid α, BM25 tokenizer and
+reranker, the best configuration per document was:
+
+| Document | Best configuration | MRR | R@5 | Targets met |
+|---|---|---|---|---|
+| AI Agents & Apps | fixed 512/50 · hybrid α=0.3 · 3-large + **Cohere rerank** | **0.958** | **1.000** | ✅ |
+| AI Agents & Apps (no rerank) | fixed 512/50 · hybrid α=0.3 · 3-large | 0.919 | 1.000 | ✅ |
+| UK Innovation report | plumber-struct · vector · 3-small | 0.958 | 1.000 | ✅ (n=12) |
+| Attitudes to Housing | plumber-struct · hybrid α=0.5 · 3-large | 0.933 | 1.000 | ✅ |
+| Probabilistic DL | fixed 512/100 · hybrid α=0.7 · bge-base + **Cohere rerank** | 0.900 | 0.950 | ✅ |
+| FY10 Yearbook | fixed 200/20 · vector · 3-large | 0.581 | 0.700 | ❌ (early run) |
+
+Four of the five documents clear both project targets (**MRR ≥ 0.85,
+Recall@5 ≥ 0.90**); the FY10 yearbook row is the retired first-run baseline kept
+as the "before" picture. Headline conclusions:
+
+- **Document type decides the retriever** — BM25 wins on technical books whose
+  vocabulary the questions reuse; embeddings win on paraphrase-heavy statistical
+  and survey reports.
+- **512-char chunks were the sweet spot**; 1024-char chunks hurt vector search
+  badly, and structure-aware `plumber-struct` chunking is the clear winner on
+  table-heavy documents.
+- **Hybrid fusion is insurance** — best or near-best everywhere, with α tuned
+  toward the stronger signal (0.3 lexical-heavy on books, 0.5–0.7 on reports).
+- **Reranking helps vector search most** (+0.19 MRR with Cohere) but can *lower*
+  an already-excellent ranking, and adds 75–180 ms per query.
+- **The QA dataset is the ceiling** — fixing QA generation bought more than any
+  retrieval change.
+
+## Full analysis, per-finding charts, methodology notes and limitations are in [RESULTS.md](RESULTS.md).
