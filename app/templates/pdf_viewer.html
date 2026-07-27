@@ -216,6 +216,8 @@
   .bulk-rerank select { flex: 0 0 auto; width: auto; font-size: 12px; padding: 4px 6px; }
   .eval-db-head { font-size: 13px; font-weight: 600; margin-top: 8px;
                   overflow-wrap: anywhere; }
+  .pipe-failed-row { font-size: 12px; font-weight: 400; color: #b3261e;
+                     margin-left: 12px; }
   .eval-table { border-collapse: collapse; width: 100%; margin: 6px 0 14px; }
   .eval-table th, .eval-table td { border: 1px solid #e0e0e0; padding: 4px 8px;
                                    font-size: 12px; text-align: right; }
@@ -3850,6 +3852,26 @@ function renderPipelineModal(runs, index, sort) {
     best.textContent = `Best by MRR: ${expDesc(labelHybridExperiment(run.best_by_mrr))} ` +
       `(MRR=${((run.best_by_mrr.metrics || {}).mrr || 0).toFixed(3)})`;
     body.appendChild(best);
+  }
+
+  // Experiments the grid planned but never got metrics for. Listed separately:
+  // they have no scores to rank, and leaving them out entirely would make a
+  // partial run look like a smaller grid that succeeded.
+  const failures = run.failed_experiments || [];
+  if (failures.length) {
+    const box = document.createElement('div');
+    box.className = 'eval-db-head';
+    const head = document.createElement('div');
+    head.textContent = `${failures.length} of ${meta.num_planned || '?'} experiments ` +
+      `failed — no metrics collected:`;
+    box.appendChild(head);
+    for (const f of failures) {
+      const line = document.createElement('div');
+      line.className = 'pipe-failed-row';
+      line.textContent = `${f.experiment_id} — [${f.failed_stage}] ${f.error}`;
+      box.appendChild(line);
+    }
+    body.appendChild(box);
   }
 }
 

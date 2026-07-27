@@ -167,8 +167,20 @@ def enumerate_experiments(chunk_specs, embed_dbs, tokenizers, retrievals, alphas
 # -------------------------------------------------------------- orchestration
 
 
-def run_step(cmd):
-    """Run a stage script, streaming its output; exit the pipeline if it fails."""
+class StepFailed(Exception):
+    """A stage script exited non-zero. Raised so callers can decide whether the
+    failure kills the run (no dataset to work on) or only costs the experiments
+    that depended on that step."""
+
+    def __init__(self, stage, code, cmd):
+        self.stage = stage
+        self.code = code
+        self.cmd = cmd
+        super().__init__(f"{stage} failed with exit code {code}")
+
+
+def run_step(cmd, stage=None):
+    """Run a stage script, streaming its output; raise StepFailed if it exits non-zero."""
     log.info("$ " + " ".join(cmd))
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             text=True, bufsize=1)
@@ -176,7 +188,7 @@ def run_step(cmd):
         log.info(line.rstrip())
     code = proc.wait()
     if code != 0:
-        sys.exit(f"ERROR: pipeline step failed with exit code {code}: {' '.join(cmd)}")
+        raise StepFailed(stage or Path(cmd[1]).stem, code, cmd)
 
 
 def new_entries(directory, before, pattern="*"):
@@ -268,6 +280,39 @@ def match_experiment(experiments, chunk_spec, meta):
                 and abs(exp["alpha"] - (meta.get("alpha") or 0)) < 1e-9):
             return exp
     return None
+
+
+def failed_row(exp, stage, error, chunk_dir=None, qa_file=None):
+    """A results row for an experiment the grid never got metrics for. Same
+    shape as a successful row, with empty metrics and the reason it died, so
+    the report shows the hole instead of silently shrinking the grid."""
+    return {
+        "experiment_id": exp["experiment_id"],
+        "status": "failed",
+        "failed_stage": stage,
+        "error": error,
+        "chunk_type": exp["chunk_type"],
+        "chunk_run": rel(chunk_dir) if chunk_dir else None,
+        "qa_file": rel(qa_file) if qa_file else None,
+        "eval_file": None,
+        "retrieval": exp["retrieval"],
+        "embedding_model": exp.get("embedding_model"),
+        "db": exp.get("db"),
+        "tokenizer": exp.get("tokenizer"),
+        "alpha": exp.get("alpha"),
+        "rerank": exp.get("rerank"),
+        "metrics": {},
+    }
+
+
+def print_failures(rows):
+    """List the experiments that produced no metrics, with the stage that broke.
+    Kept out of the metrics table: blank scores sort and read as real zeros."""
+    log.info(f"\nFailed experiments ({len(rows)}) — no metrics collected:")
+    width = max(len(r["experiment_id"]) for r in rows)
+    for row in rows:
+        log.info(f"  FAILED  {row['experiment_id'].ljust(width)}  "
+                 f"[{row['failed_stage']}] {row['error']}")
 
 
 def print_summary(rows, ks_last):
@@ -394,7 +439,11 @@ def main():
 
     # ---------------------------------------------------------------- source
     if args.pdf:
-        title_dir = extract_pdf(args.pdf, args.method)
+        try:
+            title_dir = extract_pdf(args.pdf, args.method)
+        except StepFailed as e:
+            # no dataset means there is no grid to run at all
+            sys.exit(f"ERROR: {e}: {' '.join(e.cmd) if isinstance(e.cmd, list) else e.cmd}")
     elif args.dataset:
         title_dir = resolve_title_dir(args.dataset)
     else:
@@ -406,39 +455,59 @@ def main():
 
     now = datetime.now()
     all_rows = []
+    failed_rows = []
     per_chunk = []
 
     for spec in chunk_specs:
         log.info(f"\n=== Chunk config: {spec} ===")
+        spec_experiments = [e for e in experiments if e["chunk_type"] == spec]
+        chunk_dir = qa_file = None
 
-        # 1. chunk
-        before = snapshot(title_dir, "*_chunk_*")
-        run_step([sys.executable, str(SCRIPT_DIR / "chunk_text.py"),
-                  "--type", spec, "--dataset", rel(title_dir)])
-        created = [d for d in new_entries(title_dir, before, "*_chunk_*") if d.is_dir()]
-        if len(created) != 1:
-            sys.exit(f"ERROR: expected 1 new chunk dir, found {len(created)}")
-        chunk_dir = created[0]
+        try:
+            # 1. chunk
+            before = snapshot(title_dir, "*_chunk_*")
+            run_step([sys.executable, str(SCRIPT_DIR / "chunk_text.py"),
+                      "--type", spec, "--dataset", rel(title_dir)], stage="chunk_text")
+            created = [d for d in new_entries(title_dir, before, "*_chunk_*") if d.is_dir()]
+            if len(created) != 1:
+                raise StepFailed("chunk_text", 0,
+                                 f"expected 1 new chunk dir, found {len(created)}")
+            chunk_dir = created[0]
 
-        # 2. QA dataset for this chunk config (fair eval: one per config)
-        before = snapshot(chunk_dir, "qa_*.json")
-        qa_cmd = [sys.executable, str(SCRIPT_DIR / "generate_qa.py"),
-                  "--dataset", rel(chunk_dir), "--num-chunks", str(args.qa_num),
-                  "--types", ",".join(qa_types), "--model", args.qa_model]
-        if args.seed is not None:
-            qa_cmd += ["--seed", str(args.seed)]
-        run_step(qa_cmd)
-        qa_files = new_entries(chunk_dir, before, "qa_*.json")
-        if len(qa_files) != 1:
-            sys.exit(f"ERROR: expected 1 new QA file, found {len(qa_files)}")
-        qa_file = qa_files[0]
+            # 2. QA dataset for this chunk config (fair eval: one per config)
+            before = snapshot(chunk_dir, "qa_*.json")
+            qa_cmd = [sys.executable, str(SCRIPT_DIR / "generate_qa.py"),
+                      "--dataset", rel(chunk_dir), "--num-chunks", str(args.qa_num),
+                      "--types", ",".join(qa_types), "--model", args.qa_model]
+            if args.seed is not None:
+                qa_cmd += ["--seed", str(args.seed)]
+            run_step(qa_cmd, stage="generate_qa")
+            qa_files = new_entries(chunk_dir, before, "qa_*.json")
+            if len(qa_files) != 1:
+                raise StepFailed("generate_qa", 0,
+                                 f"expected 1 new QA file, found {len(qa_files)}")
+            qa_file = qa_files[0]
+        except StepFailed as e:
+            # Without chunks or questions nothing downstream can run, so the
+            # whole config is lost — but the remaining configs are independent.
+            log.warning(f"SKIPPING chunk config {spec}: {e}. "
+                        f"Continuing with the rest of the grid.")
+            failed_rows += [failed_row(exp, e.stage, str(e), chunk_dir, qa_file)
+                            for exp in spec_experiments]
+            continue
 
-        # 3. indexes
+        # 3. indexes — a failed index only costs the experiments that need it
         bm25_files, vector_files = [], []
+        index_errors = []  # (stage, db or None for bm25, message)
         if needs_bm25:
             before = snapshot(title_dir / "bm25", "bm25_*.pkl")
-            run_step([sys.executable, str(SCRIPT_DIR / "index_bm25.py"),
-                      "--tokenizer", ",".join(tokenizers), "--dataset", rel(chunk_dir)])
+            try:
+                run_step([sys.executable, str(SCRIPT_DIR / "index_bm25.py"),
+                          "--tokenizer", ",".join(tokenizers), "--dataset", rel(chunk_dir)],
+                         stage="index_bm25")
+            except StepFailed as e:
+                log.warning(f"{e} — bm25 and hybrid experiments for {spec} will be skipped.")
+                index_errors.append((e.stage, None, str(e)))
             bm25_files = new_entries(title_dir / "bm25", before, "bm25_*.pkl")
         if needs_vector:
             edb = title_dir / "embedding_databases"
@@ -450,9 +519,13 @@ def main():
                 for db in dbs:
                     models_per_db.setdefault(db, []).append(model)
             for db, models in models_per_db.items():
-                run_step([sys.executable, str(SCRIPT_DIR / "embed_chunks.py"),
-                          "--embedding", ",".join(models), "--db", db,
-                          "--dataset", rel(chunk_dir)])
+                try:
+                    run_step([sys.executable, str(SCRIPT_DIR / "embed_chunks.py"),
+                              "--embedding", ",".join(models), "--db", db,
+                              "--dataset", rel(chunk_dir)], stage="embed_chunks")
+                except StepFailed as e:
+                    log.warning(f"{e} for db {db} — experiments needing it will be skipped.")
+                    index_errors.append((e.stage, db, f"{e} (db {db})"))
             vector_files = [p for p in new_entries(edb, before)
                             if (p.name.startswith("milvus_") and p.suffix == ".db")
                             or (p.name.startswith("chromadb_") and p.suffix == ".chroma")]
@@ -463,28 +536,45 @@ def main():
             eval_dbs += [rel(p) for p in bm25_files]
         if "vector" in retrievals:
             eval_dbs += [rel(p) for p in vector_files]
+        pairs = ([f"{rel(v)}+{rel(b)}" for v in vector_files for b in bm25_files]
+                 if "hybrid" in retrievals else [])
         eval_cmd = [sys.executable, str(SCRIPT_DIR / "eval_retrieval.py"),
                     "--qa", rel(qa_file), "--topk", str(args.topk), "--ks", ks_arg]
         if eval_dbs:
             eval_cmd += ["--db", ",".join(eval_dbs)]
-        if "hybrid" in retrievals:
-            pairs = [f"{rel(v)}+{rel(b)}" for v in vector_files for b in bm25_files]
+        if pairs:
             eval_cmd += ["--hybrid", ",".join(pairs),
                          "--alpha", ",".join(f"{a:g}" for a in alphas)]
-        if rerank:
-            eval_cmd += ["--rerank", rerank, "--rerank-model", args.rerank_model]
         eval_dir = title_dir / "evaluations"
-        before = snapshot(eval_dir, "eval_*.json")
-        run_step(eval_cmd)
-        eval_files = [p for p in new_entries(eval_dir, before, "eval_*.json")
-                      if not p.name.startswith("eval_summary_")]
+        eval_files = []
+        eval_error = None
+        if not eval_dbs and not pairs:
+            log.warning(f"Nothing to evaluate for {spec}: no indexes were built.")
+        else:
+            if rerank:
+                eval_cmd += ["--rerank", rerank, "--rerank-model", args.rerank_model]
+            before = snapshot(eval_dir, "eval_*.json")
+            try:
+                run_step(eval_cmd, stage="eval_retrieval")
+            except StepFailed as e:
+                log.warning(f"{e} for chunk config {spec}. Collecting whatever evals "
+                            f"it wrote and continuing with the rest of the grid.")
+                eval_error = str(e)
+            # eval_retrieval.py writes per-index files as it goes, so a mid-run
+            # failure can still leave usable results for earlier indexes
+            eval_files = [p for p in new_entries(eval_dir, before, "eval_*.json")
+                          if not p.name.startswith("eval_summary_")]
 
         # 5. collect metrics
+        matched = set()
         for ef in eval_files:
             meta, overall = metrics_from_eval(ef)
             exp = match_experiment(experiments, spec, meta)
+            if exp:
+                matched.add(exp["experiment_id"])
             row = {
                 "experiment_id": exp["experiment_id"] if exp else ef.stem,
+                "status": "ok",
                 "chunk_type": spec,
                 "chunk_run": rel(chunk_dir),
                 "qa_file": rel(qa_file),
@@ -498,6 +588,28 @@ def main():
                 "metrics": overall,
             }
             all_rows.append(row)
+
+        # anything the grid promised but the evals never delivered is a failure,
+        # whether its index never built or the eval died before reaching it
+        def blame(exp):
+            """Which stage cost us this experiment. A missing index is the more
+            specific cause, so it wins over the generic 'eval had no results'."""
+            for stage, db, msg in index_errors:
+                needs_bm25_index = exp["retrieval"] in ("bm25", "hybrid")
+                needs_this_db = (exp["retrieval"] in ("vector", "hybrid")
+                                 and exp.get("db") == db)
+                if (stage == "index_bm25" and needs_bm25_index) or needs_this_db:
+                    return stage, msg
+            if eval_error:
+                return "eval_retrieval", eval_error
+            return "eval_retrieval", "eval_retrieval.py produced no results for this experiment"
+
+        for exp in spec_experiments:
+            if exp["experiment_id"] in matched:
+                continue
+            stage, reason = blame(exp)
+            failed_rows.append(failed_row(exp, stage, reason, chunk_dir, qa_file))
+
         per_chunk.append({"chunk_type": spec, "chunk_run": rel(chunk_dir),
                           "qa_file": rel(qa_file),
                           "bm25_indexes": [rel(p) for p in bm25_files],
@@ -507,13 +619,17 @@ def main():
     all_rows.sort(key=lambda r: -(r["metrics"].get("mrr") or 0))
     ks_last = ks_list[-1]
     log.info("")
-    print_summary(all_rows, ks_last)
+    if all_rows:
+        print_summary(all_rows, ks_last)
+    if failed_rows:
+        print_failures(failed_rows)
 
     best = all_rows[0] if all_rows else None
     if best:
         log.info(f"\nBest configuration by MRR: {best['experiment_id']}  "
                  f"(MRR={best['metrics'].get('mrr', 0):.3f})")
-    log.info(f"Total experiments: {len(all_rows)}")
+    log.info(f"Total experiments: {len(all_rows)} of {len(experiments)}"
+             + (f" ({len(failed_rows)} failed)" if failed_rows else ""))
 
     out = {
         "metadata": {
@@ -535,9 +651,12 @@ def main():
             "topk": args.topk,
             "ks": ks_list,
             "num_experiments": len(all_rows),
+            "num_failed": len(failed_rows),
+            "num_planned": len(experiments),
         },
         "chunk_configs": per_chunk,
         "experiments": all_rows,
+        "failed_experiments": failed_rows,
         "best_by_mrr": best,
     }
     out_dir = title_dir / "pipeline_runs"
@@ -545,6 +664,12 @@ def main():
     out_file = out_dir / f"pipeline_{now.strftime('%Y%m%d_%H%M%S')}.json"
     out_file.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
     log.info(f"\nResults: {rel(out_file)}")
+
+    # A partially failed grid still exits 0: the results are real and the run
+    # is worth keeping. Only a grid with nothing to report is a failed run.
+    if not all_rows:
+        sys.exit("ERROR: every experiment in the grid failed; no metrics to report. "
+                 f"See failed_experiments in {rel(out_file)}.")
 
 
 if __name__ == "__main__":

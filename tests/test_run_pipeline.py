@@ -1,5 +1,7 @@
 """Tests for the grid configuration logic in app/run_pipeline.py."""
 
+import sys
+
 import pytest
 
 from app import run_pipeline
@@ -127,3 +129,34 @@ def test_match_experiment_returns_none_for_unknown():
                                  ["word"], ["vector"], [0.7])
     assert run_pipeline.match_experiment(
         exps, "sentence:5", {"db_type": "bm25", "tokenizer": "word"}) is None
+
+
+# --------------------------------------------------- failure handling / skips
+
+def test_run_step_raises_step_failed_with_stage_and_code():
+    with pytest.raises(run_pipeline.StepFailed) as excinfo:
+        run_pipeline.run_step([sys.executable, "-c", "import sys; sys.exit(3)"],
+                              stage="chunk_text")
+    assert excinfo.value.stage == "chunk_text"
+    assert excinfo.value.code == 3
+
+
+def test_run_step_infers_stage_from_script_name():
+    with pytest.raises(run_pipeline.StepFailed) as excinfo:
+        run_pipeline.run_step([sys.executable, "app/generate_qa.py", "--bogus"])
+    assert excinfo.value.stage == "generate_qa"
+
+
+def test_failed_row_has_empty_metrics_and_reason():
+    exp = enumerate_experiments(["sentence:5"], {"text-embedding-3-small": ["milvus"]},
+                                ["word"], ["vector"], [0.7])[0]
+    row = run_pipeline.failed_row(exp, "eval_retrieval", "boom")
+    assert row["status"] == "failed"
+    assert row["failed_stage"] == "eval_retrieval"
+    assert row["error"] == "boom"
+    assert row["metrics"] == {}
+    assert row["eval_file"] is None
+    # the grid identity is preserved so the report can name what is missing
+    assert row["experiment_id"] == exp["experiment_id"]
+    assert row["retrieval"] == "vector"
+    assert row["embedding_model"] == "text-embedding-3-small"
