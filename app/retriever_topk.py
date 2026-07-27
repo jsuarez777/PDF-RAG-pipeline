@@ -25,6 +25,7 @@ import os
 import logging
 import pickle
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -34,6 +35,7 @@ DATA_DIR = (Path(os.environ["PDF_DATA_DIR"]) if os.environ.get("PDF_DATA_DIR")
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import openai  # noqa: E402
 from embedding_backends import embed_local, is_local_model  # noqa: E402
 from logging_utils import setup_logging  # noqa: E402
 from rerank import (  # noqa: E402
@@ -360,6 +362,30 @@ def search_hybrid(vec_db, bm25_db, k, alpha):
 
 
 EMBED_BATCH_SIZE = 1000
+EMBED_ATTEMPTS = 4          # 1 try + 3 retries
+EMBED_TIMEOUT = 60.0        # a 40-question batch normally returns in under 1s
+EMBED_BACKOFF = 2.0         # seconds before retry 1; doubles each time
+
+
+def _embed_batch(client, model, batch):
+    """One embeddings call, retried on transient network/5xx failures.
+
+    The SDK's own retries are disabled (see MyOpenAIClient.get_client), so a
+    single TLS handshake timeout used to abort a whole pipeline grid mid-run.
+    Each attempt is bounded by EMBED_TIMEOUT rather than the SDK's 600s default,
+    so the worst case here is tens of seconds, not tens of minutes."""
+    for attempt in range(EMBED_ATTEMPTS):
+        try:
+            return client.embeddings.create(model=model, input=batch,
+                                            timeout=EMBED_TIMEOUT)
+        except (openai.APIConnectionError, openai.APITimeoutError,
+                openai.InternalServerError, openai.RateLimitError) as e:
+            if attempt == EMBED_ATTEMPTS - 1:
+                raise
+            wait = EMBED_BACKOFF * 2 ** attempt
+            print(f"Embedding call failed ({type(e).__name__}) — retrying in "
+                  f"{wait:.0f}s ({attempt + 1}/{EMBED_ATTEMPTS - 1}) ...", flush=True)
+            time.sleep(wait)
 
 
 def embed_query(model, texts):
@@ -371,7 +397,7 @@ def embed_query(model, texts):
     client = api.get_client()
     vectors = []
     for start in range(0, len(texts), EMBED_BATCH_SIZE):
-        resp = client.embeddings.create(model=model, input=texts[start:start + EMBED_BATCH_SIZE])
+        resp = _embed_batch(client, model, texts[start:start + EMBED_BATCH_SIZE])
         vectors.extend(d.embedding for d in resp.data)
     return vectors
 
