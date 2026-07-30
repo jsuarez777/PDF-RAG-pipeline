@@ -781,12 +781,16 @@ reranker, the best configuration per document was:
 | UK Innovation report | plumber-struct · vector · 3-small | 0.958 | 1.000 | ✅ (n=12) |
 | Attitudes to Housing | plumber-struct · hybrid α=0.5 · 3-large | 0.933 | 1.000 | ✅ |
 | Probabilistic DL | fixed 512/100 · hybrid α=0.7 · bge-base + **Cohere rerank** | 0.900 | 0.950 | ✅ |
-| FY10 Yearbook | fixed 200/20 · vector · 3-large | 0.581 | 0.700 | ❌ (early run) |
+| FY10 Yearbook | sentence-dynamic-min 8/2 · vector · 3-small | 0.612 | 0.725 | ❌ |
 
 Four of the five documents clear both project targets (**MRR ≥ 0.85,
-Recall@5 ≥ 0.90**); the FY10 yearbook row is the retired first-run baseline kept
-as the "before" picture — its `200/20` sizes are *characters*, since those runs
-predate the switch to token-based sizing (`cl100k_base`). Headline conclusions:
+Recall@5 ≥ 0.90**). On AI Agents the top score is a tie — BM25 + Cohere rerank
+on the same fixed 512/50 chunks also reaches 0.958 / R@5 1.000; the hybrid row is
+listed because it is the stronger config before reranking. FY10 is the one
+document that never cleared the targets: its first-run baseline (`fixed 200/20`,
+sizes in *characters* — those runs predate the switch to token-based sizing with
+`cl100k_base`) managed 0.581, and a re-run after the QA and chunking fixes only
+reached the 0.612 above. Headline conclusions:
 
 - **Document type decides the retriever** — BM25 wins on technical books whose
   vocabulary the questions reuse; embeddings win on paraphrase-heavy statistical
