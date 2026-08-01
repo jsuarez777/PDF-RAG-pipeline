@@ -1,0 +1,1198 @@
+{
+  "metadata": {
+    "datetime": "2026-07-18T23:36:22",
+    "dataset": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing",
+    "chunk_types": [
+      "fixed_size:256:50",
+      "fixed_size:512:100",
+      "fixed_size:800:140",
+      "sentence-dynamic-min:5:1",
+      "plumber-struct:5"
+    ],
+    "embeddings": [
+      "text-embedding-3-small",
+      "text-embedding-3-large"
+    ],
+    "embed_dbs": {
+      "text-embedding-3-small": [
+        "milvus",
+        "chromadb"
+      ],
+      "text-embedding-3-large": [
+        "milvus",
+        "chromadb"
+      ]
+    },
+    "tokenizers": [
+      "word"
+    ],
+    "retrievals": [
+      "bm25",
+      "vector",
+      "hybrid"
+    ],
+    "alpha": 0.5,
+    "alphas": [
+      0.5
+    ],
+    "qa_num": 20,
+    "qa_types": [
+      "direct"
+    ],
+    "qa_model": "gpt-4.1-mini",
+    "seed": null,
+    "topk": 5,
+    "ks": "5",
+    "num_experiments": 50
+  },
+  "chunk_configs": [
+    {
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233627_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-large.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-small.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-large.db",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-small.db"
+      ]
+    },
+    {
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233647_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-large.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-small.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-large.db",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-small.db"
+      ]
+    },
+    {
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233701_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-large.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-small.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-large.db",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-small.db"
+      ]
+    },
+    {
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233716_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-large.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-small.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-large.db",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-small.db"
+      ]
+    },
+    {
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233733_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-large.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-small.chroma",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-large.db",
+        "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-small.db"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_plumber-struct_5_hybrid",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_chromadb_20260718_233740_text-embedding-3-large__bm25_20260718_233733_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.9333333333333333,
+        "map": 0.9333333333333333,
+        "avg_retrieval_time": 0.0036122061312198637,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.95
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_plumber-struct_5_hybrid_rerank_cohere",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_chromadb_20260718_233740_text-embedding-3-large__bm25_20260718_233733_word_rerank_cohere.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8541666666666666,
+        "map": 0.8541666666666666,
+        "avg_retrieval_time": 0.1681268685963005,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.8911732909393884
+      },
+      "rerank": "cohere"
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_plumber-struct_5_hybrid_rerank_local",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_chromadb_20260718_233740_text-embedding-3-large__bm25_20260718_233733_word_rerank_local.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8791666666666667,
+        "map": 0.8791666666666667,
+        "avg_retrieval_time": 0.3751614831853658,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.9096268032608155
+      },
+      "rerank": "local"
+    },
+    {
+      "experiment_id": "text-embedding-3-large+milvus+word_a0.5_plumber-struct_5_hybrid",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_milvus_20260718_233734_text-embedding-3-large__bm25_20260718_233733_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.9333333333333333,
+        "map": 0.9333333333333333,
+        "avg_retrieval_time": 0.022305220819544048,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.95
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_plumber-struct_5_vector",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_chromadb_20260718_233740_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8708333333333333,
+        "map": 0.8708333333333333,
+        "avg_retrieval_time": 0.00858868935611099,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.9030803155822426
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_plumber-struct_5_vector_rerank_local",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_chromadb_20260718_233740_text-embedding-3-large_rerank_local.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8833333333333334,
+        "map": 0.8833333333333334,
+        "avg_retrieval_time": 0.31498579141916705,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.9130929753571457
+      },
+      "rerank": "local"
+    },
+    {
+      "experiment_id": "text-embedding-3-large_milvus_plumber-struct_5_vector",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_milvus_20260718_233734_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8708333333333333,
+        "map": 0.8708333333333333,
+        "avg_retrieval_time": 0.014149243710562587,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.9030803155822426
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+chromadb+word_a0.5_plumber-struct_5_hybrid",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_chromadb_20260718_233740_text-embedding-3-small__bm25_20260718_233733_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8666666666666666,
+        "map": 0.8666666666666666,
+        "avg_retrieval_time": 0.003118895913939923,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.9
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_plumber-struct_5_hybrid",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_milvus_20260718_233734_text-embedding-3-small__bm25_20260718_233733_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.86,
+        "map": 0.86,
+        "avg_retrieval_time": 0.013083112495951354,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.894342640361727
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_plumber-struct_5_hybrid_rerank_cohere",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_milvus_20260718_233734_text-embedding-3-small__bm25_20260718_233733_word_rerank_cohere.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8541666666666666,
+        "map": 0.8541666666666666,
+        "avg_retrieval_time": 0.18159455413697287,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.8911732909393884
+      },
+      "rerank": "cohere"
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_plumber-struct_5_hybrid_rerank_local",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_milvus_20260718_233734_text-embedding-3-small__bm25_20260718_233733_word_rerank_local.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.8516666666666668,
+        "map": 0.8516666666666668,
+        "avg_retrieval_time": 0.3552623021416366,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "ndcg@5": 0.8889821033974457
+      },
+      "rerank": "local"
+    },
+    {
+      "experiment_id": "text-embedding-3-small+chromadb+word_a0.5_sentence-dynamic-min_5_1_hybrid",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_hybrid_a0.5_chromadb_20260718_233721_text-embedding-3-small__bm25_20260718_233716_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.825,
+        "map": 0.825,
+        "avg_retrieval_time": 0.0030222708475776015,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.8561606311644849
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_sentence-dynamic-min_5_1_hybrid",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_hybrid_a0.5_milvus_20260718_233717_text-embedding-3-small__bm25_20260718_233716_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.825,
+        "map": 0.825,
+        "avg_retrieval_time": 0.013028737483546137,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.8561606311644849
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_sentence-dynamic-min_5_1_hybrid",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_hybrid_a0.5_chromadb_20260718_233721_text-embedding-3-large__bm25_20260718_233716_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7916666666666667,
+        "map": 0.7916666666666667,
+        "avg_retrieval_time": 0.003359874919988215,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8196394630357187
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+milvus+word_a0.5_sentence-dynamic-min_5_1_hybrid",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_hybrid_a0.5_milvus_20260718_233717_text-embedding-3-large__bm25_20260718_233716_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7916666666666667,
+        "map": 0.7916666666666667,
+        "avg_retrieval_time": 0.022426583245396613,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8196394630357187
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_chromadb_sentence-dynamic-min_5_1_vector",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_chromadb_20260718_233721_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7849999999999999,
+        "map": 0.7849999999999999,
+        "avg_retrieval_time": 0.004922029259614646,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.8255032715262122
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_milvus_sentence-dynamic-min_5_1_vector",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_milvus_20260718_233717_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7849999999999999,
+        "map": 0.7849999999999999,
+        "avg_retrieval_time": 0.003315591684076935,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.8255032715262122
+      }
+    },
+    {
+      "experiment_id": "word_plumber-struct_5_bm25",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_bm25_20260718_233733_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "db": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7791666666666667,
+        "map": 0.7791666666666667,
+        "avg_retrieval_time": 0.0020743229892104865,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8096268032608155
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_chromadb_plumber-struct_5_vector",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_chromadb_20260718_233740_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7791666666666667,
+        "map": 0.7791666666666667,
+        "avg_retrieval_time": 0.004562706279102713,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8096268032608155
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_milvus_plumber-struct_5_vector",
+      "chunk_type": "plumber-struct:5",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_milvus_20260718_233734_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7708333333333333,
+        "map": 0.7708333333333333,
+        "avg_retrieval_time": 0.0036998352967202663,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.8030803155822426
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_sentence-dynamic-min_5_1_vector",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_chromadb_20260718_233721_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7333333333333333,
+        "map": 0.7333333333333333,
+        "avg_retrieval_time": 0.006505243689753115,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7761859507142915
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_milvus_sentence-dynamic-min_5_1_vector",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_milvus_20260718_233717_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7333333333333333,
+        "map": 0.7333333333333333,
+        "avg_retrieval_time": 0.012952516705263406,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7761859507142915
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_fixed_size_512_100_hybrid",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_hybrid_a0.5_chromadb_20260718_233652_text-embedding-3-large__bm25_20260718_233647_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7291666666666667,
+        "map": 0.7291666666666667,
+        "avg_retrieval_time": 0.0030404186574742196,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7711479713895819
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+milvus+word_a0.5_fixed_size_512_100_hybrid",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_hybrid_a0.5_milvus_20260718_233647_text-embedding-3-large__bm25_20260718_233647_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.7291666666666667,
+        "map": 0.7291666666666667,
+        "avg_retrieval_time": 0.021751208254136144,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7711479713895819
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_fixed_size_512_100_vector",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_chromadb_20260718_233652_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.67,
+        "map": 0.67,
+        "avg_retrieval_time": 0.006440049933735282,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7263923995665121
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_milvus_fixed_size_512_100_vector",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_milvus_20260718_233647_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.67,
+        "map": 0.67,
+        "avg_retrieval_time": 0.011666935286484659,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.7263923995665121
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_fixed_size_800_140_hybrid",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_hybrid_a0.5_chromadb_20260718_233706_text-embedding-3-large__bm25_20260718_233701_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6625,
+        "map": 0.6625,
+        "avg_retrieval_time": 0.002781931369099766,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.7342409467467276
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+milvus+word_a0.5_fixed_size_800_140_hybrid",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_hybrid_a0.5_milvus_20260718_233702_text-embedding-3-large__bm25_20260718_233701_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6516666666666666,
+        "map": 0.6516666666666666,
+        "avg_retrieval_time": 0.022274639597162603,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.7255032715262122
+      }
+    },
+    {
+      "experiment_id": "word_sentence-dynamic-min_5_1_bm25",
+      "chunk_type": "sentence-dynamic-min:5:1",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233725_bm25_20260718_233716_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "db": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6416666666666667,
+        "map": 0.6416666666666667,
+        "avg_retrieval_time": 0.0020852373796515166,
+        "recall@5": 0.95,
+        "precision@5": 0.19,
+        "ndcg@5": 0.7192536065216308
+      }
+    },
+    {
+      "experiment_id": "word_fixed_size_512_100_bm25",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_bm25_20260718_233647_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "db": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6266666666666667,
+        "map": 0.6266666666666667,
+        "avg_retrieval_time": 0.0016348270582966506,
+        "recall@5": 0.75,
+        "precision@5": 0.15,
+        "ndcg@5": 0.6574356157188729
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+chromadb+word_a0.5_fixed_size_800_140_hybrid",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_hybrid_a0.5_chromadb_20260718_233706_text-embedding-3-small__bm25_20260718_233701_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6166666666666667,
+        "map": 0.6166666666666667,
+        "avg_retrieval_time": 0.0022462562075816093,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.6877071188430579
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_fixed_size_800_140_hybrid",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_hybrid_a0.5_milvus_20260718_233702_text-embedding-3-small__bm25_20260718_233701_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6166666666666667,
+        "map": 0.6166666666666667,
+        "avg_retrieval_time": 0.013174266717396677,
+        "recall@5": 0.9,
+        "precision@5": 0.18,
+        "ndcg@5": 0.6877071188430579
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_fixed_size_800_140_vector",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_chromadb_20260718_233706_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6141666666666666,
+        "map": 0.6141666666666666,
+        "avg_retrieval_time": 0.005107179307378829,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.6736089066582611
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_milvus_fixed_size_800_140_vector",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_milvus_20260718_233702_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.6141666666666666,
+        "map": 0.6141666666666666,
+        "avg_retrieval_time": 0.011395679065026343,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.6736089066582611
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+chromadb+word_a0.5_fixed_size_512_100_hybrid",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_hybrid_a0.5_chromadb_20260718_233652_text-embedding-3-small__bm25_20260718_233647_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5625,
+        "map": 0.5625,
+        "avg_retrieval_time": 0.002355506189633161,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.6227197786179611
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_fixed_size_512_100_hybrid",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_hybrid_a0.5_milvus_20260718_233647_text-embedding-3-small__bm25_20260718_233647_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5516666666666666,
+        "map": 0.5516666666666666,
+        "avg_retrieval_time": 0.012360902049113064,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.6139821033974457
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_fixed_size_256_50_hybrid",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_hybrid_a0.5_chromadb_20260718_233634_text-embedding-3-large__bm25_20260718_233627_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5458333333333333,
+        "map": 0.5458333333333333,
+        "avg_retrieval_time": 0.005316689715255052,
+        "recall@5": 0.7,
+        "precision@5": 0.14,
+        "ndcg@5": 0.5846268032608154
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large+milvus+word_a0.5_fixed_size_256_50_hybrid",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_hybrid_a0.5_milvus_20260718_233628_text-embedding-3-large__bm25_20260718_233627_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-large",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5458333333333333,
+        "map": 0.5458333333333333,
+        "avg_retrieval_time": 0.025320345954969525,
+        "recall@5": 0.7,
+        "precision@5": 0.14,
+        "ndcg@5": 0.5846268032608154
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_chromadb_fixed_size_256_50_vector",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_chromadb_20260718_233634_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5349999999999999,
+        "map": 0.5349999999999999,
+        "avg_retrieval_time": 0.003426218871027231,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.6005032715262122
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-large_milvus_fixed_size_256_50_vector",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_milvus_20260718_233628_text-embedding-3-large.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-large",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5349999999999999,
+        "map": 0.5349999999999999,
+        "avg_retrieval_time": 0.014900889527052642,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.6005032715262122
+      }
+    },
+    {
+      "experiment_id": "word_fixed_size_800_140_bm25",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_bm25_20260718_233701_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "db": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5333333333333333,
+        "map": 0.5333333333333333,
+        "avg_retrieval_time": 0.0011497688130475581,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.6138930695573495
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_chromadb_fixed_size_800_140_vector",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_chromadb_20260718_233706_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5058333333333334,
+        "map": 0.5058333333333334,
+        "avg_retrieval_time": 0.0023885415168479083,
+        "recall@5": 0.75,
+        "precision@5": 0.15,
+        "ndcg@5": 0.565490611751309
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_milvus_fixed_size_800_140_vector",
+      "chunk_type": "fixed_size:800:140",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233711_milvus_20260718_233702_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.5058333333333334,
+        "map": 0.5058333333333334,
+        "avg_retrieval_time": 0.002685454161837697,
+        "recall@5": 0.75,
+        "precision@5": 0.15,
+        "ndcg@5": 0.565490611751309
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+milvus+word_a0.5_fixed_size_256_50_hybrid",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_hybrid_a0.5_milvus_20260718_233628_text-embedding-3-small__bm25_20260718_233627_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.45166666666666666,
+        "map": 0.45166666666666666,
+        "avg_retrieval_time": 0.012916252203285693,
+        "recall@5": 0.75,
+        "precision@5": 0.15,
+        "ndcg@5": 0.5270750787545915
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+chromadb+word_a0.5_fixed_size_256_50_hybrid",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_hybrid_a0.5_chromadb_20260718_233634_text-embedding-3-small__bm25_20260718_233627_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "db": "hybrid",
+      "tokenizer": "word",
+      "alpha": 0.5,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.4416666666666667,
+        "map": 0.4416666666666667,
+        "avg_retrieval_time": 0.004289779218379408,
+        "recall@5": 0.7,
+        "precision@5": 0.14,
+        "ndcg@5": 0.5077324383928643
+      }
+    },
+    {
+      "experiment_id": "word_fixed_size_256_50_bm25",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_bm25_20260718_233627_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "db": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.4375,
+        "map": 0.4375,
+        "avg_retrieval_time": 0.0035559458541683854,
+        "recall@5": 0.6,
+        "precision@5": 0.12,
+        "ndcg@5": 0.479266266296534
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_milvus_fixed_size_512_100_vector",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_milvus_20260718_233647_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.43083333333333335,
+        "map": 0.43083333333333335,
+        "avg_retrieval_time": 0.0030886081862263382,
+        "recall@5": 0.75,
+        "precision@5": 0.15,
+        "ndcg@5": 0.5101300747870275
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_chromadb_fixed_size_512_100_vector",
+      "chunk_type": "fixed_size:512:100",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233656_chromadb_20260718_233652_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.4291666666666667,
+        "map": 0.4291666666666667,
+        "avg_retrieval_time": 0.0036320124636404216,
+        "recall@5": 0.7,
+        "precision@5": 0.14,
+        "ndcg@5": 0.49733392210387334
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_chromadb_fixed_size_256_50_vector",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_chromadb_20260718_233634_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "chromadb",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.31416666666666665,
+        "map": 0.31416666666666665,
+        "avg_retrieval_time": 0.0013804540620185434,
+        "recall@5": 0.6,
+        "precision@5": 0.12,
+        "ndcg@5": 0.38513007478702754
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small_milvus_fixed_size_256_50_vector",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50",
+      "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json",
+      "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233640_milvus_20260718_233628_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "db": "milvus",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 20,
+        "mrr": 0.31416666666666665,
+        "map": 0.31416666666666665,
+        "avg_retrieval_time": 0.004099820926785469,
+        "recall@5": 0.6,
+        "precision@5": 0.12,
+        "ndcg@5": 0.38513007478702754
+      }
+    }
+  ],
+  "best_by_mrr": {
+    "experiment_id": "text-embedding-3-large+chromadb+word_a0.5_plumber-struct_5_hybrid",
+    "chunk_type": "plumber-struct:5",
+    "chunk_run": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0",
+    "qa_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json",
+    "eval_file": "data/users/2/pdfplumber/20260718_01/attitudes_to_housing/evaluations/eval_20260718_233745_hybrid_a0.5_chromadb_20260718_233740_text-embedding-3-large__bm25_20260718_233733_word.json",
+    "retrieval": "hybrid",
+    "embedding_model": "text-embedding-3-large",
+    "db": "hybrid",
+    "tokenizer": "word",
+    "alpha": 0.5,
+    "metrics": {
+      "num_questions": 20,
+      "mrr": 0.9333333333333333,
+      "map": 0.9333333333333333,
+      "avg_retrieval_time": 0.0036122061312198637,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "ndcg@5": 0.95
+    }
+  }
+}

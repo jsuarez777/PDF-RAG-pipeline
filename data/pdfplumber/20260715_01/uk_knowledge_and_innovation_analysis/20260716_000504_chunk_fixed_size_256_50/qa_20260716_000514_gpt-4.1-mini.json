@@ -1,0 +1,207 @@
+{
+  "metadata": {
+    "datetime": "2026-07-16T00:05:14",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+    "chunk_metadata": {
+      "datetime": "2026-07-16T00:05:04",
+      "dataset": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis",
+      "extractor": "pdfplumber",
+      "chunk_method": "fixed_size",
+      "num_pages": 29,
+      "total_chars": 54136,
+      "num_chunks": 263,
+      "chunk_size": 256,
+      "overlap": 50
+    },
+    "model": "gpt-4.1-mini",
+    "temperature": 0.7,
+    "parallel": 20,
+    "seed": 42,
+    "num_chunks_requested": 5,
+    "num_chunks_sampled": 5,
+    "num_chunks_answered": 5,
+    "questions_per_chunk": 3,
+    "question_types": {
+      "direct": "Straightforward question answerable from the chunk, may use the chunk's wording.",
+      "inference": "Requires inference from the chunk's information; avoids the chunk's exact words so retrieval must match meaning, not keywords.",
+      "paraphrased": "Same style as the direct question, but the chunk's keywords are replaced with paraphrases or synonyms."
+    },
+    "prompt_version": "v3",
+    "system_prompt": "You write question/answer pairs to evaluate a retrieval system over a chunked document.\nYou are given one text chunk. Every question you write must be answerable using ONLY the\ninformation in that chunk - no outside knowledge, and nothing that depends on other parts\nof the document. Questions must be specific enough that this chunk is clearly the best\nsource for the answer (avoid generic questions many chunks could answer).\n\nProduce exactly three question/answer pairs of this type:\n1. direct: a straightforward factual question about the substantive content of the chunk;\n   it may reuse the chunk's own wording.\n2. inference: a question whose answer must be inferred or synthesized from information in\n   the chunk. Reword the reasoning and avoid copying whole phrases, but the question must\n   still NAME the specific subject it is about so this chunk remains the obvious source.\n3. paraphrased: ask about the same kind of fact as a direct question would, using synonyms\n   for the general wording, but KEEP at least one distinctive anchor from the chunk (a named\n   entity, a specific figure/percentage, or the actual subject) so retrieval can find it.\n\nAnswers must be short, correct, and grounded in the chunk text and be substantive, not about\npage numbers or chapter numbers unless it is obviously a part of the index or table of\ncontents only.\n\nDIRECT QUESTIONS - anchor to the chunk's own content, never to metadata:\nA direct question must ask about the SUBSTANTIVE information stated in this chunk - a concrete\nfact, figure, finding, statement, or relationship that actually appears in the text - and must\nbe phrased using the chunk's own distinctive subject matter so that this chunk is the obvious\nsource. It must NOT ask about, and must NOT lean on, document metadata: metadata is the\nscaffolding that recurs across many chunks and does not identify this one.\n\nTreat all of the following as metadata and do NOT build a direct question around them:\n- chapter / section titles or headings as such (e.g. \"What is the chapter title?\")\n- table, figure, or exhibit numbers or their titles used only as a label\n- page numbers, running headers, and footers\n- the data source, survey provider, or publisher (e.g. \"Ipsos MORI\")\n- base sizes / sample sizes / \"unweighted base\" figures\n- reference-list or bibliography entries and their numbering\n- captions, source notes, and other boilerplate\n\nNever phrase a direct question around bare pointers like \"the chunk\", \"the text\", \"the data\",\n\"the table\", \"the chart\", \"the source note\", or \"the passage\". If you name a table or figure,\nname it by its actual title AND still make the question about the substantive data it reports.\nDo not use the word \"chunk\" in any question unless the text is literally about chunking.\n\n- Example of BAD direct question: \"What is the chapter title shown in the chunk?\" - chapter\n  title is metadata and appears on many chunks.\n- Example of BAD direct question: \"What is the base sample size reported?\" - base size is\n  metadata; almost every table chunk has one.\n- Example of BAD direct question: \"What source is given for the data?\" - the source note\n  (\"Ipsos MORI\") recurs across the whole document.\n- Example of BAD direct question: \"What is the base size reported for this table?\" - 'this\n  table' is a generic pointer and base size is metadata.\n- Example of GOOD direct question: \"What percentage of people had ever lived in social rented\n  housing?\" - a substantive figure phrased from the chunk's own content.\n- Example of GOOD direct question: \"For the North region, what percentage disagreed that\n  living in social housing gave them a lower rent?\" - names the specific subject in the data.\n- Example of GOOD direct question: \"In Table 7.15 on regularly reviewing the needs of social\n  tenants, what is the Agree value for people currently in the social rented (SR) sector?\" -\n  the table is named by its real title and the question targets its substantive data.\n\nINFERENCE and PARAPHRASED questions - stay retrievable, keep an anchor:\nThese two types rewrite the wording, but rewording must not erase every trace of what the\nchunk is about - if it does, the question could match dozens of chunks and retrieval fails.\n\n- Every question MUST retain at least one distinctive anchor from the chunk: a named entity\n  (a place, organisation, table title, tenure group, survey year), a specific figure or\n  percentage, or the concrete subject being discussed. Paraphrase the framing around that\n  anchor; do not paraphrase the anchor itself into something generic.\n- NEVER refer to the subject with a bare pointer such as \"this activity\", \"this practice\",\n  \"this type\", \"this group\", \"the text\", \"the passage\", \"the survey\", or \"the data\". Name it.\n  Bad: \"Which group was more likely to report this practice?\" (which practice?)\n  Good: \"Which firms more often reported new business-organising practices - large firms or\n  SMEs?\" (the practice is named, so this chunk is the clear source)\n- Do not refer to un-named tables, charts, or anything generic that could be part of any\n  other chunk; keep both questions about the chunk's substantive content.\n- If the only fact in the chunk is generic boilerplate (a response rate, a weighting note,\n  a heading) that appears near-identically elsewhere in the document, prefer to reject the\n  chunk rather than write an inference/paraphrased question that cannot be uniquely located.\n\nIf the chunk does not contain enough substantive information to support such questions -\nfor example it is only a page header/footer, a bare table-of-contents fragment, a list of\nreferences, or boilerplate with no concrete facts, middle table data with no title or header\nsufficient to determine the meaning of data - reject it as containing insufficient information\n(with a brief reason) instead of forcing questions. Only reject when no substantive\nquestion is possible; a borderline chunk with at least one concrete fact should still get\nits three questions.\n",
+    "user_prompt_template": "Generate the three question/answer pairs for this chunk:\n\n<chunk>\n{chunk_text}\n</chunk>\n",
+    "rejected": [
+      {
+        "chunk_index": 57,
+        "reason": "The chunk is incomplete and contains only partial sentences without substantive information to form specific questions and answers."
+      },
+      {
+        "chunk_index": 114,
+        "reason": "The chunk contains incomplete sentences and references without substantive content to form specific, answerable questions."
+      },
+      {
+        "chunk_index": 12,
+        "reason": "The chunk contains only partial headings and no substantive information to generate grounded questions and answers."
+      },
+      {
+        "chunk_index": 125,
+        "reason": "The chunk is incomplete and contains only partial sentences and headings without substantive content to form specific question/answer pairs."
+      },
+      {
+        "chunk_index": 140,
+        "reason": "The chunk contains only a partial list of entities and percentages without context or substantive facts to form specific, answerable questions."
+      },
+      {
+        "chunk_index": 113,
+        "reason": "The chunk contains only an incomplete fragment and does not provide enough substantive content to generate specific, answerable questions."
+      },
+      {
+        "chunk_index": 159,
+        "reason": "The chunk contains an incomplete sentence and lacks enough substantive information to generate specific, answerable questions."
+      },
+      {
+        "chunk_index": 8,
+        "reason": "The chunk contains only partial section titles without substantive content or facts to form specific questions and answers."
+      },
+      {
+        "chunk_index": 7,
+        "reason": "The chunk contains only partial text with no substantive information to generate specific questions and answers."
+      },
+      {
+        "chunk_index": 45,
+        "reason": "The chunk provides only partial information about the survey questionnaire and does not contain substantive facts or data suitable for specific question/answer pairs."
+      },
+      {
+        "chunk_index": 67,
+        "reason": "The chunk contains only partial information about routing applied for surveys before UKIS 2011 and mentions the 'old definition' without substantive facts or figures."
+      }
+    ],
+    "failures": []
+  },
+  "items": [
+    {
+      "chunk_index": 26,
+      "chunk_text": "ribution to a Europe-wide\nCommunity Innovation Survey (CIS). This is the eighth Europe-wide CIS. CIS was\noriginally conducted every four years, but since 2005 it has been conducted every two\nyears. The 2013 survey is the fourth one on the biennial cycle.\nT",
+      "start_char": 5356,
+      "end_char": 5612,
+      "start_page": 5,
+      "end_page": 5,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "How often has the Europe-wide Community Innovation Survey (CIS) been conducted since 2005?",
+          "answer": "Every two years."
+        },
+        {
+          "question_type": "inference",
+          "question": "Considering the Europe-wide Community Innovation Survey's schedule, how many surveys had been conducted on the biennial cycle by 2013?",
+          "answer": "Four surveys."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Since when has the Europe-wide Community Innovation Survey been conducted biennially, as noted in the 2013 survey?",
+          "answer": "Since 2005."
+        }
+      ]
+    },
+    {
+      "chunk_index": 53,
+      "chunk_text": "in 2011.\nThe definition of innovation activity4 here includes any of the activities described below\nthat enterprises were engaged in during the survey period. These activities are as follows:\n1. Introduction of a new or significantly improved product (good",
+      "start_char": 10918,
+      "end_char": 11174,
+      "start_page": 7,
+      "end_page": 7,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What activities are included in the definition of innovation activity in 2011?",
+          "answer": "Introduction of a new or significantly improved product."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the scope of innovation activities surveyed in 2011 based on the described activities?",
+          "answer": "Innovation activities include enterprises introducing new or significantly improved products, indicating the survey covered product-related innovations."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which enterprise actions are considered part of innovation activity according to the 2011 definition?",
+          "answer": "Introducing a new or significantly improved product."
+        }
+      ]
+    },
+    {
+      "chunk_index": 62,
+      "chunk_text": "activities 15 19 15\nBoth product AND process innovator 7 10 7\nEither product OR process innovator 21 28 22\n2011\nInnovation active 37 42 37\nInnovation active (old definition) 36 41 36\nBroader innovator 39 44 39\nWider innovator 31 35 31\nActivities 33 38 33\nP",
+      "start_char": 12772,
+      "end_char": 13028,
+      "start_page": 8,
+      "end_page": 8,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of firms were 'Innovation active' in 2011?",
+          "answer": "37%"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data for 2011, how does the percentage of 'Broader innovator' firms compare to those that were 'Innovation active'?",
+          "answer": "The percentage of 'Broader innovator' firms (39%) is slightly higher than that of 'Innovation active' firms (37%) in 2011."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "In 2011, what proportion of companies were classified as 'Either product OR process innovator'?",
+          "answer": "22%"
+        }
+      ]
+    },
+    {
+      "chunk_index": 73,
+      "chunk_text": "novation active’ (defined above) firms increased over\nthe survey period; 45 per cent of enterprises were found to be ‘innovation active’,\ncompared to 37 per cent of businesses in the 2011 survey. The share of large firms (those\nwith more than 250 employees",
+      "start_char": 15038,
+      "end_char": 15294,
+      "start_page": 9,
+      "end_page": 9,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of enterprises were 'innovation active' according to the survey period mentioned?",
+          "answer": "45 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "How did the proportion of 'innovation active' firms change between the 2011 survey and the later survey period?",
+          "answer": "It increased from 37 per cent to 45 per cent"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What was the proportion of large firms classified as 'innovation active' in the survey period?",
+          "answer": "45 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 143,
+      "chunk_text": "cquisition of external knowledge or machinery and equipment linked to\ninnovation activities.\n11\nUK Innovation Survey 2013 – First findings report\nAs shown in Figure 4, the most frequently mentioned partners of businesses with co-\noperation agreements were ",
+      "start_char": 29458,
+      "end_char": 29714,
+      "start_page": 15,
+      "end_page": 16,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What is linked to innovation activities according to the text?",
+          "answer": "Acquisition of external knowledge or machinery and equipment."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the role of cooperation agreements in innovation activities?",
+          "answer": "Cooperation agreements are important as they involve partnerships that support innovation activities."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "According to the UK Innovation Survey 2013, what type of acquisition is connected to innovation activities?",
+          "answer": "Acquisition of external knowledge or machinery and equipment."
+        }
+      ]
+    }
+  ]
+}

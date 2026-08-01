@@ -1,0 +1,4833 @@
+{
+  "metadata": {
+    "datetime": "2026-07-12T22:08:25",
+    "qa_file": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json",
+    "chunk_run": "data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10",
+    "db": "data/pdfplumber/20260712_01/fy10syb/bm25/bm25_20260712_202237_simple.pkl",
+    "db_type": "bm25",
+    "tokenizer": "simple",
+    "top_k": 10,
+    "ks": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "num_questions": 60,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "aggregates": {
+    "overall": {
+      "num_questions": 60,
+      "mrr": 0.23680555555555557,
+      "map": 0.23680555555555557,
+      "recall@1": 0.16666666666666666,
+      "precision@1": 0.16666666666666666,
+      "ndcg@1": 0.16666666666666666,
+      "recall@3": 0.2833333333333333,
+      "precision@3": 0.09444444444444444,
+      "ndcg@3": 0.23591081279762144,
+      "recall@5": 0.3333333333333333,
+      "precision@5": 0.06666666666666667,
+      "ndcg@5": 0.2559838490066627,
+      "recall@10": 0.38333333333333336,
+      "precision@10": 0.03833333333333333,
+      "ndcg@10": 0.27199613051019006
+    },
+    "by_question_type": {
+      "direct": {
+        "num_questions": 20,
+        "mrr": 0.41,
+        "map": 0.41,
+        "recall@1": 0.35,
+        "precision@1": 0.35,
+        "ndcg@1": 0.35,
+        "recall@3": 0.45,
+        "precision@3": 0.15,
+        "ndcg@3": 0.4065464876785729,
+        "recall@5": 0.5,
+        "precision@5": 0.1,
+        "ndcg@5": 0.4258891280403,
+        "recall@10": 0.55,
+        "precision@10": 0.055,
+        "ndcg@10": 0.4436994873957011
+      },
+      "inference": {
+        "num_questions": 20,
+        "mrr": 0.18416666666666665,
+        "map": 0.18416666666666665,
+        "recall@1": 0.1,
+        "precision@1": 0.1,
+        "ndcg@1": 0.1,
+        "recall@3": 0.25,
+        "precision@3": 0.08333333333333333,
+        "ndcg@3": 0.18809297535714575,
+        "recall@5": 0.3,
+        "precision@5": 0.06,
+        "ndcg@5": 0.20962680326081543,
+        "recall@10": 0.35,
+        "precision@10": 0.035,
+        "ndcg@10": 0.2240800445767098
+      },
+      "paraphrased": {
+        "num_questions": 20,
+        "mrr": 0.11625,
+        "map": 0.11625,
+        "recall@1": 0.05,
+        "precision@1": 0.05,
+        "ndcg@1": 0.05,
+        "recall@3": 0.15,
+        "precision@3": 0.05,
+        "ndcg@3": 0.11309297535714576,
+        "recall@5": 0.2,
+        "precision@5": 0.04,
+        "ndcg@5": 0.13243561571887283,
+        "recall@10": 0.25,
+        "precision@10": 0.025,
+        "ndcg@10": 0.14820885955815927
+      }
+    }
+  },
+  "questions": [
+    {
+      "chunk_index": 163,
+      "question_type": "direct",
+      "question": "What percentage is listed for BOSTON, MASSACHUSETTS?",
+      "answer": "6%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 599,
+          "score": 7.333657265789643,
+          "similarity": 7.333657265789643,
+          "text": "is\ncalculated as a percentage of asylum claims decided on the merits, i.e., grants and\ndenials. The "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1074,
+          "score": 7.333657265789643,
+          "similarity": 7.333657265789643,
+          "text": " their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the pe"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1004,
+          "score": 7.136871608672141,
+          "similarity": 7.136871608672141,
+          "text": "om certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-ba"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1104,
+          "score": 6.813716340345215,
+          "similarity": 6.813716340345215,
+          "text": "declined from FY 2006 to FY 2010. This\ndrop in the percentage of IHP completions is caused by a decr"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 594,
+          "score": 6.618635079273408,
+          "similarity": 6.618635079273408,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 773,
+          "score": 6.405614693910753,
+          "similarity": 6.405614693910753,
+          "text": "age N2 shows the number and percentage of proceedings\ncompleted with applications for relief at each"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 151,
+          "score": 6.2426815227585335,
+          "similarity": 6.2426815227585335,
+          "text": "the largest percentage decrease, down 35\npercent. Table 1A identifies receipts for FY 2010 by type o"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 777,
+          "score": 5.9404776269073185,
+          "similarity": 5.9404776269073185,
+          "text": "s with a low percentage of applications for\nrelief (10 percent or less) are shown in red. Courts whe"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 835,
+          "score": 5.92237260628063,
+          "similarity": 5.92237260628063,
+          "text": "045\nBOSTON, MASSACHUSETTS 1,605\nBUFFALO, NEW YORK 112\nCHARLOTTE, NORTH CAROLINA 407\nCHICAGO, ILLINOI"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 740,
+          "score": 5.763656999370457,
+          "similarity": 5.763656999370457,
+          "text": "OMINGTON (ST. PAUL), MINNESOTA 273\nBOSTON, MASSACHUSETTS 503\nBUFFALO, NEW YORK 76\nCHARLOTTE, NORTH C"
+        }
+      ]
+    },
+    {
+      "chunk_index": 163,
+      "question_type": "inference",
+      "question": "Which listed location has the smallest first number among the entries shown?",
+      "answer": "BUFFALO, NEW YORK",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 594,
+          "score": 11.718858489764937,
+          "similarity": 11.718858489764937,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 964,
+          "score": 9.279690487426207,
+          "similarity": 9.279690487426207,
+          "text": "in 30 days of the immigration judge’s decision.\nOther types of cases over which the BIA has jurisdic"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 110,
+          "score": 9.220399969388685,
+          "similarity": 9.220399969388685,
+          "text": "transfers from DHS to the Executive Office for Immigration\nReview (EOIR), which has oversight over t"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1381,
+          "score": 9.066886607054759,
+          "similarity": 9.066886607054759,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1472,
+          "score": 8.550870189141843,
+          "similarity": 8.550870189141843,
+          "text": "e Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Mot"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 278,
+          "score": 8.490657816555224,
+          "similarity": 8.490657816555224,
+          "text": "ved and matters completed the number of bonds has significantly increased from FY 2006\nto FY 2010 wh"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1013,
+          "score": 8.490657816555224,
+          "similarity": 8.490657816555224,
+          "text": "Y 2010 there has been an overall decrease in the number of\ncompletions of appeals from immigration j"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 930,
+          "score": 8.27232891319678,
+          "similarity": 8.27232891319678,
+          "text": "ion of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 386,
+          "score": 8.173457786277572,
+          "similarity": 8.173457786277572,
+          "text": "ation\njudges first decide whether or not the charges against an alien should be sustained. If\nthe ch"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1678,
+          "score": 8.056422210647947,
+          "similarity": 8.056422210647947,
+          "text": "A visa petition is the first step toward obtaining lawful permanent residence for a\nforeign-born ind"
+        }
+      ]
+    },
+    {
+      "chunk_index": 163,
+      "question_type": "paraphrased",
+      "question": "What share is shown next to the Massachusetts city entry?",
+      "answer": "6%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 729,
+          "score": 7.291868480898037,
+          "similarity": 7.291868480898037,
+          "text": "le to remove the alien.\nAs shown in Table 9 below, the immigration courts adjudicated 24,754 CAT\napp"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 622,
+          "score": 7.033510721465776,
+          "similarity": 7.033510721465776,
+          "text": "ken out by\ndisposition. Each of the dispositions has shown a significant decrease from FY 2006 to\nFY"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 461,
+          "score": 6.863267026205232,
+          "similarity": 6.863267026205232,
+          "text": "g to obtain counsel.\nAs shown in Figure 9, less than half of the aliens whose proceedings were\ncompl"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 969,
+          "score": 6.426997296336422,
+          "similarity": 6.426997296336422,
+          "text": "ar Book, appeals\nfrom these DHS decisions are referred to as DHS decision appeals.\nAs shown in Figur"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 835,
+          "score": 6.159514660514298,
+          "similarity": 6.159514660514298,
+          "text": "045\nBOSTON, MASSACHUSETTS 1,605\nBUFFALO, NEW YORK 112\nCHARLOTTE, NORTH CAROLINA 407\nCHICAGO, ILLINOI"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 501,
+          "score": 6.1232235400802875,
+          "similarity": 6.1232235400802875,
+          "text": "to appear for aliens released on bond or on their own recognizance are\nshown in Figure 12. From FY 2"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 221,
+          "score": 5.994443805874235,
+          "similarity": 5.994443805874235,
+          "text": "STON, MASSACHUSETTS 7,641 8,581 12%\nBUFFALO, NEW YORK 2,615 2,737 5%\nCHARLOTTE, NORTH CAROLINA 2,886"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 740,
+          "score": 5.994443805874235,
+          "similarity": 5.994443805874235,
+          "text": "OMINGTON (ST. PAUL), MINNESOTA 273\nBOSTON, MASSACHUSETTS 503\nBUFFALO, NEW YORK 76\nCHARLOTTE, NORTH C"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 882,
+          "score": 5.902565834273646,
+          "similarity": 5.902565834273646,
+          "text": "ien to depart voluntarily if the alien is able to pay for his or her removal, and if he or\nshe is no"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1075,
+          "score": 5.885010191827734,
+          "similarity": 5.885010191827734,
+          "text": "han the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the r"
+        }
+      ]
+    },
+    {
+      "chunk_index": 220,
+      "question_type": "direct",
+      "question": "What is the percentage shown for BATAVIA SPC, NEW YORK?",
+      "answer": "3%",
+      "gold_rank": 5,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 834,
+          "score": 12.783955811813822,
+          "similarity": 12.783955811813822,
+          "text": "257\nBALTIMORE, MARYLAND 599\nBATAVIA SPC, NEW YORK 848\nBLOOMINGTON (ST. PAUL), MINNESOTA 2,045\nBOSTON"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 739,
+          "score": 12.45029623736732,
+          "similarity": 12.45029623736732,
+          "text": "ON, VIRGINIA 467\nATLANTA, GEORGIA 105\nBALTIMORE, MARYLAND 382\nBATAVIA SPC, NEW YORK 67\nBLOOMINGTON ("
+        },
+        {
+          "rank": 3,
+          "chunk_index": 783,
+          "score": 12.45029623736732,
+          "similarity": 12.45029623736732,
+          "text": ",086 32%\nATLANTA, GEORGIA 5,257 1,062 20%\nBALTIMORE, MARYLAND 3,613 1,594 44%\nBATAVIA SPC, NEW YORK "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 162,
+          "score": 12.133610588187208,
+          "similarity": 12.133610588187208,
+          "text": ", MARYLAND 5,276 5,160 -2%\nBATAVIA SPC, NEW YORK 2,153 2,283 6%\nBLOOMINGTON (ST. PAUL), MINNESOTA 5,"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 220,
+          "score": 12.133610588187208,
+          "similarity": 12.133610588187208,
+          "text": "%\nBATAVIA SPC, NEW YORK 2,132 2,204 3%\nBLOOMINGTON (ST. PAUL), MINNESOTA 4,735 5,042 6%\nBOSTON, MASS"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 247,
+          "score": 12.133610588187208,
+          "similarity": 12.133610588187208,
+          "text": "TLANTA, GEORGIA 5,257 828 596 6,681\nBALTIMORE, MARYLAND 3,613 479 361 4,453\nBATAVIA SPC, NEW YORK 1,"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 536,
+          "score": 12.133610588187208,
+          "similarity": 12.133610588187208,
+          "text": "MORE, MARYLAND 674 843\nBATAVIA SPC, NEW YORK 57 64\nBLOOMINGTON (ST. PAUL), MINNESOTA 329 417\nBOSTON,"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 190,
+          "score": 11.83263574697845,
+          "similarity": 11.83263574697845,
+          "text": "0 506 324 5,160\nBATAVIA SPC, NEW YORK 1,331 946 6 2,283\nBLOOMINGTON (ST. PAUL), MINNESOTA 4,211 1,07"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 664,
+          "score": 11.546230889715673,
+          "similarity": 11.546230889715673,
+          "text": "GIA 40 133 23%\nBALTIMORE, MARYLAND 281 177 61%\nBATAVIA SPC, NEW YORK 4 38 10%\nBLOOMINGTON (ST. PAUL)"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 777,
+          "score": 10.699443987574416,
+          "similarity": 10.699443987574416,
+          "text": "s with a low percentage of applications for\nrelief (10 percent or less) are shown in red. Courts whe"
+        }
+      ]
+    },
+    {
+      "chunk_index": 220,
+      "question_type": "inference",
+      "question": "Which listed location had the larger first number, and what was that number?",
+      "answer": "BLOOMINGTON (ST. PAUL), MINNESOTA, 4,735",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1525,
+          "score": 10.695659628295148,
+          "similarity": 10.695659628295148,
+          "text": "idence that the written notice was provided and that the\nalien is removable. See Failure to Appear.\n"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1437,
+          "score": 9.593886287119748,
+          "similarity": 9.593886287119748,
+          "text": "s with the immigration judge function, which was previously\nperformed by Special Inquiry Officers of"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 915,
+          "score": 9.592793796458084,
+          "similarity": 9.592793796458084,
+          "text": " years of a sentence if the underlying\ncrime was classified as an aggravated felony, had been rehabi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 645,
+          "score": 9.491164744063582,
+          "similarity": 9.491164744063582,
+          "text": " removal grant rate. Cases that had\ngrants for both asylum and withholding were omitted from withhol"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 913,
+          "score": 9.413822002610548,
+          "similarity": 9.413822002610548,
+          "text": "In order to be eligible to apply for 212(c) relief, an\napplicant had to show that he or she had been"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1668,
+          "score": 9.106604658465479,
+          "similarity": 9.106604658465479,
+          "text": "n judge. The\nstatus of an alien who was granted this relief was adjusted to that of an alien lawfull"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 299,
+          "score": 9.001733826148111,
+          "similarity": 9.001733826148111,
+          "text": "ssible. Deportation cases usually\narose when INS alleged that an alien had entered the country illeg"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1651,
+          "score": 8.896196654194414,
+          "similarity": 8.896196654194414,
+          "text": " status, the Department of\nHomeland Security (DHS) discovers that the respondent/applicant was not e"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1342,
+          "score": 8.63880486569589,
+          "similarity": 8.63880486569589,
+          "text": "istrative determination by the Department of Homeland Security that a number\nwas available. Effectiv"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 484,
+          "score": 8.316465621529424,
+          "similarity": 8.316465621529424,
+          "text": "closures were included to calculate the failure to appear\nrate. However, due to a larger percentage "
+        }
+      ]
+    },
+    {
+      "chunk_index": 220,
+      "question_type": "paraphrased",
+      "question": "What rate is listed for the New York site in Batavia SPC?",
+      "answer": "3%",
+      "gold_rank": 5,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 834,
+          "score": 13.035947893366945,
+          "similarity": 13.035947893366945,
+          "text": "257\nBALTIMORE, MARYLAND 599\nBATAVIA SPC, NEW YORK 848\nBLOOMINGTON (ST. PAUL), MINNESOTA 2,045\nBOSTON"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 739,
+          "score": 12.695711358554451,
+          "similarity": 12.695711358554451,
+          "text": "ON, VIRGINIA 467\nATLANTA, GEORGIA 105\nBALTIMORE, MARYLAND 382\nBATAVIA SPC, NEW YORK 67\nBLOOMINGTON ("
+        },
+        {
+          "rank": 3,
+          "chunk_index": 783,
+          "score": 12.695711358554451,
+          "similarity": 12.695711358554451,
+          "text": ",086 32%\nATLANTA, GEORGIA 5,257 1,062 20%\nBALTIMORE, MARYLAND 3,613 1,594 44%\nBATAVIA SPC, NEW YORK "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 162,
+          "score": 12.372783332045314,
+          "similarity": 12.372783332045314,
+          "text": ", MARYLAND 5,276 5,160 -2%\nBATAVIA SPC, NEW YORK 2,153 2,283 6%\nBLOOMINGTON (ST. PAUL), MINNESOTA 5,"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 220,
+          "score": 12.372783332045314,
+          "similarity": 12.372783332045314,
+          "text": "%\nBATAVIA SPC, NEW YORK 2,132 2,204 3%\nBLOOMINGTON (ST. PAUL), MINNESOTA 4,735 5,042 6%\nBOSTON, MASS"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 247,
+          "score": 12.372783332045314,
+          "similarity": 12.372783332045314,
+          "text": "TLANTA, GEORGIA 5,257 828 596 6,681\nBALTIMORE, MARYLAND 3,613 479 361 4,453\nBATAVIA SPC, NEW YORK 1,"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 536,
+          "score": 12.372783332045314,
+          "similarity": 12.372783332045314,
+          "text": "MORE, MARYLAND 674 843\nBATAVIA SPC, NEW YORK 57 64\nBLOOMINGTON (ST. PAUL), MINNESOTA 329 417\nBOSTON,"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 190,
+          "score": 12.065875798495643,
+          "similarity": 12.065875798495643,
+          "text": "0 506 324 5,160\nBATAVIA SPC, NEW YORK 1,331 946 6 2,283\nBLOOMINGTON (ST. PAUL), MINNESOTA 4,211 1,07"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 664,
+          "score": 11.773825446425864,
+          "similarity": 11.773825446425864,
+          "text": "GIA 40 133 23%\nBALTIMORE, MARYLAND 281 177 61%\nBATAVIA SPC, NEW YORK 4 38 10%\nBLOOMINGTON (ST. PAUL)"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 749,
+          "score": 10.949362322306854,
+          "similarity": 10.949362322306854,
+          "text": "\nNEW ORLEANS, LOUISIANA 67\nNEW YORK CITY, NEW YORK 4,306\nNEWARK, NEW JERSEY 663\nOAKDALE FEDERAL DETE"
+        }
+      ]
+    },
+    {
+      "chunk_index": 428,
+      "question_type": "direct",
+      "question": "What countries are listed on line 16?",
+      "answer": "Ecuador, Indonesia, Peru, Nicaragua, Nicaragua.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 413,
+          "score": 11.849552870131998,
+          "similarity": 11.849552870131998,
+          "text": "Mexico and Central\nAmerican countries are consistently among the predominant nationalities of immigr"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1004,
+          "score": 10.380316784834829,
+          "similarity": 10.380316784834829,
+          "text": "om certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-ba"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 501,
+          "score": 6.83971037010301,
+          "similarity": 6.83971037010301,
+          "text": "to appear for aliens released on bond or on their own recognizance are\nshown in Figure 12. From FY 2"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 594,
+          "score": 6.618635079273408,
+          "similarity": 6.618635079273408,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1593,
+          "score": 6.391999039032594,
+          "similarity": 6.391999039032594,
+          "text": "on\nAppeals.\nR\nReasonable Fear Review\nReasonable Fear Review proceedings are available to aliens who "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 606,
+          "score": 6.225168700237527,
+          "similarity": 6.225168700237527,
+          "text": "on whether the asylum\napplication was filed affirmatively or defensively. There are two ways that al"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1410,
+          "score": 6.225168700237527,
+          "similarity": 6.225168700237527,
+          "text": " (EOIR) maintains data on the custody\nstatus of aliens in proceedings. Detained aliens are those in "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 956,
+          "score": 6.066825352135208,
+          "similarity": 6.066825352135208,
+          "text": "d by immigration judges or certain DHS officials.\nPublished BIA decisions are binding on all DHS off"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1268,
+          "score": 6.066825352135208,
+          "similarity": 6.066825352135208,
+          "text": "sions are binding on all DHS officers and immigration\njudges unless modified or overruled by the Att"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 147,
+          "score": 5.916337433990064,
+          "similarity": 5.916337433990064,
+          "text": "ecreases. In Table 1, on the following page, courts with increases of 25\npercent or more are highlig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 428,
+      "question_type": "inference",
+      "question": "Which line shows the only repeated country name in the chunk, and what is that country?",
+      "answer": "Line 16; Nicaragua.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1381,
+          "score": 21.831182509070153,
+          "similarity": 21.831182509070153,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1551,
+          "score": 13.845137095880666,
+          "similarity": 13.845137095880666,
+          "text": "k, nationality indicates the country that the\nalien is from.\nNicaraguan Adjustment and Central Ameri"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 652,
+          "score": 12.515170104781998,
+          "similarity": 12.515170104781998,
+          "text": "cal Year Book January 2011\nK4\nFigure 19-B shows the percentage of cases in which asylum or withholdi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1640,
+          "score": 12.069036207338655,
+          "similarity": 12.069036207338655,
+          "text": "es that a respondent is inadmissible to the United States, has\nentered the country illegally by cros"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 342,
+          "score": 12.03853128556802,
+          "similarity": 12.03853128556802,
+          "text": "secution or torture if returned\nto the country of removal and that claim is reviewed by an asylum of"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1264,
+          "score": 12.012753121911677,
+          "similarity": 12.012753121911677,
+          "text": "Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other p"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1704,
+          "score": 11.679724625043736,
+          "similarity": 11.679724625043736,
+          "text": "tablish that his or her life or\nfreedom would be threatened in that country because of the alien’s r"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1012,
+          "score": 11.39221003789249,
+          "similarity": 11.39221003789249,
+          "text": "on visa petitions increased 115 percent. The data in Table 17 shows that\nfrom FY 2006 to FY 2010 the"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1785,
+          "score": 10.962277995131927,
+          "similarity": 10.962277995131927,
+          "text": "VINCENT AND THE GRENADINES 3 0 1 0 1 2\nSTATELESS - ALIEN UNABLE TO NAME A COUNTRY 133 85 22 3 11 34\n"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 725,
+          "score": 10.839694323170898,
+          "similarity": 10.839694323170898,
+          "text": "lien who establishes that he or she would be tortured in the\nproposed country of removal.\n• The seco"
+        }
+      ]
+    },
+    {
+      "chunk_index": 428,
+      "question_type": "paraphrased",
+      "question": "Which nations are named on the row marked 16?",
+      "answer": "Ecuador, Indonesia, Peru, Nicaragua, Nicaragua.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 373,
+          "score": 9.066546422397256,
+          "similarity": 9.066546422397256,
+          "text": "S.\nIn addition to decisions, there are other possible proceeding outcomes which are\nreported here as"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 762,
+          "score": 7.759167223807826,
+          "similarity": 7.759167223807826,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 638,
+          "score": 7.601340090976347,
+          "similarity": 7.601340090976347,
+          "text": "Refugees (1967 Protocol).\nThe 1951 United Nations Convention Relating to the Status of Refugees (Ref"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 717,
+          "score": 7.545500634144577,
+          "similarity": 7.545500634144577,
+          "text": "t of Justice implemented regulations regarding the United\nNations Convention Against Torture and oth"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 302,
+          "score": 7.491477927763423,
+          "similarity": 7.491477927763423,
+          "text": "f\n1996 (IIRIRA), which became effective on April 1, 1997, established five new types of\nproceedings:"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 637,
+          "score": 7.228220416580964,
+          "similarity": 7.228220416580964,
+          "text": "ty obligations as signatory to\nthe 1967 United Nations Protocol Relating to the Status of Refugees ("
+        },
+        {
+          "rank": 7,
+          "chunk_index": 606,
+          "score": 6.8633419674851925,
+          "similarity": 6.8633419674851925,
+          "text": "on whether the asylum\napplication was filed affirmatively or defensively. There are two ways that al"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1410,
+          "score": 6.8633419674851925,
+          "similarity": 6.8633419674851925,
+          "text": " (EOIR) maintains data on the custody\nstatus of aliens in proceedings. Detained aliens are those in "
+        },
+        {
+          "rank": 9,
+          "chunk_index": 501,
+          "score": 6.83971037010301,
+          "similarity": 6.83971037010301,
+          "text": "to appear for aliens released on bond or on their own recognizance are\nshown in Figure 12. From FY 2"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 941,
+          "score": 6.781208618551679,
+          "similarity": 6.781208618551679,
+          "text": "ancellation of removal who meet certain\nconditions are not subject to the cap.\nTable 15, on the foll"
+        }
+      ]
+    },
+    {
+      "chunk_index": 537,
+      "question_type": "direct",
+      "question": "What are the two numbers shown for Boston, Massachusetts?",
+      "answer": "775 and 1,397",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 359,
+          "score": 11.956402623370339,
+          "similarity": 11.956402623370339,
+          "text": "ions. These numbers include other completions such as\ntransfers and changes of venue. As shown in Ta"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 778,
+          "score": 10.301184751270474,
+          "similarity": 10.301184751270474,
+          "text": "Courts where 50 percent or more of the\ncompletions involved applications for relief are shown in blu"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 723,
+          "score": 9.511835632134925,
+          "similarity": 9.511835632134925,
+          "text": "sions regarding CAT claims.\nThere are two forms of protection under the 1999 regulations:\n• The regu"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 606,
+          "score": 9.49484474902885,
+          "similarity": 9.49484474902885,
+          "text": "on whether the asylum\napplication was filed affirmatively or defensively. There are two ways that al"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 513,
+          "score": 9.344449290067995,
+          "similarity": 9.344449290067995,
+          "text": "gion, nationality, political\nbeliefs, and/or membership in a particular social group.\nThere are two "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 777,
+          "score": 9.210678543116385,
+          "similarity": 9.210678543116385,
+          "text": "s with a low percentage of applications for\nrelief (10 percent or less) are shown in red. Courts whe"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 514,
+          "score": 9.094024327149983,
+          "similarity": 9.094024327149983,
+          "text": "e are two ways that aliens may request asylum: “affirmatively,” by\ncompleting an asylum application "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 686,
+          "score": 9.094024327149983,
+          "similarity": 9.094024327149983,
+          "text": "\nExpedited Asylum Cases\nThere are two ways that aliens may request asylum: “affirmatively,” by\ncompl"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 501,
+          "score": 8.993005943479137,
+          "similarity": 8.993005943479137,
+          "text": "to appear for aliens released on bond or on their own recognizance are\nshown in Figure 12. From FY 2"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 929,
+          "score": 8.856671481781184,
+          "similarity": 8.856671481781184,
+          "text": " a form of relief provided by IIRIRA.\nThere are two IIRIRA provisions addressing cancellation of rem"
+        }
+      ]
+    },
+    {
+      "chunk_index": 537,
+      "question_type": "inference",
+      "question": "Which listed city has the largest values in both columns among the entries shown?",
+      "answer": "Boston, Massachusetts",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 149,
+          "score": 11.319536850483095,
+          "similarity": 11.319536850483095,
+          "text": " red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 964,
+          "score": 11.13747734789149,
+          "similarity": 11.13747734789149,
+          "text": "in 30 days of the immigration judge’s decision.\nOther types of cases over which the BIA has jurisdic"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 155,
+          "score": 11.114874204451873,
+          "similarity": 11.114874204451873,
+          "text": "ans, LA, showed the largest percentage increase at 63 percent. East\nMesa, CA, showed the largest per"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1381,
+          "score": 10.879706378870154,
+          "similarity": 10.879706378870154,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 110,
+          "score": 9.220399969388685,
+          "similarity": 9.220399969388685,
+          "text": "transfers from DHS to the Executive Office for Immigration\nReview (EOIR), which has oversight over t"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 560,
+          "score": 8.950818161286792,
+          "similarity": 8.950818161286792,
+          "text": " represented among cases\ngranted asylum in FY 2010. Table 7, on the following page, provides informa"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1347,
+          "score": 8.85277672389961,
+          "similarity": 8.85277672389961,
+          "text": "Davis, in which the immigration judge decides whether or not the alien\nshould remain in custody.\nCon"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1472,
+          "score": 8.550870189141843,
+          "similarity": 8.550870189141843,
+          "text": "e Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Mot"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1264,
+          "score": 8.485079969786247,
+          "similarity": 8.485079969786247,
+          "text": "Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other p"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 810,
+          "score": 7.998562168638098,
+          "similarity": 7.998562168638098,
+          "text": "\nconduct hearings for both detained and non-detained aliens, and EOIR maintains data\non the custody "
+        }
+      ]
+    },
+    {
+      "chunk_index": 537,
+      "question_type": "paraphrased",
+      "question": "What pair of figures is given for the Massachusetts city named Boston?",
+      "answer": "775 and 1,397",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1261,
+          "score": 8.723140212726719,
+          "similarity": 8.723140212726719,
+          "text": "e body for\ninterpreting and applying immigration laws. The BIA has been given nationwide\njurisdictio"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1324,
+          "score": 8.704274434526802,
+          "similarity": 8.704274434526802,
+          "text": "If applicants for asylum met the criteria for a CPC grant, they\nwere given conditional asylum and we"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1090,
+          "score": 8.475411457927567,
+          "similarity": 8.475411457927567,
+          "text": "that involved detainees. The figures for detained appeal decisions also\ninclude IHP cases. Detained "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 612,
+          "score": 8.032997197124537,
+          "similarity": 8.032997197124537,
+          "text": "airly consistent. Figures 17 and 18 show the grant rates for affirmative and defensive\nasylum claims"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1116,
+          "score": 7.634479371245274,
+          "similarity": 7.634479371245274,
+          "text": "se appeals received (aliens) at the BIA for fiscal years 2006 through 2010.\nAll other figures and ta"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1313,
+          "score": 6.904293121531557,
+          "similarity": 6.904293121531557,
+          "text": " after one of the parties has filed a motion to change venue\nand the other party has been given noti"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1325,
+          "score": 6.215865748184215,
+          "similarity": 6.215865748184215,
+          "text": "lum and were given a final grant of asylum when a number\nbecame available. Effective May 11, 2005, u"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 26,
+          "score": 6.183494167186964,
+          "similarity": 6.183494167186964,
+          "text": "sary of Terms\nFY 2010 STATISTICAL YEAR BOOK\nLIST OF FIGURES AND TABLES\nPage\nList of Figures:\nFigure "
+        },
+        {
+          "rank": 9,
+          "chunk_index": 835,
+          "score": 6.159514660514298,
+          "similarity": 6.159514660514298,
+          "text": "045\nBOSTON, MASSACHUSETTS 1,605\nBUFFALO, NEW YORK 112\nCHARLOTTE, NORTH CAROLINA 407\nCHICAGO, ILLINOI"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 488,
+          "score": 6.154879760617904,
+          "similarity": 6.154879760617904,
+          "text": "FY 2010 Statistical Year Book January 2011\nH1\nThe following figures show EOIR data on failures to ap"
+        }
+      ]
+    },
+    {
+      "chunk_index": 601,
+      "question_type": "direct",
+      "question": "What is the asylum grant rate shown for FY 06?",
+      "answer": "45",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 598,
+          "score": 18.597394053888348,
+          "similarity": 18.597394053888348,
+          "text": "pletion.\nFigure 16 provides the asylum grant rate for the past five years. The grant rate is\ncalcula"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 601,
+          "score": 17.864836761469377,
+          "similarity": 17.864836761469377,
+          "text": "ion Courts\nAsylum Grant Rate\nAsylum Grant Rate\n100% Grants Denials Grant Rate\nFY 06 13,304 16,477 45"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 610,
+          "score": 15.204184353451746,
+          "similarity": 15.204184353451746,
+          "text": "gher than\ngrant rates for defensive claims. The grant rate for affirmative asylum claims has\nsignifi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 660,
+          "score": 14.848407242844836,
+          "similarity": 14.848407242844836,
+          "text": "nformation on the FY 2010 asylum grant\nrate for each individual immigration court.\nExecutive Office "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 85,
+          "score": 14.04022031474246,
+          "similarity": 14.04022031474246,
+          "text": "e for asylum applications was 51 percent in FY 2010. The\ngrant rate was 61 percent for affirmative a"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 617,
+          "score": 13.830051912194797,
+          "similarity": 13.830051912194797,
+          "text": "Rate\nImmigration Court Defensive Grant Rate\nGrants Denials Grant Rate\n100%\nFY 06 3,774 7,457 34%\n80%"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 60,
+          "score": 13.184877628546932,
+          "similarity": 13.184877628546932,
+          "text": "5 Nationalities for\nFY 2006 – FY 2010 J2\nTable 8 - FY 2010 Asylum Grant Rate by Immigration Court K6"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 648,
+          "score": 12.80838084648127,
+          "similarity": 12.80838084648127,
+          "text": "holding of\n90% Removal Grant Rate\n80% Grants Denials Grant Rate\n70% FY 06 2,571 16,778 13%\n60% FY 07"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 614,
+          "score": 12.593269399241704,
+          "similarity": 12.593269399241704,
+          "text": "ive Grant Rate\nGrants Denials Grant Rate\n100% FY 06 9,530 9,020 51%\n80% FY 07 8,427 7,953 51%\n61%\n60"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 657,
+          "score": 12.265858165631606,
+          "similarity": 12.265858165631606,
+          "text": "ithholding of\nAsylum Grants and Withholding of Grant Rate\nRemoval Grants\nRemoval\nFY 06 13,304 2,571 "
+        }
+      ]
+    },
+    {
+      "chunk_index": 601,
+      "question_type": "inference",
+      "question": "In FY 06, were asylum grants or denials more numerous?",
+      "answer": "Denials were more numerous.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 625,
+          "score": 14.527470138343542,
+          "similarity": 14.527470138343542,
+          "text": "FY 07 FY 08 FY 09 FY 10\nGrants Denials Withdrawn Abandoned Other\nAsylum Completions by Disposition\nG"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 601,
+          "score": 14.363036780128652,
+          "similarity": 14.363036780128652,
+          "text": "ion Courts\nAsylum Grant Rate\nAsylum Grant Rate\n100% Grants Denials Grant Rate\nFY 06 13,304 16,477 45"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 439,
+          "score": 12.269747253044201,
+          "similarity": 12.269747253044201,
+          "text": "e top five\nlanguages were the same, there was more diversity in languages in FY 2010. A total of 283"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 626,
+          "score": 11.885906633716207,
+          "similarity": 11.885906633716207,
+          "text": "position\nGrants Denials Withdrawn Abandoned Other Total\nFY 06 13,304 16,477 10,324 3,918 13,841 57,8"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 656,
+          "score": 11.635907608885041,
+          "similarity": 11.635907608885041,
+          "text": " 10\nImmigration Court Asylum or Withholding of Removal Grant Rate\nDenials of Both Asylum\nWithholding"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 617,
+          "score": 11.281246955483756,
+          "similarity": 11.281246955483756,
+          "text": "Rate\nImmigration Court Defensive Grant Rate\nGrants Denials Grant Rate\n100%\nFY 06 3,774 7,457 34%\n80%"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 645,
+          "score": 11.1325577747441,
+          "similarity": 11.1325577747441,
+          "text": " removal grant rate. Cases that had\ngrants for both asylum and withholding were omitted from withhol"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 648,
+          "score": 11.092495184174172,
+          "similarity": 11.092495184174172,
+          "text": "holding of\n90% Removal Grant Rate\n80% Grants Denials Grant Rate\n70% FY 06 2,571 16,778 13%\n60% FY 07"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 614,
+          "score": 10.84887689416789,
+          "similarity": 10.84887689416789,
+          "text": "ive Grant Rate\nGrants Denials Grant Rate\n100% FY 06 9,530 9,020 51%\n80% FY 07 8,427 7,953 51%\n61%\n60"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1323,
+          "score": 10.580270426448452,
+          "similarity": 10.580270426448452,
+          "text": "nd asylum grants were made each fiscal year to applicants who raised\nclaims based on CPC. If applica"
+        }
+      ]
+    },
+    {
+      "chunk_index": 601,
+      "question_type": "paraphrased",
+      "question": "What percentage of applications were approved in FY 06?",
+      "answer": "45",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 462,
+          "score": 13.153955985140506,
+          "similarity": 13.153955985140506,
+          "text": "were\ncompleted during the period FY 2006 – FY 2010 were represented. The percentage of\nrepresented a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 730,
+          "score": 12.11231655826768,
+          "similarity": 12.11231655826768,
+          "text": "54 CAT\napplications during FY 2010. Of those, 489 CAT cases were granted, the majority of\nwhich were"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 777,
+          "score": 10.864701548504396,
+          "similarity": 10.864701548504396,
+          "text": "s with a low percentage of applications for\nrelief (10 percent or less) are shown in red. Courts whe"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 770,
+          "score": 9.871212783640239,
+          "similarity": 9.871212783640239,
+          "text": "\nWith Applications Without Applications Total\nApplications Applications\nFY 06 83,344 26% 240,696 74%"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 773,
+          "score": 9.76064056763203,
+          "similarity": 9.76064056763203,
+          "text": "age N2 shows the number and percentage of proceedings\ncompleted with applications for relief at each"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 77,
+          "score": 9.328178962352098,
+          "similarity": 9.328178962352098,
+          "text": "ases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asy"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 484,
+          "score": 9.159435637002762,
+          "similarity": 9.159435637002762,
+          "text": "closures were included to calculate the failure to appear\nrate. However, due to a larger percentage "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 440,
+          "score": 8.97360954350935,
+          "similarity": 8.97360954350935,
+          "text": "tal of 283\ndifferent languages were spoken in court proceedings in the immigration courts during FY\n"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 87,
+          "score": 8.877291319927057,
+          "similarity": 8.877291319927057,
+          "text": "pages K1 and K2)\n! In FY 2010, the percentage of asylum cases in which either asylum or\nwithholding "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1104,
+          "score": 8.50694470829061,
+          "similarity": 8.50694470829061,
+          "text": "declined from FY 2006 to FY 2010. This\ndrop in the percentage of IHP completions is caused by a decr"
+        }
+      ]
+    },
+    {
+      "chunk_index": 713,
+      "question_type": "direct",
+      "question": "What were the receipts and completions in FY 06?",
+      "answer": "35,391 receipts and 38,819 completions.",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 527,
+          "score": 14.157321957204818,
+          "similarity": 14.157321957204818,
+          "text": "ipts Completions\nAsylum Receipts and Completions\nReceipts Completions\nFY 06 56,969 57,864\nFY 07 57,5"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 710,
+          "score": 11.989712250385633,
+          "similarity": 11.989712250385633,
+          "text": "in Figure 21 below are the number of receipts and completions for\nexpedited asylum cases between FY "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 713,
+          "score": 11.73910308306634,
+          "similarity": 11.73910308306634,
+          "text": "ipts and Completions\nFY 2006 - FY 2010\nReceipts Completions\nFY 06 35,391 38,819\nFY 07 31,688 34,281\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 712,
+          "score": 11.639902953231257,
+          "similarity": 11.639902953231257,
+          "text": "000\n30,000\n25,000\nFY 06 FY 07 FY 08 FY 09 FY 10\nReceipts Completions\nExpedited Asylum Receipts and C"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 861,
+          "score": 11.359914353273055,
+          "similarity": 11.359914353273055,
+          "text": " information on IHP receipts and completions for FY 2006 - FY\n2010. IHP receipts declined by 21 perc"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 711,
+          "score": 10.779578706801844,
+          "similarity": 10.779578706801844,
+          "text": "etween FY 2006 and FY 2010.\nFigure 21\nExpedited Asylum\nReceipts and Completions\n40,000\n35,000\n30,000"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 139,
+          "score": 10.244464418502126,
+          "similarity": 10.244464418502126,
+          "text": "eived and Completed Total Immigration Court Matters\nReceipts Completions\nFY 06 351,051 366,080\n400,0"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 73,
+          "score": 10.190380819349565,
+          "similarity": 10.190380819349565,
+          "text": "Salvador, Honduras, and China were the leading\nnationalities of immigration court completions during"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 973,
+          "score": 10.076223917037112,
+          "similarity": 10.076223917037112,
+          "text": " and Completed\nTotal BIA Cases\nReceipts Completions\n50,000\n45,000 FY 06 39,743 41,475\n40,000 FY 07 3"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 412,
+          "score": 9.80157172735806,
+          "similarity": 9.80157172735806,
+          "text": "total of 224 nationalities were\nrepresented in the FY 2010 immigration judge completions. Mexico and"
+        }
+      ]
+    },
+    {
+      "chunk_index": 713,
+      "question_type": "inference",
+      "question": "In the two fiscal years shown, did receipts or completions run higher in both years?",
+      "answer": "Completions were higher in both years.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1042,
+          "score": 16.918247954969008,
+          "similarity": 16.918247954969008,
+          "text": "ration judge appeals in\nfiscal years 2006-2010. For the five-year period, seven nationalities ranked"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1116,
+          "score": 11.5240421550645,
+          "similarity": 11.5240421550645,
+          "text": "se appeals received (aliens) at the BIA for fiscal years 2006 through 2010.\nAll other figures and ta"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 710,
+          "score": 11.319799138251815,
+          "similarity": 11.319799138251815,
+          "text": "in Figure 21 below are the number of receipts and completions for\nexpedited asylum cases between FY "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 153,
+          "score": 10.963813879816664,
+          "similarity": 10.963813879816664,
+          "text": "migration court. Courts with increases in completions of 25 percent or more are\nhighlighted in blue,"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 527,
+          "score": 10.831922294995092,
+          "similarity": 10.831922294995092,
+          "text": "ipts Completions\nAsylum Receipts and Completions\nReceipts Completions\nFY 06 56,969 57,864\nFY 07 57,5"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 524,
+          "score": 10.432497507222127,
+          "similarity": 10.432497507222127,
+          "text": "n in Figure 14 below, asylum receipts declined by 42 percent and asylum\ncompletions declined by 30 p"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1470,
+          "score": 10.157421953011493,
+          "similarity": 10.157421953011493,
+          "text": "hich an organization plans the use of its funds. In the U.S.\ngovernment, the fiscal year runs from O"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 149,
+          "score": 10.140668852172682,
+          "similarity": 10.140668852172682,
+          "text": " red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts a"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1665,
+          "score": 10.066602572847337,
+          "similarity": 10.066602572847337,
+          "text": "s physical presence in the\nUnited States for seven years and had met the other statutory requirement"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 513,
+          "score": 10.04721394199216,
+          "similarity": 10.04721394199216,
+          "text": "gion, nationality, political\nbeliefs, and/or membership in a particular social group.\nThere are two "
+        }
+      ]
+    },
+    {
+      "chunk_index": 713,
+      "question_type": "paraphrased",
+      "question": "For the first year listed, how many applications were taken in and how many were finished?",
+      "answer": "35,391 and 38,819.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 730,
+          "score": 16.576392086208774,
+          "similarity": 16.576392086208774,
+          "text": "54 CAT\napplications during FY 2010. Of those, 489 CAT cases were granted, the majority of\nwhich were"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 454,
+          "score": 14.839060565175952,
+          "similarity": 14.839060565175952,
+          "text": "tion court, representatives\nmust file a Notice of Appearance with the court.\nMany individuals in rem"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1473,
+          "score": 13.839673626611738,
+          "similarity": 13.839673626611738,
+          "text": "ant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nar"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 77,
+          "score": 13.799252063532204,
+          "similarity": 13.799252063532204,
+          "text": "ases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asy"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1072,
+          "score": 13.655495261699432,
+          "similarity": 13.655495261699432,
+          "text": "Many individuals who file appeals with the BIA are indigent and cannot afford a\nprivate attorney. So"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 462,
+          "score": 12.774652934352485,
+          "similarity": 12.774652934352485,
+          "text": "were\ncompleted during the period FY 2006 – FY 2010 were represented. The percentage of\nrepresented a"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 412,
+          "score": 12.672604144065332,
+          "similarity": 12.672604144065332,
+          "text": "total of 224 nationalities were\nrepresented in the FY 2010 immigration judge completions. Mexico and"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1226,
+          "score": 12.574312357073739,
+          "similarity": 12.574312357073739,
+          "text": "ntion Against Torture,\nadjustment of status, or cancellation of removal. Many forms of relief requir"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1627,
+          "score": 12.574312357073739,
+          "similarity": 12.574312357073739,
+          "text": "ntion Against Torture, cancellation of removal, or\nadjustment of status. Many forms of relief requir"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1071,
+          "score": 12.503464127169199,
+          "similarity": 12.503464127169199,
+          "text": "g an alien before the BIA,\nrepresentatives must file a Notice of Appearance with the BIA.\nMany indiv"
+        }
+      ]
+    },
+    {
+      "chunk_index": 822,
+      "question_type": "direct",
+      "question": "What is the value listed for FY 08 in the second number column?",
+      "answer": "281,216",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 594,
+          "score": 11.718858489764937,
+          "similarity": 11.718858489764937,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1088,
+          "score": 11.348966032286198,
+          "similarity": 11.348966032286198,
+          "text": " cases.\nDepicted in Figure 30 is the number of immigration judge case appeal decisions\nbetween FY 20"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1133,
+          "score": 10.68926709022566,
+          "similarity": 10.68926709022566,
+          "text": "es is decreasing. Proceedings received prior to FY 2009 account for 20 percent of\nthe total number o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 726,
+          "score": 10.3703398959656,
+          "similarity": 10.3703398959656,
+          "text": "• The second protection concerns aliens who would be tortured in the country\nof removal, but who are"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 710,
+          "score": 10.257990289255087,
+          "similarity": 10.257990289255087,
+          "text": "in Figure 21 below are the number of receipts and completions for\nexpedited asylum cases between FY "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 934,
+          "score": 9.393940629703632,
+          "similarity": 9.393940629703632,
+          "text": "avated\nfelony convictions.\n• Non-Permanent Residents. Under the second provision, applicants\nphysica"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 505,
+          "score": 8.577742117770335,
+          "similarity": 8.577742117770335,
+          "text": "9 FY 10\nFailure to Appear Rates for Released Aliens\nIn Absentia Orders\nIJ Decisions\nNumber % of Tota"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1413,
+          "score": 8.379659809393463,
+          "similarity": 8.379659809393463,
+          "text": "ns, the number of\nincarcerated aliens in the Institutional Hearing Program. Immigration court hearin"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 395,
+          "score": 8.166110017504318,
+          "similarity": 8.166110017504318,
+          "text": "umber % of Total Number % of Total Number % of Total Number % of Total Number % of Total\nFY 06 15,98"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 457,
+          "score": 7.967892344586015,
+          "similarity": 7.967892344586015,
+          "text": "e. Of great concern to EOIR is the large number of\nindividuals appearing pro se. Immigration judges,"
+        }
+      ]
+    },
+    {
+      "chunk_index": 822,
+      "question_type": "inference",
+      "question": "Between FY 06 and FY 09, which year shows the largest first-number value, and what is that value?",
+      "answer": "FY 09, 144,970",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 356,
+          "score": 13.265731207992646,
+          "similarity": 13.265731207992646,
+          "text": " of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nC3\nTable 4 shows a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1099,
+          "score": 13.265731207992646,
+          "similarity": 13.265731207992646,
+          "text": "anning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nW1\nTable 19 shows a brea"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 652,
+          "score": 12.807047014016774,
+          "similarity": 12.807047014016774,
+          "text": "cal Year Book January 2011\nK4\nFigure 19-B shows the percentage of cases in which asylum or withholdi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1012,
+          "score": 12.751806464404542,
+          "similarity": 12.751806464404542,
+          "text": "on visa petitions increased 115 percent. The data in Table 17 shows that\nfrom FY 2006 to FY 2010 the"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 143,
+          "score": 12.542344562020528,
+          "similarity": 12.542344562020528,
+          "text": "courts decreased between FY 2006 and FY 2007 by four percent. The increase in\nreceipts from FY 2007 "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 71,
+          "score": 12.444338372824284,
+          "similarity": 12.444338372824284,
+          "text": " four percent between FY 2006\n(366,080) and FY 2010 (353,247). However, completions in FY 2010\nincre"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1159,
+          "score": 12.425793856113321,
+          "similarity": 12.425793856113321,
+          "text": "ases received and completed\nby OCAHO between FY 2006 and FY 2010. Completions may include cases rece"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1384,
+          "score": 11.92277997435287,
+          "similarity": 11.92277997435287,
+          "text": " it is terminated. The major difference between deferral of removal and\nwithholding of removal is th"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 69,
+          "score": 11.780303651792867,
+          "similarity": 11.780303651792867,
+          "text": "10 HIGHLIGHTS\n! Immigration court receipts increased by 12 percent between FY 2006\n(351,051) and FY "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1142,
+          "score": 11.749848853916085,
+          "similarity": 11.749848853916085,
+          "text": "\nBIA Pending Cases\nYear Filed Pending 09/30/10\n24000\nPre FY 06 50\n20000\nFY 06 130\n16000\nFY 07 180\n12"
+        }
+      ]
+    },
+    {
+      "chunk_index": 822,
+      "question_type": "paraphrased",
+      "question": "In the row for fiscal year 2007, what amount appears in the third position?",
+      "answer": "273,468",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1470,
+          "score": 13.841220500991078,
+          "similarity": 13.841220500991078,
+          "text": "hich an organization plans the use of its funds. In the U.S.\ngovernment, the fiscal year runs from O"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1042,
+          "score": 13.4139394903961,
+          "similarity": 13.4139394903961,
+          "text": "ration judge appeals in\nfiscal years 2006-2010. For the five-year period, seven nationalities ranked"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 123,
+          "score": 12.49922441737059,
+          "similarity": 12.49922441737059,
+          "text": "e, or seeks a reduction in the amount of\nbond. In some cases, bond redetermination hearings are held"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1469,
+          "score": 11.123609099634283,
+          "similarity": 11.123609099634283,
+          "text": "eal this decision to the Board of Immigration Appeals.\nFiscal Year\nA 12-month period for which an or"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 5,
+          "score": 10.70136427993,
+          "similarity": 10.70136427993,
+          "text": "nd\nis strictly informational in nature. In no way should any information in the Year Book, in whole "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 763,
+          "score": 9.901174846504201,
+          "similarity": 9.901174846504201,
+          "text": "Convention Against Torture.\nFor the purpose of this Year Book, voluntary departure (discussed in Tab"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1550,
+          "score": 9.901174846504201,
+          "similarity": 9.901174846504201,
+          "text": " in this Statistical\nYear Book.\nN\nNationality\nFor purposes of the EOIR Statistical Yearbook, nationa"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1237,
+          "score": 9.794645437368713,
+          "similarity": 9.794645437368713,
+          "text": "y for asylum within one year of arrival in the\nExecutive Office for Immigration Review Office of Pla"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1338,
+          "score": 9.670700032495182,
+          "similarity": 9.670700032495182,
+          "text": "ed that for any\nfiscal year no more than 1,000 aliens could be admitted as refugees or granted asylu"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1160,
+          "score": 9.629232784487932,
+          "similarity": 9.629232784487932,
+          "text": "cases received\nin a prior fiscal year.\nFigure 34\nOCAHO Cases\nReceived and Completed\nOCAHO Cases\n100\n"
+        }
+      ]
+    },
+    {
+      "chunk_index": 959,
+      "question_type": "direct",
+      "question": "What can overrule or modify the decision regarding the individual case at issue?",
+      "answer": "The Attorney General",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 959,
+          "score": 16.895502268716836,
+          "similarity": 16.895502268716836,
+          "text": "e or DHS with regard to the individual\ncase at issue unless overruled or modified by the Attorney Ge"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 370,
+          "score": 13.104922975366716,
+          "similarity": 13.104922975366716,
+          "text": "sion or reserves\nthe decision and issues a decision at a later date. In rendering a decision, the\nim"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 7,
+          "score": 10.16474069900272,
+          "similarity": 10.16474069900272,
+          "text": "y to enlarge upon, or otherwise modify or interpret, any existing legal authority, including, but\nno"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1349,
+          "score": 10.080808812637352,
+          "similarity": 10.080808812637352,
+          "text": " regulations regarding the\nUnited Nations’ Convention Against Torture and Other Cruel, Inhuman or De"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1578,
+          "score": 10.044103061771967,
+          "similarity": 10.044103061771967,
+          "text": "f ALJs'\ndecisions in the areas of employer sanctions and document fraud, and may modify or\nvacate th"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1282,
+          "score": 9.614897400850642,
+          "similarity": 9.614897400850642,
+          "text": "migration judge\ncan eliminate the bond; or change any of the conditions over which the immigration\nc"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1623,
+          "score": 9.423772588920038,
+          "similarity": 9.423772588920038,
+          "text": " alien is an individual who was detained at some point during proceedings\nand subsequently was relea"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1279,
+          "score": 9.331698303548452,
+          "similarity": 9.331698303548452,
+          "text": "o redetermine the bond. In a\nbond redetermination hearing, the judge can raise, lower, or maintain t"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1001,
+          "score": 8.981494163904035,
+          "similarity": 8.981494163904035,
+          "text": "or detention; and\n• Interlocutory appeals relating to important jurisdictional questions regarding\nt"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1243,
+          "score": 8.814694926302506,
+          "similarity": 8.814694926302506,
+          "text": "benefits and derivative asylum status for any spouse or child. An asylee can apply to\nthe Department"
+        }
+      ]
+    },
+    {
+      "chunk_index": 959,
+      "question_type": "inference",
+      "question": "Who has final authority to change the position taken in the individual matter unless that authority is displaced?",
+      "answer": "The Attorney General",
+      "gold_rank": 10,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 312,
+          "score": 20.882683135948145,
+          "similarity": 20.882683135948145,
+          "text": "e placed in removal\nproceedings.\n• Reasonable Fear Review. DHS has the authority to order the\nadmini"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1085,
+          "score": 20.0489202874511,
+          "similarity": 20.0489202874511,
+          "text": " Act, DHS has authority to detain an alien\npending a decision on whether or not the alien is removab"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 808,
+          "score": 18.460638244473824,
+          "similarity": 18.460638244473824,
+          "text": "d for Detained Cases\nUnder the Immigration and Nationality Act, DHS has authority to detain an alien"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1423,
+          "score": 18.057233150827262,
+          "similarity": 18.057233150827262,
+          "text": "delegated authority to grant or\ndeny most applications and petitions, except those that are specific"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1656,
+          "score": 16.916509622875136,
+          "similarity": 16.916509622875136,
+          "text": "nt has\nthe burden of proof to show that rescission is warranted. If an individual loses LPR\nstatus, "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 333,
+          "score": 16.46307188741184,
+          "similarity": 16.46307188741184,
+          "text": "liens who are subject to\nfinal orders of removal. In these cases the alien has already been ordered\n"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1441,
+          "score": 14.64155128884633,
+          "similarity": 14.64155128884633,
+          "text": "ted authority from the\nAttorney General, EOIR interprets and administers federal immigration laws by"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1565,
+          "score": 14.52051679922802,
+          "similarity": 14.52051679922802,
+          "text": "tatus, and the individual has the right to\ncontest the charge in rescission proceedings. See Resciss"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1381,
+          "score": 14.461768566592372,
+          "similarity": 14.461768566592372,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 959,
+          "score": 14.08858425842994,
+          "similarity": 14.08858425842994,
+          "text": "e or DHS with regard to the individual\ncase at issue unless overruled or modified by the Attorney Ge"
+        }
+      ]
+    },
+    {
+      "chunk_index": 959,
+      "question_type": "paraphrased",
+      "question": "Who may alter or reverse the ruling about the specific case unless higher authority changes it?",
+      "answer": "The Attorney General",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1423,
+          "score": 15.644027009232328,
+          "similarity": 15.644027009232328,
+          "text": "delegated authority to grant or\ndeny most applications and petitions, except those that are specific"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 959,
+          "score": 13.998985601912697,
+          "similarity": 13.998985601912697,
+          "text": "e or DHS with regard to the individual\ncase at issue unless overruled or modified by the Attorney Ge"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1605,
+          "score": 11.960770831650308,
+          "similarity": 11.960770831650308,
+          "text": "efers the case to the immigration court, unless\nthere are exceptional circumstances. No appeal to th"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1270,
+          "score": 10.946939219041367,
+          "similarity": 10.946939219041367,
+          "text": " may detain a respondent who is in\nremoval or deportation proceedings and may condition his or her r"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1074,
+          "score": 10.816588175187574,
+          "similarity": 10.816588175187574,
+          "text": " their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the pe"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1417,
+          "score": 10.774007029681666,
+          "similarity": 10.774007029681666,
+          "text": " of Homeland Security or other entities.\nDisposition\nIn immigration proceedings, the latest ruling o"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1330,
+          "score": 10.707615926483783,
+          "similarity": 10.707615926483783,
+          "text": ", changes of venue, and\ntransfers.\nFor matters before the Board of Immigration Appeals, a case is co"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1618,
+          "score": 10.369328889088138,
+          "similarity": 10.369328889088138,
+          "text": "ns may request, by motion, the reconsideration of a case previously heard by an\nimmigration judge or"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 957,
+          "score": 10.35743787081677,
+          "similarity": 10.35743787081677,
+          "text": "ll DHS officers and immigration judges unless\nmodified or overruled by the Attorney General or a fed"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 126,
+          "score": 10.278950575988036,
+          "similarity": 10.278950575988036,
+          "text": "et by DHS, or to change bond conditions.\n• Either the alien or DHS may request by motion that a case"
+        }
+      ]
+    },
+    {
+      "chunk_index": 973,
+      "question_type": "direct",
+      "question": "What were the FY 06 receipts and completions for Total BIA Cases?",
+      "answer": "39,743 receipts and 41,475 completions.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 973,
+          "score": 20.423950126026497,
+          "similarity": 20.423950126026497,
+          "text": " and Completed\nTotal BIA Cases\nReceipts Completions\n50,000\n45,000 FY 06 39,743 41,475\n40,000 FY 07 3"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 527,
+          "score": 17.819084259935526,
+          "similarity": 17.819084259935526,
+          "text": "ipts Completions\nAsylum Receipts and Completions\nReceipts Completions\nFY 06 56,969 57,864\nFY 07 57,5"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 139,
+          "score": 17.27792933300673,
+          "similarity": 17.27792933300673,
+          "text": "eived and Completed Total Immigration Court Matters\nReceipts Completions\nFY 06 351,051 366,080\n400,0"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 705,
+          "score": 16.097097086729903,
+          "similarity": 16.097097086729903,
+          "text": "lum Receipts\nFY 06 Number of Expedited Total Asylum\nAsylum Receipts Receipts\nFY 07 FY 06 35,391 56,9"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 713,
+          "score": 15.12837477314753,
+          "similarity": 15.12837477314753,
+          "text": "ipts and Completions\nFY 2006 - FY 2010\nReceipts Completions\nFY 06 35,391 38,819\nFY 07 31,688 34,281\n"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 712,
+          "score": 14.868979805070424,
+          "similarity": 14.868979805070424,
+          "text": "000\n30,000\n25,000\nFY 06 FY 07 FY 08 FY 09 FY 10\nReceipts Completions\nExpedited Asylum Receipts and C"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 975,
+          "score": 14.036696775039317,
+          "similarity": 14.036696775039317,
+          "text": "35,787 33,305\nFY 06 FY 07 FY 08 FY 09 FY 10\nReceipts Completions\nExecutive Office for Immigration Re"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1080,
+          "score": 13.383809529223804,
+          "similarity": 13.383809529223804,
+          "text": "presented Before the BIA\nRepresented Unrepresented Total\nFY 06 23,539 12,809 36,348\nFY 07 21,816 8,9"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1162,
+          "score": 13.315259927970018,
+          "similarity": 13.315259927970018,
+          "text": "\nFY 10 91 53\n0\nFY 06 FY 07 FY 08 FY 09 FY 10\nReceipts Completions\nExecutive Office for Immigration R"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 972,
+          "score": 12.970910731051811,
+          "similarity": 12.970910731051811,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        }
+      ]
+    },
+    {
+      "chunk_index": 973,
+      "question_type": "inference",
+      "question": "Which fiscal year shown has both a receipts figure and a completions figure listed, rather than just a partial entry?",
+      "answer": "FY 06.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1039,
+          "score": 18.637204083486292,
+          "similarity": 18.637204083486292,
+          "text": "010, the top 10 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A t"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 42,
+          "score": 18.521192312505665,
+          "similarity": 18.521192312505665,
+          "text": "ylum Receipts L1\nFigure 21 - Expedited Asylum Receipts and Completions L2\nFigure 22 - Immigration Co"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1160,
+          "score": 18.270625073115955,
+          "similarity": 18.270625073115955,
+          "text": "cases received\nin a prior fiscal year.\nFigure 34\nOCAHO Cases\nReceived and Completed\nOCAHO Cases\n100\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1469,
+          "score": 17.577839105122607,
+          "similarity": 17.577839105122607,
+          "text": "eal this decision to the Board of Immigration Appeals.\nFiscal Year\nA 12-month period for which an or"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 36,
+          "score": 16.301632997824715,
+          "similarity": 16.301632997824715,
+          "text": "ensive I1\nFigure 14 - Asylum Cases: Receipts and Completions I2\nFigure 15 - FY 2010 Asylum Grants by"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 411,
+          "score": 15.947964968980932,
+          "similarity": 15.947964968980932,
+          "text": "counted for approximately 76 percent of all\nproceedings completed as shown in Figure 6. A total of 2"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 461,
+          "score": 15.577739648616582,
+          "similarity": 15.577739648616582,
+          "text": "g to obtain counsel.\nAs shown in Figure 9, less than half of the aliens whose proceedings were\ncompl"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 711,
+          "score": 15.186030385983411,
+          "similarity": 15.186030385983411,
+          "text": "etween FY 2006 and FY 2010.\nFigure 21\nExpedited Asylum\nReceipts and Completions\n40,000\n35,000\n30,000"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 142,
+          "score": 14.600844149869495,
+          "similarity": 14.600844149869495,
+          "text": "Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts dec"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 710,
+          "score": 14.35477920791518,
+          "similarity": 14.35477920791518,
+          "text": "in Figure 21 below are the number of receipts and completions for\nexpedited asylum cases between FY "
+        }
+      ]
+    },
+    {
+      "chunk_index": 973,
+      "question_type": "paraphrased",
+      "question": "For the overall BIA case count, what were the incoming and finished totals in FY 06?",
+      "answer": "39,743 and 41,475.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 100,
+          "score": 13.431876584042856,
+          "similarity": 13.431876584042856,
+          "text": "f BIA appeals completed in FY 2010 were for\nrepresented aliens. (Figure 29, page V1)\n! In FY 2010, e"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1101,
+          "score": 11.149456448685148,
+          "similarity": 11.149456448685148,
+          "text": "ber who were serving sentences at an IHP location. In FY\n2010, 11 percent of detained BIA completion"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 623,
+          "score": 11.046125606940024,
+          "similarity": 11.046125606940024,
+          "text": "2006 to\nFY 2010. These decreases are mutually related to the overall decrease in asylum\ncompletions."
+        },
+        {
+          "rank": 4,
+          "chunk_index": 970,
+          "score": 10.831951583883557,
+          "similarity": 10.831951583883557,
+          "text": "n in Figure 25, BIA case receipts decreased by 17 percent from FY 2006\nto FY 2009. During this same "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 503,
+          "score": 10.538306659398781,
+          "similarity": 10.538306659398781,
+          "text": " is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 412,
+          "score": 10.456847609412105,
+          "similarity": 10.456847609412105,
+          "text": "total of 224 nationalities were\nrepresented in the FY 2010 immigration judge completions. Mexico and"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 440,
+          "score": 9.847850284756369,
+          "similarity": 9.847850284756369,
+          "text": "tal of 283\ndifferent languages were spoken in court proceedings in the immigration courts during FY\n"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 462,
+          "score": 9.797516095526573,
+          "similarity": 9.797516095526573,
+          "text": "were\ncompleted during the period FY 2006 – FY 2010 were represented. The percentage of\nrepresented a"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1016,
+          "score": 9.674535210306688,
+          "similarity": 9.674535210306688,
+          "text": "akdown of the types of cases received by the BIA between\nFY 2006 and FY 2010.\nTable 16 - BIA Receipt"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 77,
+          "score": 9.328178962352098,
+          "similarity": 9.328178962352098,
+          "text": "ases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asy"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1105,
+      "question_type": "direct",
+      "question": "What was decreased, according to the chunk?",
+      "answer": "the number of IHP completions",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1668,
+          "score": 7.546267545777073,
+          "similarity": 7.546267545777073,
+          "text": "n judge. The\nstatus of an alien who was granted this relief was adjusted to that of an alien lawfull"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1652,
+          "score": 7.377725650161271,
+          "similarity": 7.377725650161271,
+          "text": " was not entitled to\nlawful permanent resident (LPR) status when it was granted, DHS issues a Notice"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1339,
+          "score": 6.9608097257571675,
+          "similarity": 6.9608097257571675,
+          "text": "nted asylum\npursuant to a determination that the alien was or would be persecuted for resistance to\n"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 905,
+          "score": 6.820662836595707,
+          "similarity": 6.820662836595707,
+          "text": "\ncancellation of removal. Cancellation of removal was intended to replace the former\nImmigration and"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1491,
+          "score": 6.820662836595707,
+          "similarity": 6.820662836595707,
+          "text": "2003,\nINS was the agency responsible for administering immigration and nationality laws\nrelating to "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1525,
+          "score": 6.5586935266821715,
+          "similarity": 6.5586935266821715,
+          "text": "idence that the written notice was provided and that the\nalien is removable. See Failure to Appear.\n"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 298,
+          "score": 6.253212116567749,
+          "similarity": 6.253212116567749,
+          "text": "ed States, but was stopped at the point of\nentry because INS found the person to be inadmissible. De"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 85,
+          "score": 6.178966431508189,
+          "similarity": 6.178966431508189,
+          "text": "e for asylum applications was 51 percent in FY 2010. The\ngrant rate was 61 percent for affirmative a"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 653,
+          "score": 6.143915252102942,
+          "similarity": 6.143915252102942,
+          "text": " withholding of\nremoval was granted. The grant rate has increased eight percent from FY 2006 to FY\n2"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1405,
+          "score": 6.143915252102942,
+          "similarity": 6.143915252102942,
+          "text": "used prior to April 1, 1997. A deportation\nproceeding actually began when the OSC was filed with an "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1105,
+      "question_type": "inference",
+      "question": "What happened to the overall count of detained completions?",
+      "answer": "It stayed fairly constant.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 623,
+          "score": 9.229913248667948,
+          "similarity": 9.229913248667948,
+          "text": "2006 to\nFY 2010. These decreases are mutually related to the overall decrease in asylum\ncompletions."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1141,
+          "score": 8.286042180703804,
+          "similarity": 8.286042180703804,
+          "text": "count for three\npercent of the pending caseload.\nFigure 33\nBIA Pending Cases\nBy Year Filed\nBIA Pendi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 503,
+          "score": 8.144391290952143,
+          "similarity": 8.144391290952143,
+          "text": " is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 816,
+          "score": 8.0175125925341,
+          "similarity": 8.0175125925341,
+          "text": "percent detained increased yearly from FY 2006 to FY 2009. In FY 2010, the percent\nof detained compl"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1093,
+          "score": 7.9488244163474455,
+          "similarity": 7.9488244163474455,
+          "text": "period causing the percent detained to increase.\nFigure 30\nIJ Case Appeal Decisions\nDetained and Tot"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1013,
+          "score": 7.139352362709058,
+          "similarity": 7.139352362709058,
+          "text": "Y 2010 there has been an overall decrease in the number of\ncompletions of appeals from immigration j"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1575,
+          "score": 7.034899645920049,
+          "similarity": 7.034899645920049,
+          "text": "ief Administrative Hearing\nOfficer (CAHO) who provides overall program direction, articulates polici"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1582,
+          "score": 7.034899645920049,
+          "similarity": 7.034899645920049,
+          "text": "CIJ provides overall program direction, articulates policies and procedures, and\nestablishes priorit"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 815,
+          "score": 6.893853736794518,
+          "similarity": 6.893853736794518,
+          "text": "3 below\nprovides a comparison of detained completions to total proceedings completed. The\npercent de"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1090,
+          "score": 6.569272905723581,
+          "similarity": 6.569272905723581,
+          "text": "that involved detainees. The figures for detained appeal decisions also\ninclude IHP cases. Detained "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1105,
+      "question_type": "paraphrased",
+      "question": "What did the passage say about the count of IHP finishes and the overall number of held finishes?",
+      "answer": "The IHP finishes went down, while the total detained finishes stayed fairly constant.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1533,
+          "score": 15.120984469805055,
+          "similarity": 15.120984469805055,
+          "text": "meet this requirement, the Department of Justice established\nthe IHP where removal hearings are held"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1105,
+          "score": 13.466998351767742,
+          "similarity": 13.466998351767742,
+          "text": " by a decrease in the number of\nIHP completions and the total detained completions staying fairly co"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1013,
+          "score": 12.911032679482432,
+          "similarity": 12.911032679482432,
+          "text": "Y 2010 there has been an overall decrease in the number of\ncompletions of appeals from immigration j"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 911,
+          "score": 12.625505880152193,
+          "similarity": 12.625505880152193,
+          "text": "o the passage of IIRIRA, Section 212(c) of the Immigration and Nationality\nAct provided relief from "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1128,
+          "score": 11.557795285717857,
+          "similarity": 11.557795285717857,
+          "text": "ates. The nature and number of the proceedings\nand the number of appeals from immigration court deci"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1141,
+          "score": 9.881226314013889,
+          "similarity": 9.881226314013889,
+          "text": "count for three\npercent of the pending caseload.\nFigure 33\nBIA Pending Cases\nBy Year Filed\nBIA Pendi"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 762,
+          "score": 9.820318494836435,
+          "similarity": 9.820318494836435,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 972,
+          "score": 9.674014566101942,
+          "similarity": 9.674014566101942,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 492,
+          "score": 9.426532029667811,
+          "similarity": 9.426532029667811,
+          "text": ".\nFigure 11 shows a comparison of the number of failures to appear with the\nnumber of immigration ju"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 444,
+          "score": 9.05997808546631,
+          "similarity": 9.05997808546631,
+          "text": "ian, Portuguese, and Arabic represented the three most\nfrequently spoken languages.\n• The number of "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1185,
+      "question_type": "direct",
+      "question": "Who may adjust the alien's status, in his discretion, to that of a lawful permanent resident?",
+      "answer": "The Attorney General.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1185,
+          "score": 33.32194636337806,
+          "similarity": 33.32194636337806,
+          "text": "alien may be adjusted by the Attorney General,\nin his discretion, to that of a lawful permanent resi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 922,
+          "score": 19.897519345003044,
+          "similarity": 19.897519345003044,
+          "text": "tatus to that of lawful permanent resident. The total number of\nadjustments to lawful permanent resi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 912,
+          "score": 16.628217351241986,
+          "similarity": 16.628217351241986,
+          "text": "lief from deportation for long-term lawful permanent residents who\nhad committed a crime. In order t"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1270,
+          "score": 16.321551238327114,
+          "similarity": 16.321551238327114,
+          "text": " may detain a respondent who is in\nremoval or deportation proceedings and may condition his or her r"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1650,
+          "score": 15.776677593021137,
+          "similarity": 15.776677593021137,
+          "text": "scinding lawful permanent resident\nstatus. If, within five years of granting adjustment of status, t"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1183,
+          "score": 14.30022061521083,
+          "similarity": 14.30022061521083,
+          "text": " removal, or exclusion for an alien who is eligible for\nlawful permanent resident status based on a "
+        },
+        {
+          "rank": 7,
+          "chunk_index": 930,
+          "score": 14.150753602349742,
+          "similarity": 14.150753602349742,
+          "text": "ion of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1564,
+          "score": 14.060500694125569,
+          "similarity": 14.060500694125569,
+          "text": "omeland Security issues a Notice of Intent to\nRescind an individual’s permanent resident status, and"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1595,
+          "score": 14.008878370759552,
+          "similarity": 14.008878370759552,
+          "text": "tion 238 of the\nImmigration and Nationality Act (covering aliens who are not lawful permanent reside"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 329,
+          "score": 13.96715579328933,
+          "similarity": 13.96715579328933,
+          "text": "ssion. DHS issues a Notice of Intent to Rescind an individual’s\npermanent resident status, and the i"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1185,
+      "question_type": "inference",
+      "question": "What kind of change in immigration status can be made at the Attorney General's discretion?",
+      "answer": "It can be changed to lawful permanent resident status.",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1282,
+          "score": 12.86509531128308,
+          "similarity": 12.86509531128308,
+          "text": "migration judge\ncan eliminate the bond; or change any of the conditions over which the immigration\nc"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1296,
+          "score": 11.773335788816691,
+          "similarity": 11.773335788816691,
+          "text": "etionary\nrelief is made during the course of a hearing before an immigration judge. The status of\nan"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1185,
+          "score": 11.132841776949387,
+          "similarity": 11.132841776949387,
+          "text": "alien may be adjusted by the Attorney General,\nin his discretion, to that of a lawful permanent resi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1281,
+          "score": 10.787494850679641,
+          "similarity": 10.787494850679641,
+          "text": "t bond of at least\n$1,500 is required before an alien may be released. In addition, the immigration "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1699,
+          "score": 10.668112298721637,
+          "similarity": 10.668112298721637,
+          "text": "ision made in the\ncase shall be final to the same extent as if no appeal had been taken.\nWithdrawal "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 452,
+          "score": 10.58662985357498,
+          "similarity": 10.58662985357498,
+          "text": "individuals in removal proceedings\nbefore an immigration judge may be represented by counsel, but at"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1502,
+          "score": 10.20964392822047,
+          "similarity": 10.20964392822047,
+          "text": "\nImmigration Judge\nThe term immigration judge means an attorney whom the Attorney General appoints a"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1243,
+          "score": 10.20818952905893,
+          "similarity": 10.20818952905893,
+          "text": "benefits and derivative asylum status for any spouse or child. An asylee can apply to\nthe Department"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 697,
+          "score": 10.056528662108647,
+          "similarity": 10.056528662108647,
+          "text": "ization. The\napplicant can only be granted employment authorization if the asylum application has\nno"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 959,
+          "score": 9.589316303172254,
+          "similarity": 9.589316303172254,
+          "text": "e or DHS with regard to the individual\ncase at issue unless overruled or modified by the Attorney Ge"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1185,
+      "question_type": "paraphrased",
+      "question": "Which official can, at his discretion, convert the person's status to that of a lawful permanent resident?",
+      "answer": "The Attorney General.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1185,
+          "score": 28.288627356115875,
+          "similarity": 28.288627356115875,
+          "text": "alien may be adjusted by the Attorney General,\nin his discretion, to that of a lawful permanent resi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 922,
+          "score": 19.897519345003044,
+          "similarity": 19.897519345003044,
+          "text": "tatus to that of lawful permanent resident. The total number of\nadjustments to lawful permanent resi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1652,
+          "score": 16.41850744369125,
+          "similarity": 16.41850744369125,
+          "text": " was not entitled to\nlawful permanent resident (LPR) status when it was granted, DHS issues a Notice"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1244,
+          "score": 15.09534523460232,
+          "similarity": 15.09534523460232,
+          "text": "Department of Homeland Security for lawful permanent resident status under\nImmigration and Nationali"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 909,
+          "score": 14.829097520163092,
+          "similarity": 14.829097520163092,
+          "text": "o is eligible for lawful permanent resident status based on a visa\npetition approved by DHS. Normall"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1183,
+          "score": 14.829097520163092,
+          "similarity": 14.829097520163092,
+          "text": " removal, or exclusion for an alien who is eligible for\nlawful permanent resident status based on a "
+        },
+        {
+          "rank": 7,
+          "chunk_index": 914,
+          "score": 14.273580374846965,
+          "similarity": 14.273580374846965,
+          "text": "e had been a lawful permanent resident for at\nleast seven years, had served less than five years of "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 930,
+          "score": 14.150753602349742,
+          "similarity": 14.150753602349742,
+          "text": "ion of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 938,
+          "score": 12.62380597271202,
+          "similarity": 12.62380597271202,
+          "text": "ly unusual hardship to\na citizen or lawful permanent resident alien spouse, parent, or child.\nIIRIRA"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 939,
+          "score": 12.61961670381374,
+          "similarity": 12.61961670381374,
+          "text": "ld.\nIIRIRA limits to 4,000 annually the total number of adjustments to lawful\npermanent resident sta"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1280,
+      "question_type": "direct",
+      "question": "What does the Immigration and Nationality Act provide about the bond?",
+      "answer": "It provides that bond of",
+      "gold_rank": 6,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1485,
+          "score": 13.952894710924404,
+          "similarity": 13.952894710924404,
+          "text": "ctment of the Immigration and\nNationality Act.\nImmigration and Nationality Act\nThe Immigration and N"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1508,
+          "score": 11.490036032841303,
+          "similarity": 11.490036032841303,
+          "text": " powers and duties delegated to them by the Immigration and Nationality\nAct and by the Attorney Gene"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1487,
+          "score": 11.483325598069355,
+          "similarity": 11.483325598069355,
+          "text": "te. As amended, the Immigration and Nationality Act provides the\nfoundation for immigration law in e"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 451,
+          "score": 11.428906162168708,
+          "similarity": 11.428906162168708,
+          "text": "edings Completed by Representation Status\nThe Immigration and Nationality Act states that individual"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1068,
+          "score": 11.428906162168708,
+          "similarity": 11.428906162168708,
+          "text": "ation Judge Decision Appeals Completed by Representation\nStatus\nThe Immigration and Nationality Act "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1280,
+          "score": 11.330647441643393,
+          "similarity": 11.330647441643393,
+          "text": "maintain the amount of the\nbond, however, the Immigration and Nationality Act provides that bond of "
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1230,
+          "score": 11.272293820663633,
+          "similarity": 11.272293820663633,
+          "text": "ugee” and is not subject to any statutory prohibitions. The\nImmigration and Nationality Act generall"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1305,
+          "score": 11.272293820663633,
+          "similarity": 11.272293820663633,
+          "text": "ases brought under Immigration and Nationality Act section 274A and section 274C,\nthe complainant is"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1465,
+          "score": 11.272293820663633,
+          "similarity": 11.272293820663633,
+          "text": "s\nCertain provisions of the Immigration and Nationality Act render individuals and carriers\nliable f"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1528,
+          "score": 11.272293820663633,
+          "similarity": 11.272293820663633,
+          "text": "the\nImmigration and Nationality Act defines classes of aliens ineligible to receive visas and\ninelig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1280,
+      "question_type": "inference",
+      "question": "What is being kept unchanged, according to the text?",
+      "answer": "The amount of the bond.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1638,
+          "score": 9.062999117669081,
+          "similarity": 9.062999117669081,
+          "text": "certain aliens from being admitted to the United States or to remove them from the\nUnited States. A "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1559,
+          "score": 8.351551971628236,
+          "similarity": 8.351551971628236,
+          "text": "rm I-862) used by the Department of Homeland Security (DHS) to\ncharge an alien with being removable "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1400,
+          "score": 7.382637579998283,
+          "similarity": 7.382637579998283,
+          "text": "espondent entered the country illegally by crossing the border without being inspected\nby an immigra"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1641,
+          "score": 7.020643736723053,
+          "similarity": 7.020643736723053,
+          "text": "ly by crossing the border without being inspected by an\nimmigration officer, or has violated the ter"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1676,
+          "score": 6.76214204810008,
+          "similarity": 6.76214204810008,
+          "text": "lf or herself before an immigration\ncourt or the Board of Immigration Appeals instead of being repre"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 882,
+          "score": 5.902565834273646,
+          "similarity": 5.902565834273646,
+          "text": "ien to depart voluntarily if the alien is able to pay for his or her removal, and if he or\nshe is no"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 917,
+          "score": 5.7373563462342005,
+          "similarity": 5.7373563462342005,
+          "text": "tation proceedings is\nable to establish these factors, the immigration judge has discretion to grant"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1383,
+          "score": 5.6823692093232,
+          "similarity": 5.6823692093232,
+          "text": "she is not likely to be tortured. In addition, deferral of removal is effective\nonly until it is ter"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1166,
+          "score": 5.6682492325434755,
+          "similarity": 5.6682492325434755,
+          "text": "IR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1381,
+          "score": 5.503614418091562,
+          "similarity": 5.503614418091562,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1280,
+      "question_type": "paraphrased",
+      "question": "What does the immigration law say about the security deposit?",
+      "answer": "It provides that bond of",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1169,
+          "score": 12.173702915611422,
+          "similarity": 12.173702915611422,
+          "text": "tudy of the pertinent laws and\nregulations. This Glossary does not carry the weight of law or regula"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1171,
+          "score": 11.6569873967469,
+          "similarity": 11.6569873967469,
+          "text": "egal advice, nor does it\nextend or limit the jurisdiction of EOIR as established by law and regulati"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 762,
+          "score": 9.127931605893467,
+          "similarity": 9.127931605893467,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1487,
+          "score": 8.563111926697896,
+          "similarity": 8.563111926697896,
+          "text": "te. As amended, the Immigration and Nationality Act provides the\nfoundation for immigration law in e"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 107,
+          "score": 8.1306361992761,
+          "similarity": 8.1306361992761,
+          "text": "lation\nof immigration law is issued a charging document. The most common charging\ndocuments are the "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1488,
+          "score": 8.1306361992761,
+          "similarity": 8.1306361992761,
+          "text": "n law in effect today. The Immigration and Nationality Act\ndeals with the immigration, temporary adm"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 972,
+          "score": 7.995837516635794,
+          "similarity": 7.995837516635794,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1620,
+          "score": 7.910484990679821,
+          "similarity": 7.910484990679821,
+          "text": "s an error in law or fact in a prior proceeding or identifies a change in law\nand asks the immigrati"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1149,
+          "score": 7.817858713044681,
+          "similarity": 7.817858713044681,
+          "text": "istrative law judges hear cases and\nadjudicate issues arising under provisions of the Immigration an"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1690,
+          "score": 7.2930453963391795,
+          "similarity": 7.2930453963391795,
+          "text": "of Terms\nJanuary 2011\n18\nprocess. The BIA’s role in the appeal process does not begin until the comp"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1295,
+      "question_type": "direct",
+      "question": "According to the chunk, which section of the Immigration and Nationality Act is mentioned?",
+      "answer": "Section 240A(b).",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1305,
+          "score": 20.024828419280915,
+          "similarity": 20.024828419280915,
+          "text": "ases brought under Immigration and Nationality Act section 274A and section 274C,\nthe complainant is"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1307,
+          "score": 17.25675618107126,
+          "similarity": 17.25675618107126,
+          "text": "gration and Nationality Act section 274B cases, the complainant is\neither the Office of Special Coun"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 631,
+          "score": 16.127244398150324,
+          "similarity": 16.127244398150324,
+          "text": " applicant for withholding of removal under\nsection 241(b)(3) of the Immigration and Nationality Act"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 911,
+          "score": 15.811337147171654,
+          "similarity": 15.811337147171654,
+          "text": "o the passage of IIRIRA, Section 212(c) of the Immigration and Nationality\nAct provided relief from "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1230,
+          "score": 15.694900994444126,
+          "similarity": 15.694900994444126,
+          "text": "ugee” and is not subject to any statutory prohibitions. The\nImmigration and Nationality Act generall"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1708,
+          "score": 15.537211720451108,
+          "similarity": 15.537211720451108,
+          "text": "removal proceedings under section 238 of the Immigration\nand Nationality Act (covering aliens who ar"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1485,
+          "score": 14.36577666927753,
+          "similarity": 14.36577666927753,
+          "text": "ctment of the Immigration and\nNationality Act.\nImmigration and Nationality Act\nThe Immigration and N"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1711,
+          "score": 13.865696109353575,
+          "similarity": 13.865696109353575,
+          "text": "n and Nationality Act are now able to apply for\nwithholding of removal under section 241(b)(3) of th"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1528,
+          "score": 13.35977593876014,
+          "similarity": 13.35977593876014,
+          "text": "the\nImmigration and Nationality Act defines classes of aliens ineligible to receive visas and\ninelig"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 906,
+          "score": 13.24389599859925,
+          "similarity": 13.24389599859925,
+          "text": "ration and Nationality Act Section 212(c) waiver and suspension of deportation.\nTable 15 on page R3 "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1295,
+      "question_type": "inference",
+      "question": "What kind of approval is being discussed in the fragment, based on the phrase \"Application for this form of discretionary\"?",
+      "answer": "A discretionary application.",
+      "gold_rank": 4,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 760,
+          "score": 16.613418970125704,
+          "similarity": 16.613418970125704,
+          "text": " proceedings are discussed in other sections of this\nYear Book. Asylum is addressed in more detail i"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1291,
+          "score": 14.802501905991411,
+          "similarity": 14.802501905991411,
+          "text": "tion for this form of discretionary relief is made\nduring the course of a hearing before an immigrat"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1588,
+          "score": 13.291649019434665,
+          "similarity": 13.291649019434665,
+          "text": "ntext, this phrase means\nlegal representation done or performed free of charge. Because aliens in re"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1295,
+          "score": 13.218027467697476,
+          "similarity": 13.218027467697476,
+          "text": "section\n240A(b) of the Immigration and Nationality Act. Application for this form of discretionary\nr"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1132,
+          "score": 13.053196321792049,
+          "similarity": 13.053196321792049,
+          "text": "\ncourts based on the year the proceeding was received at the court. The age of pending\ncases is decr"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1476,
+          "score": 12.884054823586023,
+          "similarity": 12.884054823586023,
+          "text": "on Appeals (BIA) allows a reconsideration of the decision based on a possible\nerror in law or fact, "
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1183,
+          "score": 12.797335488390129,
+          "similarity": 12.797335488390129,
+          "text": " removal, or exclusion for an alien who is eligible for\nlawful permanent resident status based on a "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 403,
+          "score": 12.438156101382905,
+          "similarity": 12.438156101382905,
+          "text": "ges. Data in this section provide information on the\npredominant nationalities for completed proceed"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1518,
+          "score": 12.410573143616261,
+          "similarity": 12.410573143616261,
+          "text": "ections for workers against discrimination based on\ncitizenship status and national origin.\nIn Absen"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 909,
+          "score": 12.166716310007564,
+          "similarity": 12.166716310007564,
+          "text": "o is eligible for lawful permanent resident status based on a visa\npetition approved by DHS. Normall"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1295,
+      "question_type": "paraphrased",
+      "question": "Which part of the immigration law is referred to in the excerpt?",
+      "answer": "Section 240A(b).",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1456,
+          "score": 12.448478463791751,
+          "similarity": 12.448478463791751,
+          "text": "plication is referred to the Executive Office for Immigration Review\n(EOIR) by DHS within 75 days of"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1381,
+          "score": 12.348558641478611,
+          "similarity": 12.348558641478611,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 690,
+          "score": 12.29136059569562,
+          "similarity": 12.29136059569562,
+          "text": " referred to the appropriate immigration court for a hearing.\nAsylum regulations implemented in 1995"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1264,
+          "score": 11.339936043228473,
+          "similarity": 11.339936043228473,
+          "text": "Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other p"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 107,
+          "score": 11.209026382956052,
+          "similarity": 11.209026382956052,
+          "text": "lation\nof immigration law is issued a charging document. The most common charging\ndocuments are the "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 308,
+          "score": 11.113783338776422,
+          "similarity": 11.113783338776422,
+          "text": "g to the country of\nremoval, the alien is referred for a “credible fear” interview by a DHS\nasylum o"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 700,
+          "score": 11.0157240607458,
+          "similarity": 11.0157240607458,
+          "text": "lien files “affirmatively” at a DHS Asylum Office and the application is referred to EOIR\nwithin 75 "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1620,
+          "score": 10.875796775565536,
+          "similarity": 10.875796775565536,
+          "text": "s an error in law or fact in a prior proceeding or identifies a change in law\nand asks the immigrati"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1443,
+          "score": 10.612179054400459,
+          "similarity": 10.612179054400459,
+          "text": "\nhearings. EOIR consists of three components: the Office of the Chief Immigration\nJudge, which is re"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1232,
+          "score": 10.585175340990277,
+          "similarity": 10.585175340990277,
+          "text": "ty or, in the case of a person having no nationality,\nis outside any county in which such person las"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1419,
+      "question_type": "direct",
+      "question": "According to the chunk, who was the highest ranking immigration official in the INS?",
+      "answer": "The District Director (DD).",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1419,
+          "score": 23.97673375900353,
+          "similarity": 23.97673375900353,
+          "text": "nd Naturalization Service (INS), the District Director\n(DD) was the highest ranking immigration offi"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1420,
+          "score": 16.166567901986618,
+          "similarity": 16.166567901986618,
+          "text": "ation official in each of the INS’s 30+ districts. The\nINS was transferred out of the Department of "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1668,
+          "score": 12.034578599308642,
+          "similarity": 12.034578599308642,
+          "text": "n judge. The\nstatus of an alien who was granted this relief was adjusted to that of an alien lawfull"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1260,
+          "score": 11.596667632528348,
+          "similarity": 11.596667632528348,
+          "text": "of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1427,
+          "score": 11.114267253882876,
+          "similarity": 11.114267253882876,
+          "text": "e involved a person who tried to enter the United\nStates but was stopped at the port of entry becaus"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1495,
+          "score": 10.291699977134982,
+          "similarity": 10.291699977134982,
+          "text": "to the United States, removed aliens in this country who were in violation of the law,\nexamined alie"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 332,
+          "score": 9.790621085387922,
+          "similarity": 9.790621085387922,
+          "text": " v. Davis, a new type of proceeding was\nestablished regarding the continued detention of aliens who "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1623,
+          "score": 9.57498146897408,
+          "similarity": 9.57498146897408,
+          "text": " alien is an individual who was detained at some point during proceedings\nand subsequently was relea"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1407,
+          "score": 9.551627074901834,
+          "similarity": 9.551627074901834,
+          "text": "to prove that a respondent was\ndeportable for the reasons stated in the OSC. As of April 1, 1997, de"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 726,
+          "score": 9.440378990401062,
+          "similarity": 9.440378990401062,
+          "text": "• The second protection concerns aliens who would be tortured in the country\nof removal, but who are"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1419,
+      "question_type": "inference",
+      "question": "What does the chunk imply about the District Director's position within the immigration agency hierarchy?",
+      "answer": "They were at the top of the local chain of command.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1491,
+          "score": 11.247998022445003,
+          "similarity": 11.247998022445003,
+          "text": "2003,\nINS was the agency responsible for administering immigration and nationality laws\nrelating to "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1419,
+          "score": 9.953721567483326,
+          "similarity": 9.953721567483326,
+          "text": "nd Naturalization Service (INS), the District Director\n(DD) was the highest ranking immigration offi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1223,
+          "score": 9.897202112781311,
+          "similarity": 9.897202112781311,
+          "text": "n appeal, the respondent asks the Board of Immigration Appeals to\nreview the District Director’s dec"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 762,
+          "score": 9.820318494836435,
+          "similarity": 9.820318494836435,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1327,
+          "score": 9.08582608887829,
+          "similarity": 9.08582608887829,
+          "text": "ee Conditional Asylum Grants.\nCompletions\nWithin the context of the Office of the Chief Immigration "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1221,
+          "score": 8.93548693238407,
+          "similarity": 8.93548693238407,
+          "text": "rom a decision of a DHS U.S. Citizenship and Immigration Services’\nDistrict Director, the respondent"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1418,
+          "score": 8.93548693238407,
+          "similarity": 8.93548693238407,
+          "text": "t ruling on an alien’s removability.\nDistrict Director (DD)\nUnder the former Immigration and Natural"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 972,
+          "score": 8.602350941765147,
+          "similarity": 8.602350941765147,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1257,
+          "score": 8.530229879588294,
+          "similarity": 8.530229879588294,
+          "text": "maximum extent practical, within the\nsame time frame as asylum claims in removal cases, i.e, within "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1429,
+          "score": 8.409462443985948,
+          "similarity": 8.409462443985948,
+          "text": "eland Security) found the person\nto be inadmissible. The INS District Director could either detain t"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1419,
+      "question_type": "paraphrased",
+      "question": "In the immigration agency mentioned, which officer held the top rank?",
+      "answer": "The District Director (DD).",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1491,
+          "score": 10.574677605588633,
+          "similarity": 10.574677605588633,
+          "text": "2003,\nINS was the agency responsible for administering immigration and nationality laws\nrelating to "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1347,
+          "score": 9.893653293879575,
+          "similarity": 9.893653293879575,
+          "text": "Davis, in which the immigration judge decides whether or not the alien\nshould remain in custody.\nCon"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 123,
+          "score": 9.85007230283836,
+          "similarity": 9.85007230283836,
+          "text": "e, or seeks a reduction in the amount of\nbond. In some cases, bond redetermination hearings are held"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1194,
+          "score": 9.244449345913257,
+          "similarity": 9.244449345913257,
+          "text": "udges\nAdministrative Law Judges (ALJs) in the Office of the Chief Administrative Hearing\nOfficer (OC"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1439,
+          "score": 9.017355735529831,
+          "similarity": 9.017355735529831,
+          "text": "land Security). The Office of the Chief\nAdministrative Hearing Officer (OCAHO) was added in 1987. EO"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 964,
+          "score": 8.888611821145897,
+          "similarity": 8.888611821145897,
+          "text": "in 30 days of the immigration judge’s decision.\nOther types of cases over which the BIA has jurisdic"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1216,
+          "score": 8.584843798855735,
+          "similarity": 8.584843798855735,
+          "text": "igration Judge\nIn an appeal from a decision of an immigration judge, the appealing party, which coul"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1264,
+          "score": 8.485079969786247,
+          "similarity": 8.485079969786247,
+          "text": "Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other p"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1533,
+          "score": 8.295967266444618,
+          "similarity": 8.295967266444618,
+          "text": "meet this requirement, the Department of Justice established\nthe IHP where removal hearings are held"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 441,
+          "score": 8.244173396036043,
+          "similarity": 8.244173396036043,
+          "text": "during FY\n2010. The top five languages accounted for 91 percent of the proceedings completed in FY\n2"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1422,
+      "question_type": "direct",
+      "question": "Under which agency is it organizationally placed?",
+      "answer": "The U.S. Citizenship and Immigration Services.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1422,
+          "score": 12.118713368845986,
+          "similarity": 12.118713368845986,
+          "text": "ated organizationally under the U.S.\nCitizenship and Immigration Services. The DD has the delegated "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1191,
+          "score": 11.485062335932755,
+          "similarity": 11.485062335932755,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1381,
+          "score": 11.485062335932755,
+          "similarity": 11.485062335932755,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1383,
+          "score": 8.990731816539618,
+          "similarity": 8.990731816539618,
+          "text": "she is not likely to be tortured. In addition, deferral of removal is effective\nonly until it is ter"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1384,
+          "score": 8.958273976011286,
+          "similarity": 8.958273976011286,
+          "text": " it is terminated. The major difference between deferral of removal and\nwithholding of removal is th"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1491,
+          "score": 8.101171380974945,
+          "similarity": 8.101171380974945,
+          "text": "2003,\nINS was the agency responsible for administering immigration and nationality laws\nrelating to "
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1672,
+          "score": 7.746231832251646,
+          "similarity": 7.746231832251646,
+          "text": "bility Act of 1996 (IIRIRA).\nT\nTermination\nA termination is a type of completion in which a case is "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1284,
+          "score": 7.674285946784407,
+          "similarity": 7.674285946784407,
+          "text": " the\nremoval or deportation hearing. It is not recorded and has no bearing on the\nsubsequent removal"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1679,
+          "score": 7.674285946784407,
+          "similarity": 7.674285946784407,
+          "text": "n-born individual or family. It is usually filed by a U.S. citizen, lawful permanent\nresident, or em"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 728,
+          "score": 7.483924885051245,
+          "similarity": 7.483924885051245,
+          "text": "oval, a form of protection that is more easily\nand quickly terminated if it becomes possible to remo"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1422,
+      "question_type": "inference",
+      "question": "What does the passage imply about the relationship between the DD and the agency named?",
+      "answer": "The DD has delegated authority within that agency.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1422,
+          "score": 13.557382334720131,
+          "similarity": 13.557382334720131,
+          "text": "ated organizationally under the U.S.\nCitizenship and Immigration Services. The DD has the delegated "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 911,
+          "score": 12.392234760444666,
+          "similarity": 12.392234760444666,
+          "text": "o the passage of IIRIRA, Section 212(c) of the Immigration and Nationality\nAct provided relief from "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1491,
+          "score": 11.984159604548562,
+          "similarity": 11.984159604548562,
+          "text": "2003,\nINS was the agency responsible for administering immigration and nationality laws\nrelating to "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 762,
+          "score": 10.512705383779403,
+          "similarity": 10.512705383779403,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 972,
+          "score": 10.280527991231295,
+          "similarity": 10.280527991231295,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1169,
+          "score": 9.967101793838657,
+          "similarity": 9.967101793838657,
+          "text": "tudy of the pertinent laws and\nregulations. This Glossary does not carry the weight of law or regula"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 375,
+          "score": 9.400006032389918,
+          "similarity": 9.400006032389918,
+          "text": " judge does not render a decision on the merits. Administrative closures\nand cases transferred to a "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1690,
+          "score": 9.281712734810357,
+          "similarity": 9.281712734810357,
+          "text": "of Terms\nJanuary 2011\n18\nprocess. The BIA’s role in the appeal process does not begin until the comp"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1535,
+          "score": 9.06395953921412,
+          "similarity": 9.06395953921412,
+          "text": "nal sentence. The IHP is a collaborative effort between the\nExecutive Office for Immigration Review "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1384,
+          "score": 8.949721030628401,
+          "similarity": 8.949721030628401,
+          "text": " it is terminated. The major difference between deferral of removal and\nwithholding of removal is th"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1422,
+      "question_type": "paraphrased",
+      "question": "Which federal immigration service does it fall under structurally?",
+      "answer": "U.S. Citizenship and Immigration Services.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1191,
+          "score": 14.307491618499977,
+          "similarity": 14.307491618499977,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1171,
+          "score": 10.376364672650716,
+          "similarity": 10.376364672650716,
+          "text": "egal advice, nor does it\nextend or limit the jurisdiction of EOIR as established by law and regulati"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 296,
+          "score": 9.744059634210211,
+          "similarity": 9.744059634210211,
+          "text": "Naturalization Service (INS) (now reorganized under\nDHS) as excludable were placed in exclusion proc"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1381,
+          "score": 9.003113560631977,
+          "similarity": 9.003113560631977,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1489,
+          "score": 7.252829880237134,
+          "similarity": 7.252829880237134,
+          "text": "porary admission, naturalization, and removal of aliens.\nImmigration and Naturalization Service (INS"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 594,
+          "score": 7.1207411190098995,
+          "similarity": 7.1207411190098995,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1419,
+          "score": 6.853383037240121,
+          "similarity": 6.853383037240121,
+          "text": "nd Naturalization Service (INS), the District Director\n(DD) was the highest ranking immigration offi"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1428,
+          "score": 6.853383037240121,
+          "similarity": 6.853383037240121,
+          "text": "try because the former Immigration and\nNaturalization Service (INS) (now Department of Homeland Secu"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1438,
+          "score": 6.853383037240121,
+          "similarity": 6.853383037240121,
+          "text": "fficers of the former Immigration and Naturalization\nService (INS) (now Department of Homeland Secur"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1514,
+          "score": 6.853383037240121,
+          "similarity": 6.853383037240121,
+          "text": "The\nImmigration and Naturalization Service (now Department of Homeland Security) also\nwas provided w"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1440,
+      "question_type": "direct",
+      "question": "What is EOIR responsible for?",
+      "answer": "adjudicating immigration cases",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1440,
+          "score": 15.046241533062593,
+          "similarity": 15.046241533062593,
+          "text": "n 1987. EOIR is responsible for\nadjudicating immigration cases. Specifically, under delegated author"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1148,
+          "score": 9.546862177177413,
+          "similarity": 9.546862177177413,
+          "text": "who is responsible for the general supervision of\nadministrative law judges. OCAHO’s administrative "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1444,
+          "score": 9.283967278208927,
+          "similarity": 9.283967278208927,
+          "text": "hich is responsible for managing the numerous immigration courts located\nthroughout the United State"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1687,
+          "score": 9.283967278208927,
+          "similarity": 9.283967278208927,
+          "text": " petition appeals within the BIA’s jurisdiction,\nUSCIS is initially responsible for management of th"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1448,
+          "score": 7.952627025948231,
+          "similarity": 7.952627025948231,
+          "text": "on-related civil money penalty and document fraud\ncases. EOIR is committed to providing fair, expedi"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1443,
+          "score": 7.745064500837065,
+          "similarity": 7.745064500837065,
+          "text": "\nhearings. EOIR consists of three components: the Office of the Chief Immigration\nJudge, which is re"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 457,
+          "score": 7.548061093638774,
+          "similarity": 7.548061093638774,
+          "text": "e. Of great concern to EOIR is the large number of\nindividuals appearing pro se. Immigration judges,"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 700,
+          "score": 7.548061093638774,
+          "similarity": 7.548061093638774,
+          "text": "lien files “affirmatively” at a DHS Asylum Office and the application is referred to EOIR\nwithin 75 "
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1086,
+          "score": 7.548061093638774,
+          "similarity": 7.548061093638774,
+          "text": "is removable. EOIR maintains data on\nthe custody status of aliens in proceedings. The BIA handles de"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1266,
+          "score": 6.836822964990934,
+          "similarity": 6.836822964990934,
+          "text": "responsible for the recognition of organizations and accreditation of\nrepresentatives requesting per"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1440,
+      "question_type": "inference",
+      "question": "What kind of work does EOIR do with immigration matters under delegated authority?",
+      "answer": "It decides immigration cases.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1440,
+          "score": 17.62515314864316,
+          "similarity": 17.62515314864316,
+          "text": "n 1987. EOIR is responsible for\nadjudicating immigration cases. Specifically, under delegated author"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1422,
+          "score": 11.791862606338789,
+          "similarity": 11.791862606338789,
+          "text": "ated organizationally under the U.S.\nCitizenship and Immigration Services. The DD has the delegated "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1171,
+          "score": 10.63542811659849,
+          "similarity": 10.63542811659849,
+          "text": "egal advice, nor does it\nextend or limit the jurisdiction of EOIR as established by law and regulati"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 112,
+          "score": 10.514072959716277,
+          "similarity": 10.514072959716277,
+          "text": "en ordered removed by EOIR, DHS carries out the\nremoval. EOIR does not maintain statistics on alien "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1457,
+          "score": 8.297764430356509,
+          "similarity": 8.297764430356509,
+          "text": "75 days of the filing; or (2) an alien files an application\n“defensively” with EOIR on or after Janu"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1424,
+          "score": 8.19857223511411,
+          "similarity": 8.19857223511411,
+          "text": "e specifically delegated to\nasylum officers.\nExecutive Office for Immigration Review Office of Plann"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 285,
+          "score": 7.9184509593625885,
+          "similarity": 7.9184509593625885,
+          "text": "ourt Matters Completed\nBy Type\nImmigration Court Matters Completed\n400,000 Proceedings Bonds Motions"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 358,
+          "score": 7.581497520117685,
+          "similarity": 7.581497520117685,
+          "text": "06 to FY 2010. Note that proceedings completed do not reflect only\nimmigration judge decisions. Thes"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1508,
+          "score": 7.181077921654362,
+          "similarity": 7.181077921654362,
+          "text": " powers and duties delegated to them by the Immigration and Nationality\nAct and by the Attorney Gene"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 28,
+          "score": 7.176987098199332,
+          "similarity": 7.176987098199332,
+          "text": "tion Court Matters Received by Type B7\nFigure 3 - Immigration Court Matters Completed by Type B7\nFig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1440,
+      "question_type": "paraphrased",
+      "question": "What does EOIR handle in the immigration system?",
+      "answer": "adjudicating immigration cases",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 112,
+          "score": 11.13601365614196,
+          "similarity": 11.13601365614196,
+          "text": "en ordered removed by EOIR, DHS carries out the\nremoval. EOIR does not maintain statistics on alien "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1171,
+          "score": 10.859784258676466,
+          "similarity": 10.859784258676466,
+          "text": "egal advice, nor does it\nextend or limit the jurisdiction of EOIR as established by law and regulati"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 775,
+          "score": 8.330572946911817,
+          "similarity": 8.330572946911817,
+          "text": " courts co-located with DHS detention facilities,\nand courts which handle Institutional Hearing Prog"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1690,
+          "score": 8.111531498918986,
+          "similarity": 8.111531498918986,
+          "text": "of Terms\nJanuary 2011\n18\nprocess. The BIA’s role in the appeal process does not begin until the comp"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1550,
+          "score": 7.867045073556977,
+          "similarity": 7.867045073556977,
+          "text": " in this Statistical\nYear Book.\nN\nNationality\nFor purposes of the EOIR Statistical Yearbook, nationa"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1086,
+          "score": 7.72533455377142,
+          "similarity": 7.72533455377142,
+          "text": "is removable. EOIR maintains data on\nthe custody status of aliens in proceedings. The BIA handles de"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1412,
+          "score": 7.539975447318607,
+          "similarity": 7.539975447318607,
+          "text": "the purpose of this Year\nBook, EOIR also includes in its statistical data on detained aliens, the nu"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1441,
+          "score": 7.148127052007137,
+          "similarity": 7.148127052007137,
+          "text": "ted authority from the\nAttorney General, EOIR interprets and administers federal immigration laws by"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1191,
+          "score": 7.117197829683397,
+          "similarity": 7.117197829683397,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1443,
+          "score": 7.033407977956978,
+          "similarity": 7.033407977956978,
+          "text": "\nhearings. EOIR consists of three components: the Office of the Chief Immigration\nJudge, which is re"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1624,
+      "question_type": "direct",
+      "question": "What are the two ways mentioned for someone to be released?",
+      "answer": "On bond or on their own recognizance.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 606,
+          "score": 16.274920425181467,
+          "similarity": 16.274920425181467,
+          "text": "on whether the asylum\napplication was filed affirmatively or defensively. There are two ways that al"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 514,
+          "score": 16.055801476238678,
+          "similarity": 16.055801476238678,
+          "text": "e are two ways that aliens may request asylum: “affirmatively,” by\ncompleting an asylum application "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 686,
+          "score": 16.055801476238678,
+          "similarity": 16.055801476238678,
+          "text": "\nExpedited Asylum Cases\nThere are two ways that aliens may request asylum: “affirmatively,” by\ncompl"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 723,
+          "score": 9.511835632134925,
+          "similarity": 9.511835632134925,
+          "text": "sions regarding CAT claims.\nThere are two forms of protection under the 1999 regulations:\n• The regu"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 513,
+          "score": 9.344449290067995,
+          "similarity": 9.344449290067995,
+          "text": "gion, nationality, political\nbeliefs, and/or membership in a particular social group.\nThere are two "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1180,
+          "score": 9.288716713169809,
+          "similarity": 9.288716713169809,
+          "text": "sentatives are granted accreditation by the BIA. To be granted BIA accreditation,\naccredited represe"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 929,
+          "score": 8.856671481781184,
+          "similarity": 8.856671481781184,
+          "text": " a form of relief provided by IIRIRA.\nThere are two IIRIRA provisions addressing cancellation of rem"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1287,
+          "score": 8.856671481781184,
+          "similarity": 8.856671481781184,
+          "text": " of Removal\nThere are two different forms of cancellation of removal:\n(A) Cancellation of removal fo"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 517,
+          "score": 8.803848130816565,
+          "similarity": 8.803848130816565,
+          "text": " asylum are not granted, may be placed\nin removal proceedings and referred to the appropriate immigr"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1634,
+          "score": 8.803848130816565,
+          "similarity": 8.803848130816565,
+          "text": " aliens are determined to be\nremovable by the Department of Homeland Security, e.g., in expedited re"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1624,
+      "question_type": "inference",
+      "question": "What section heading begins immediately after the note about release status?",
+      "answer": "Relief from Removal.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1245,
+          "score": 9.34345096910795,
+          "similarity": 9.34345096910795,
+          "text": " Nationality Act section 209(b) after he or she has been physically\npresent in the United States for"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 762,
+          "score": 8.4355447169505,
+          "similarity": 8.4355447169505,
+          "text": " M provides information about\nprotection afforded certain aliens under the United Nations Convention"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1187,
+          "score": 7.835780576730764,
+          "similarity": 7.835780576730764,
+          "text": "isa is immediately available at the time of the\nalien’s application for adjustment of status, and th"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 358,
+          "score": 7.6782923542817585,
+          "similarity": 7.6782923542817585,
+          "text": "06 to FY 2010. Note that proceedings completed do not reflect only\nimmigration judge decisions. Thes"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 886,
+          "score": 7.4684762655987535,
+          "similarity": 7.4684762655987535,
+          "text": "s for one year immediately preceding the\nissuance of the Notice to Appear, has been a person of good"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 972,
+          "score": 7.38932409150644,
+          "similarity": 7.38932409150644,
+          "text": "9 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Compl"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1430,
+          "score": 6.756192118983979,
+          "similarity": 6.756192118983979,
+          "text": "r detain the applicant or \"parole\"\nthe applicant into the country; i.e., release from detention and "
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1305,
+          "score": 6.659803466634219,
+          "similarity": 6.659803466634219,
+          "text": "ases brought under Immigration and Nationality Act section 274A and section 274C,\nthe complainant is"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1154,
+          "score": 6.532612891622179,
+          "similarity": 6.532612891622179,
+          "text": "olation of section 274B\nof the INA;\n• Immigration-related document fraud in violation of section 274"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 858,
+          "score": 6.528269012768166,
+          "similarity": 6.528269012768166,
+          "text": " of their release from incarceration.\nIn FY 2010, DHS filed charging documents with the immigration "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1624,
+      "question_type": "paraphrased",
+      "question": "By what two means can a person be let out before the hearing?",
+      "answer": "On bond or on their own recognizance.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1703,
+          "score": 10.43085897374142,
+          "similarity": 10.43085897374142,
+          "text": "d Nationality Act, an alien may not\nbe removed to a particular country if the alien can establish th"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 697,
+          "score": 10.056528662108647,
+          "similarity": 10.056528662108647,
+          "text": "ization. The\napplicant can only be granted employment authorization if the asylum application has\nno"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1429,
+          "score": 10.025910534692471,
+          "similarity": 10.025910534692471,
+          "text": "eland Security) found the person\nto be inadmissible. The INS District Director could either detain t"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1070,
+          "score": 9.873741382211351,
+          "similarity": 9.873741382211351,
+          "text": "ngs may be represented by counsel, but at no\nexpense to the government. Before representing an alien"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1232,
+          "score": 9.763065230377732,
+          "similarity": 9.763065230377732,
+          "text": "ty or, in the case of a person having no nationality,\nis outside any county in which such person las"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 452,
+          "score": 9.747684770923847,
+          "similarity": 9.747684770923847,
+          "text": "individuals in removal proceedings\nbefore an immigration judge may be represented by counsel, but at"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1502,
+          "score": 9.625651001710349,
+          "similarity": 9.625651001710349,
+          "text": "\nImmigration Judge\nThe term immigration judge means an attorney whom the Attorney General appoints a"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 622,
+          "score": 9.595228744351257,
+          "similarity": 9.595228744351257,
+          "text": "ken out by\ndisposition. Each of the dispositions has shown a significant decrease from FY 2006 to\nFY"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1318,
+          "score": 9.494028878267722,
+          "similarity": 9.494028878267722,
+          "text": "he or she can obtain a review of that claim\nby an immigration judge.\nCoercive Population Control\nThe"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 929,
+          "score": 9.351441434678524,
+          "similarity": 9.351441434678524,
+          "text": " a form of relief provided by IIRIRA.\nThere are two IIRIRA provisions addressing cancellation of rem"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1646,
+      "question_type": "direct",
+      "question": "What may an immigration judge or the BIA consider in a ?",
+      "answer": "new and previously unavailable facts or evidence",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1646,
+          "score": 22.992137074966415,
+          "similarity": 22.992137074966415,
+          "text": "ks\nan immigration judge or the BIA to consider new and previously unavailable facts or\nevidence in a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1714,
+          "score": 21.638421221874857,
+          "similarity": 21.638421221874857,
+          "text": "icer. In a withholding-only\nproceeding, an immigration judge may only consider the alien’s applicati"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1477,
+          "score": 17.13177001989144,
+          "similarity": 17.13177001989144,
+          "text": " or fact, or a change in the law. A motion to reopen is granted when an\nimmigration judge or the BIA"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1618,
+          "score": 13.834782690872819,
+          "similarity": 13.834782690872819,
+          "text": "ns may request, by motion, the reconsideration of a case previously heard by an\nimmigration judge or"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 470,
+          "score": 13.301131502578237,
+          "similarity": 13.301131502578237,
+          "text": "o appear for a hearing, the immigration judge may conduct\nan in absentia (in absence of) hearing and"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 876,
+          "score": 13.162655611739842,
+          "similarity": 13.162655611739842,
+          "text": "stances, an immigration judge may allow an alien to depart\nthe United States voluntarily. An alien a"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 958,
+          "score": 12.747599110635866,
+          "similarity": 12.747599110635866,
+          "text": "l or a federal court. Unpublished decisions\nof the BIA are binding on the immigration judge or DHS w"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1265,
+          "score": 12.450867908549117,
+          "similarity": 12.450867908549117,
+          "text": "he other party is either an alien, a citizen, or a business firm. In addition, the\nBIA is responsibl"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 117,
+          "score": 12.362740259578166,
+          "similarity": 12.362740259578166,
+          "text": "lief. After hearing a\ncase, the immigration judge renders a decision. The immigration judge may orde"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1621,
+          "score": 12.20931187160362,
+          "similarity": 12.20931187160362,
+          "text": " immigration judge or BIA to re-examine its ruling. A motion to reconsider\nis based on the existing "
+        }
+      ]
+    },
+    {
+      "chunk_index": 1646,
+      "question_type": "inference",
+      "question": "What kind of material is being described as something a decision-maker may examine even though it was not available earlier?",
+      "answer": "recently discovered facts or evidence that were not available before",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1652,
+          "score": 15.961484995522628,
+          "similarity": 15.961484995522628,
+          "text": " was not entitled to\nlawful permanent resident (LPR) status when it was granted, DHS issues a Notice"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1170,
+          "score": 13.960556392942214,
+          "similarity": 13.960556392942214,
+          "text": " or regulation. This Glossary\nis not intended, nor should it be construed in any way, as legal advic"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1191,
+          "score": 13.224808200375925,
+          "similarity": 13.224808200375925,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1383,
+          "score": 12.642443097456738,
+          "similarity": 12.642443097456738,
+          "text": "she is not likely to be tortured. In addition, deferral of removal is effective\nonly until it is ter"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1378,
+          "score": 12.464336920143582,
+          "similarity": 12.464336920143582,
+          "text": "igration judge concludes that it is more likely than not that a removable alien\nwill be tortured in "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1274,
+          "score": 11.9762310100872,
+          "similarity": 11.9762310100872,
+          "text": "011\n4\namount of money set by DHS as a condition of release is known as a bond. A bond\nmay be also se"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 883,
+          "score": 11.19584956106904,
+          "similarity": 11.19584956106904,
+          "text": "\nshe is not removable as an aggravated felon or a terrorist.\nImmigration judges also have discretion"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1284,
+          "score": 11.11988920052091,
+          "similarity": 11.11988920052091,
+          "text": " the\nremoval or deportation hearing. It is not recorded and has no bearing on the\nsubsequent removal"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1211,
+          "score": 10.13816526111231,
+          "similarity": 10.13816526111231,
+          "text": "mes of\nviolence for which the term of imprisonment, even if suspended, is at least one year or\nmore;"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1187,
+          "score": 9.770584994894536,
+          "similarity": 9.770584994894536,
+          "text": "isa is immediately available at the time of the\nalien’s application for adjustment of status, and th"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1646,
+      "question_type": "paraphrased",
+      "question": "What may an immigration judge or the Board of Immigration Appeals review that was not obtainable earlier?",
+      "answer": "new and previously unavailable facts or evidence",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1606,
+          "score": 19.659259097641982,
+          "similarity": 19.659259097641982,
+          "text": "peal to the Board of Immigration Appeals\nmay be taken from the immigration judge’s finding that an a"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1645,
+          "score": 18.45317806401085,
+          "similarity": 18.45317806401085,
+          "text": "d by an\nimmigration judge or the Board of Immigration Appeals (BIA). A motion to reopen asks\nan immi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1475,
+          "score": 18.381783086359203,
+          "similarity": 18.381783086359203,
+          "text": "der.\nA motion to reconsider is granted when an immigration judge or the Board of\nImmigration Appeals"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1673,
+          "score": 17.532168257847136,
+          "similarity": 17.532168257847136,
+          "text": "a case is closed by an immigration judge\nor the Board of Immigration Appeals without a final order o"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1619,
+          "score": 17.516529043540473,
+          "similarity": 17.516529043540473,
+          "text": "n judge or the Board of Immigration Appeals (BIA). A motion to reconsider\neither identifies an error"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1607,
+          "score": 16.95662492823561,
+          "similarity": 16.95662492823561,
+          "text": " that an alien does not have a\nreasonable fear of persecution or torture. If an immigration judge de"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1603,
+          "score": 16.77063478979678,
+          "similarity": 16.77063478979678,
+          "text": "ar of persecution or torture, the alien may request a\nreview of that determination by an immigration"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1252,
+          "score": 16.549000828547705,
+          "similarity": 16.549000828547705,
+          "text": "e of Referral to an Immigration Judge, with the immigration court. The\nimmigration judge may not con"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1717,
+          "score": 16.51105185876313,
+          "similarity": 16.51105185876313,
+          "text": "1208.17. The Board of Immigration Appeals has jurisdiction over appeals from\nimmigration judge decis"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1676,
+          "score": 16.483983909186346,
+          "similarity": 16.483983909186346,
+          "text": "lf or herself before an immigration\ncourt or the Board of Immigration Appeals instead of being repre"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1973,
+      "question_type": "direct",
+      "question": "How many entries does CHAD have in the last column?",
+      "answer": "8",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1607,
+          "score": 9.397725148153292,
+          "similarity": 9.397725148153292,
+          "text": " that an alien does not have a\nreasonable fear of persecution or torture. If an immigration judge de"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 454,
+          "score": 8.715998340489481,
+          "similarity": 8.715998340489481,
+          "text": "tion court, representatives\nmust file a Notice of Appearance with the court.\nMany individuals in rem"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1690,
+          "score": 8.111531498918986,
+          "similarity": 8.111531498918986,
+          "text": "of Terms\nJanuary 2011\n18\nprocess. The BIA’s role in the appeal process does not begin until the comp"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1289,
+          "score": 7.9558518427915494,
+          "similarity": 7.9558518427915494,
+          "text": " have resided in the United States for seven or more years,\nand have not been convicted of an aggrav"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1473,
+          "score": 7.872357570420057,
+          "similarity": 7.872357570420057,
+          "text": "ant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nar"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 10,
+          "score": 7.775044875919807,
+          "similarity": 7.775044875919807,
+          "text": "of each page reflects the last revision date for that\npage. Yearly updates are available electronica"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1167,
+          "score": 7.553040495136498,
+          "similarity": 7.553040495136498,
+          "text": "rmational in nature. These terms may\nhave further meaning in the context of other immigration matter"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1293,
+          "score": 7.13389893808948,
+          "similarity": 7.13389893808948,
+          "text": "permanent resident\naliens who have maintained continuous physical presence in the United States for "
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1191,
+          "score": 7.117197829683397,
+          "similarity": 7.117197829683397,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 919,
+          "score": 6.8371309013084725,
+          "similarity": 6.8371309013084725,
+          "text": "discretionary relief.\nCertain aliens in deportation proceedings who have maintained continuous\nphysi"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1973,
+      "question_type": "inference",
+      "question": "Which listed place has the highest total across its row?",
+      "answer": "CHAD",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 110,
+          "score": 8.58222670214102,
+          "similarity": 8.58222670214102,
+          "text": "transfers from DHS to the Executive Office for Immigration\nReview (EOIR), which has oversight over t"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1419,
+          "score": 8.460644299386976,
+          "similarity": 8.460644299386976,
+          "text": "nd Naturalization Service (INS), the District Director\n(DD) was the highest ranking immigration offi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 964,
+          "score": 8.414819302864592,
+          "similarity": 8.414819302864592,
+          "text": "in 30 days of the immigration judge’s decision.\nOther types of cases over which the BIA has jurisdic"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1260,
+          "score": 8.241464659333207,
+          "similarity": 8.241464659333207,
+          "text": "of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1381,
+          "score": 8.217045420729413,
+          "similarity": 8.217045420729413,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1472,
+          "score": 7.959037211772955,
+          "similarity": 7.959037211772955,
+          "text": "e Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Mot"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 594,
+          "score": 7.210468056642296,
+          "similarity": 7.210468056642296,
+          "text": ".\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1004,
+          "score": 7.136871608672141,
+          "similarity": 7.136871608672141,
+          "text": "om certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-ba"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 474,
+          "score": 6.890327672688432,
+          "similarity": 6.890327672688432,
+          "text": "ion judge must be satisfied that notice\nof time and place of the hearing were provided to the alien "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1165,
+          "score": 6.684167655865407,
+          "similarity": 6.684167655865407,
+          "text": "um to the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its i"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1973,
+      "question_type": "paraphrased",
+      "question": "What is the first number shown for the Cayman Islands row?",
+      "answer": "0",
+      "gold_rank": 8,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1678,
+          "score": 12.289540924295205,
+          "similarity": 12.289540924295205,
+          "text": "A visa petition is the first step toward obtaining lawful permanent residence for a\nforeign-born ind"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 142,
+          "score": 10.877749714375806,
+          "similarity": 10.877749714375806,
+          "text": "Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts dec"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1133,
+          "score": 9.249847971524392,
+          "similarity": 9.249847971524392,
+          "text": "es is decreasing. Proceedings received prior to FY 2009 account for 20 percent of\nthe total number o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 2051,
+          "score": 8.517944185752514,
+          "similarity": 8.517944185752514,
+          "text": "49 3 10 14\nCAMEROON 462 357 167 15 31 139\nCANADA 43 9 3 1 3 7\nCAPE VERDE 4 0 1 0 3 3\nCAYMAN ISLANDS "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1735,
+          "score": 8.351948881258002,
+          "similarity": 8.351948881258002,
+          "text": "22 13 14 1 10 18\nCAMEROON 245 196 57 13 15 100\nCANADA 16 5 4 1 3 9\nCAYMAN ISLANDS 1 1 0 0 0 0\nCENTRA"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 930,
+          "score": 8.27232891319678,
+          "similarity": 8.27232891319678,
+          "text": "ion of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 386,
+          "score": 8.173457786277572,
+          "similarity": 8.173457786277572,
+          "text": "ation\njudges first decide whether or not the charges against an alien should be sustained. If\nthe ch"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1973,
+          "score": 8.038639386934772,
+          "similarity": 8.038639386934772,
+          "text": "E 6 0 1 1 1 2\nCAYMAN ISLANDS 0 1 0 0 0 0\nCENTRAL AFRICAN REPUBLIC 22 13 10 2 1 5\nCHAD 45 21 8 2 3 8\n"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 457,
+          "score": 7.967892344586015,
+          "similarity": 7.967892344586015,
+          "text": "e. Of great concern to EOIR is the large number of\nindividuals appearing pro se. Immigration judges,"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1088,
+          "score": 7.967892344586015,
+          "similarity": 7.967892344586015,
+          "text": " cases.\nDepicted in Figure 30 is the number of immigration judge case appeal decisions\nbetween FY 20"
+        }
+      ]
+    },
+    {
+      "chunk_index": 2093,
+      "question_type": "direct",
+      "question": "What page number is shown in the chunk?",
+      "answer": "Page 5 of 7",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 142,
+          "score": 11.902348843555526,
+          "similarity": 11.902348843555526,
+          "text": "Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts dec"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1088,
+          "score": 9.250993162388708,
+          "similarity": 9.250993162388708,
+          "text": " cases.\nDepicted in Figure 30 is the number of immigration judge case appeal decisions\nbetween FY 20"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1075,
+          "score": 7.742797052293017,
+          "similarity": 7.742797052293017,
+          "text": "han the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the r"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 729,
+          "score": 7.599670813587952,
+          "similarity": 7.599670813587952,
+          "text": "le to remove the alien.\nAs shown in Table 9 below, the immigration courts adjudicated 24,754 CAT\napp"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 778,
+          "score": 7.52804664234229,
+          "similarity": 7.52804664234229,
+          "text": "Courts where 50 percent or more of the\ncompletions involved applications for relief are shown in blu"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1008,
+          "score": 7.52804664234229,
+          "similarity": 7.52804664234229,
+          "text": "ations of immigration\nlaws.\nAs shown in Table 16, on the following page, appeals received from immig"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1413,
+          "score": 7.448947604038571,
+          "similarity": 7.448947604038571,
+          "text": "ns, the number of\nincarcerated aliens in the Institutional Hearing Program. Immigration court hearin"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 457,
+          "score": 7.345951648160332,
+          "similarity": 7.345951648160332,
+          "text": "e. Of great concern to EOIR is the large number of\nindividuals appearing pro se. Immigration judges,"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1609,
+          "score": 7.191555815540047,
+          "similarity": 7.191555815540047,
+          "text": "en will be placed in\nwithholding-only proceedings.\nReceipts\nThe number of judicial filings received "
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1133,
+          "score": 7.1637349357676685,
+          "similarity": 7.1637349357676685,
+          "text": "es is decreasing. Proceedings received prior to FY 2009 account for 20 percent of\nthe total number o"
+        }
+      ]
+    },
+    {
+      "chunk_index": 2093,
+      "question_type": "inference",
+      "question": "Which U.S. government department is named in the chunk?",
+      "answer": "U.S. Department of Justice",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1264,
+          "score": 19.688999959000107,
+          "similarity": 19.688999959000107,
+          "text": "Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other p"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1306,
+          "score": 9.939922622524817,
+          "similarity": 9.939922622524817,
+          "text": "lainant is the Department of Homeland Security, and the respondent is an\nemployer. In Immigration an"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1232,
+          "score": 9.643234419812206,
+          "similarity": 9.643234419812206,
+          "text": "ty or, in the case of a person having no nationality,\nis outside any county in which such person las"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1672,
+          "score": 9.55905160406704,
+          "similarity": 9.55905160406704,
+          "text": "bility Act of 1996 (IIRIRA).\nT\nTermination\nA termination is a type of completion in which a case is "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1381,
+          "score": 9.326892998687827,
+          "similarity": 9.326892998687827,
+          "text": " deferred only to the country in which it has been determined that the alien is\nlikely to be torture"
+        },
+        {
+          "rank": 6,
+          "chunk_index": 1436,
+          "score": 9.200761686816081,
+          "similarity": 9.200761686816081,
+          "text": " Department of Justice (DOJ) reorganization which combined the\nBoard of Immigration Appeals with the"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1389,
+          "score": 9.195763235665323,
+          "similarity": 9.195763235665323,
+          "text": " DHS\nhave functions which relate closely to the Executive Office for Immigration Review. U.S.\nCitize"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 1467,
+          "score": 8.856232452652128,
+          "similarity": 8.856232452652128,
+          "text": "by certain Department of Homeland Security officials. The respondent is notified in\nwriting of the d"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 1191,
+          "score": 8.47705181236248,
+          "similarity": 8.47705181236248,
+          "text": "sure of a case does not result in a final order. It is merely an\nadministrative convenience which al"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 1557,
+          "score": 8.281993263835256,
+          "similarity": 8.281993263835256,
+          "text": "\nThe status of an alien who is not in the custody of the Department of Homeland Security\nor the Inst"
+        }
+      ]
+    },
+    {
+      "chunk_index": 2093,
+      "question_type": "paraphrased",
+      "question": "What sheet number out of the total is displayed in the excerpt?",
+      "answer": "Page 5 of 7",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 395,
+          "score": 12.972211156748646,
+          "similarity": 12.972211156748646,
+          "text": "umber % of Total Number % of Total Number % of Total Number % of Total Number % of Total\nFY 06 15,98"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 1105,
+          "score": 11.194878867991951,
+          "similarity": 11.194878867991951,
+          "text": " by a decrease in the number of\nIHP completions and the total detained completions staying fairly co"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 1133,
+          "score": 11.09873701747268,
+          "similarity": 11.09873701747268,
+          "text": "es is decreasing. Proceedings received prior to FY 2009 account for 20 percent of\nthe total number o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 1088,
+          "score": 10.264811691880379,
+          "similarity": 10.264811691880379,
+          "text": " cases.\nDepicted in Figure 30 is the number of immigration judge case appeal decisions\nbetween FY 20"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 1420,
+          "score": 9.94486296995246,
+          "similarity": 9.94486296995246,
+          "text": "ation official in each of the INS’s 30+ districts. The\nINS was transferred out of the Department of "
+        },
+        {
+          "rank": 6,
+          "chunk_index": 133,
+          "score": 9.497574710945761,
+          "similarity": 9.497574710945761,
+          "text": " reconsider. Receipts are defined as the total number of\nproceedings, bond redeterminations, and mot"
+        },
+        {
+          "rank": 7,
+          "chunk_index": 1227,
+          "score": 9.426314137217643,
+          "similarity": 9.426314137217643,
+          "text": "ief require the alien\nto fill out an appropriate application.\nAsylum\nAn alien, who is physically pre"
+        },
+        {
+          "rank": 8,
+          "chunk_index": 497,
+          "score": 9.199983384023326,
+          "similarity": 9.199983384023326,
+          "text": "ailure to Appear Rates for Never Detained Aliens\nIn Absentia Orders\nIJ Decisions\nNumber % of Total\nF"
+        },
+        {
+          "rank": 9,
+          "chunk_index": 922,
+          "score": 9.164625839979571,
+          "similarity": 9.164625839979571,
+          "text": "tatus to that of lawful permanent resident. The total number of\nadjustments to lawful permanent resi"
+        },
+        {
+          "rank": 10,
+          "chunk_index": 491,
+          "score": 9.11502304536762,
+          "similarity": 9.11502304536762,
+          "text": "use of illness or transportation\nproblems, and are not broken out in the following figures.\nFigure 1"
+        }
+      ]
+    }
+  ]
+}

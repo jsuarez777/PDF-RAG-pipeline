@@ -1,0 +1,2720 @@
+{
+  "metadata": {
+    "datetime": "2026-07-13T23:38:28",
+    "qa_file": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_132639_gpt-5.4-mini.json",
+    "chunk_run": "data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50",
+    "db": "data/pdfplumber/20260712_01/fy10syb/bm25/bm25_20260713_075603_word.pkl",
+    "db_type": "bm25",
+    "tokenizer": "word",
+    "top_k": 5,
+    "ks": [
+      1,
+      3,
+      5
+    ],
+    "num_questions": 60,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "aggregates": {
+    "overall": {
+      "num_questions": 60,
+      "mrr": 0.28944444444444445,
+      "map": 0.28944444444444445,
+      "recall@1": 0.25,
+      "precision@1": 0.25,
+      "ndcg@1": 0.25,
+      "recall@3": 0.3333333333333333,
+      "precision@3": 0.1111111111111111,
+      "ndcg@3": 0.29821315434523954,
+      "recall@5": 0.35,
+      "precision@5": 0.07,
+      "ndcg@5": 0.3046607011324819
+    },
+    "by_question_type": {
+      "direct": {
+        "num_questions": 20,
+        "mrr": 0.45166666666666666,
+        "map": 0.45166666666666666,
+        "recall@1": 0.4,
+        "precision@1": 0.4,
+        "ndcg@1": 0.4,
+        "recall@3": 0.5,
+        "precision@3": 0.16666666666666666,
+        "ndcg@3": 0.45654648767857287,
+        "recall@5": 0.55,
+        "precision@5": 0.11,
+        "ndcg@5": 0.4758891280403
+      },
+      "inference": {
+        "num_questions": 20,
+        "mrr": 0.2,
+        "map": 0.2,
+        "recall@1": 0.15,
+        "precision@1": 0.15,
+        "ndcg@1": 0.15,
+        "recall@3": 0.25,
+        "precision@3": 0.08333333333333333,
+        "ndcg@3": 0.21309297535714578,
+        "recall@5": 0.25,
+        "precision@5": 0.05,
+        "ndcg@5": 0.21309297535714578
+      },
+      "paraphrased": {
+        "num_questions": 20,
+        "mrr": 0.21666666666666665,
+        "map": 0.21666666666666665,
+        "recall@1": 0.2,
+        "precision@1": 0.2,
+        "ndcg@1": 0.2,
+        "recall@3": 0.25,
+        "precision@3": 0.08333333333333333,
+        "ndcg@3": 0.225,
+        "recall@5": 0.25,
+        "precision@5": 0.05,
+        "ndcg@5": 0.225
+      }
+    }
+  },
+  "questions": [
+    {
+      "chunk_index": 1,
+      "question_type": "direct",
+      "question": "What is the street address listed before the disclaimer?",
+      "answer": "5107 Leesburg Pike, Suite 1902, Falls Church, VA 22041",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1,
+          "score": 11.946887805948531,
+          "similarity": 11.946887805948531,
+          "text": "tive and Public Affairs\n5107 Leesburg Pike, Suite 1902\nFalls Church, VA 22041\n(703) 305-0289\n(703) 605-0365 (fax)\nDISCLAIMER\nThe Statistical Year Book has been prepared as a public service by the Executive Office for Immigration Review (EOIR) and\nis strict"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 581,
+          "score": 11.507434008991826,
+          "similarity": 11.507434008991826,
+          "text": "ative closures, changes of venue, and\ntransfers.\nFor matters before the Board of Immigration Appeals, a case is considered completed\nonce the Board renders a final decision.\nFor matters before the Office of the Chief Administrative Hearing Officer, a case "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 206,
+          "score": 10.607097227694956,
+          "similarity": 10.607097227694956,
+          "text": "ited\nStates. Before the immigration judge orders the alien removed in absentia, the DHS\nAssistant Chief Counsel must establish by clear, unequivocal, and convincing evidence\nthat the alien is removable. Further, the immigration judge must be satisfied that"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 553,
+          "score": 10.4268570502095,
+          "similarity": 10.4268570502095,
+          "text": " addition, the\nBIA is responsible for the recognition of organizations and accreditation of\nrepresentatives requesting permission to practice before the BIA, the immigration\ncourts, and/or DHS. BIA decisions are binding on all DHS officers and immigration\n"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 508,
+          "score": 10.342694173659027,
+          "similarity": 10.342694173659027,
+          "text": "ecutive Office for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nZ1\nGLOSSARY OF TERMS\nDisclaimer\nThis Glossary has been compiled as an addendum to the FY 2010 Statistical Year Book\nof the Executi"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1,
+      "question_type": "inference",
+      "question": "Which office is identified as having prepared the Statistical Year Book as a public service?",
+      "answer": "The Executive Office for Immigration Review (EOIR)",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1,
+          "score": 35.16553755772661,
+          "similarity": 35.16553755772661,
+          "text": "tive and Public Affairs\n5107 Leesburg Pike, Suite 1902\nFalls Church, VA 22041\n(703) 305-0289\n(703) 605-0365 (fax)\nDISCLAIMER\nThe Statistical Year Book has been prepared as a public service by the Executive Office for Immigration Review (EOIR) and\nis strict"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 0,
+          "score": 22.8937960005766,
+          "similarity": 22.8937960005766,
+          "text": "U.S. Department of Justice\nExecutive Office for Immigration Review\nFY 2010\nStatistical Year Book\nPrepared by the Office of Planning, Analysis, & Technology\nJanuary 2011\nContact Information\nOffice of Legislative and Public Affairs\n5107 Leesburg Pike, Suite "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 509,
+          "score": 18.139125086118522,
+          "similarity": 18.139125086118522,
+          "text": "o the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational in nature. These terms may\nhave further meaning in the context of othe"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 556,
+          "score": 17.40960272649783,
+          "similarity": 17.40960272649783,
+          "text": "n Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book Appendix A - Glossary of Terms\nJanuary 2011\n4\namount of money set by DHS as a condition of release is known as a bond. A bond\nmay be also set by an immigration judge as a c"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 508,
+          "score": 17.23419863920669,
+          "similarity": 17.23419863920669,
+          "text": "ecutive Office for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nZ1\nGLOSSARY OF TERMS\nDisclaimer\nThis Glossary has been compiled as an addendum to the FY 2010 Statistical Year Book\nof the Executi"
+        }
+      ]
+    },
+    {
+      "chunk_index": 1,
+      "question_type": "paraphrased",
+      "question": "What mailing location is given for the office in Falls Church, Virginia?",
+      "answer": "5107 Leesburg Pike, Suite 1902, Falls Church, VA 22041",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 1,
+          "score": 17.5472470632203,
+          "similarity": 17.5472470632203,
+          "text": "tive and Public Affairs\n5107 Leesburg Pike, Suite 1902\nFalls Church, VA 22041\n(703) 305-0289\n(703) 605-0365 (fax)\nDISCLAIMER\nThe Statistical Year Book has been prepared as a public service by the Executive Office for Immigration Review (EOIR) and\nis strict"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 420,
+          "score": 15.686365084520403,
+          "similarity": 15.686365084520403,
+          "text": "es in removal, deportation, or exclusion proceedings, and for the\npurposes of this Statistical Year Book are referred to as immigration judge appeals.\nThese appeals are filed directly with the BIA in Falls Church, VA, and must be filed\nwithin 30 days of th"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 578,
+          "score": 9.685124915277076,
+          "similarity": 9.685124915277076,
+          "text": " and asylum grants were made each fiscal year to applicants who raised\nclaims based on CPC. If applicants for asylum met the criteria for a CPC grant, they\nwere given conditional asylum and were given a final grant of asylum when a number\nbecame available."
+        },
+        {
+          "rank": 4,
+          "chunk_index": 481,
+          "score": 8.778218501778202,
+          "similarity": 8.778218501778202,
+          "text": " number who were serving sentences at an IHP location. In FY\n2010, 11 percent of detained BIA completions involved aliens whose removal orders\nhad been issued prior to their release from a federal, state, or municipal corrections\nfacility. The percentage o"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 509,
+          "score": 8.233621237135761,
+          "similarity": 8.233621237135761,
+          "text": "o the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational in nature. These terms may\nhave further meaning in the context of othe"
+        }
+      ]
+    },
+    {
+      "chunk_index": 45,
+      "question_type": "direct",
+      "question": "According to the figure, how many OCAHO case completions were there in FY 2010?",
+      "answer": "53",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 44,
+          "score": 25.434476128397506,
+          "similarity": 25.434476128397506,
+          "text": "(Figure 29, page V1)\n! In FY 2010, eight percent of immigration judge decisions were appealed to\nthe BIA. (Figure 31, page X1)\n! OCAHO case receipts increased from FY 2009 (31) to FY 2010 (91).\n(Figure 34, page Z1)\n! OCAHO case completions increased from F"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 506,
+          "score": 17.53785405113105,
+          "similarity": 17.53785405113105,
+          "text": "ircuit court of appeals.\nFigure 34 provides information on the number of cases received and completed\nby OCAHO between FY 2006 and FY 2010. Completions may include cases received\nin a prior fiscal year.\nFigure 34\nOCAHO Cases\nReceived and Completed\nOCAHO Ca"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 191,
+          "score": 17.380007889313923,
+          "similarity": 17.380007889313923,
+          "text": "cent were in the following five languages: Spanish, English, Portuguese, Mandarin,\nand Creole.\nFigure 8 below shows comparable data for FY 2010. Although four of the top five\nlanguages were the same, there was more diversity in languages in FY 2010. A tota"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 33,
+          "score": 16.864213871780894,
+          "similarity": 16.864213871780894,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 32,
+          "score": 16.689089368447316,
+          "similarity": 16.689089368447316,
+          "text": "d China were the leading\nnationalities of immigration court completions during FY 2010, representing\n67 percent of the total caseload. (Figure 6, page E1)\n! Spanish was the most frequently spoken language for immigration court\ncase completions during FY 20"
+        }
+      ]
+    },
+    {
+      "chunk_index": 45,
+      "question_type": "inference",
+      "question": "Did the number of OCAHO case completions go up or down from FY 2009 to FY 2010?",
+      "answer": "It went up.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 44,
+          "score": 26.046705501919774,
+          "similarity": 26.046705501919774,
+          "text": "(Figure 29, page V1)\n! In FY 2010, eight percent of immigration judge decisions were appealed to\nthe BIA. (Figure 31, page X1)\n! OCAHO case receipts increased from FY 2009 (31) to FY 2010 (91).\n(Figure 34, page Z1)\n! OCAHO case completions increased from F"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 45,
+          "score": 21.44919967884207,
+          "similarity": 21.44919967884207,
+          "text": "page Z1)\n! OCAHO case completions increased from FY 2009 (25) to FY 2010 (53).\n(Figure 34, page Z1)\nExecutive Office for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book A2 January 2011\nImmigration Courts:\nTotal"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 66,
+          "score": 19.717896884724126,
+          "similarity": 19.717896884724126,
+          "text": "rgest percentage decrease, down 35\npercent. Table 1A identifies receipts for FY 2010 by type of matter.\nTable 2 provides a comparison of FY 2009 and FY 2010 completions by\nimmigration court. Courts with increases in completions of 25 percent or more are\nhi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 506,
+          "score": 19.644664902731247,
+          "similarity": 19.644664902731247,
+          "text": "ircuit court of appeals.\nFigure 34 provides information on the number of cases received and completed\nby OCAHO between FY 2006 and FY 2010. Completions may include cases received\nin a prior fiscal year.\nFigure 34\nOCAHO Cases\nReceived and Completed\nOCAHO Ca"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 356,
+          "score": 19.504874619263873,
+          "similarity": 19.504874619263873,
+          "text": "b P). Figure 23 below\nprovides a comparison of detained completions to total proceedings completed. The\npercent detained increased yearly from FY 2006 to FY 2009. In FY 2010, the percent\nof detained completions decreased by six percent from FY 2009.\nFigure"
+        }
+      ]
+    },
+    {
+      "chunk_index": 45,
+      "question_type": "paraphrased",
+      "question": "What was the count of OCAHO matters finished in fiscal year 2010?",
+      "answer": "53",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 506,
+          "score": 19.63035938653928,
+          "similarity": 19.63035938653928,
+          "text": "ircuit court of appeals.\nFigure 34 provides information on the number of cases received and completed\nby OCAHO between FY 2006 and FY 2010. Completions may include cases received\nin a prior fiscal year.\nFigure 34\nOCAHO Cases\nReceived and Completed\nOCAHO Ca"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 628,
+          "score": 15.34524198195447,
+          "similarity": 15.34524198195447,
+          "text": " which was previously\nperformed by Special Inquiry Officers of the former Immigration and Naturalization\nService (INS) (now Department of Homeland Security). The Office of the Chief\nAdministrative Hearing Officer (OCAHO) was added in 1987. EOIR is responsi"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 642,
+          "score": 14.827782532141203,
+          "similarity": 14.827782532141203,
+          "text": "ion Appeals.\nFiscal Year\nA 12-month period for which an organization plans the use of its funds. In the U.S.\ngovernment, the fiscal year runs from October 1 through September 30.\nG\nGrant of Relief\nWhen an immigration judge or the Board of Immigration Appea"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 62,
+          "score": 14.494987880097257,
+          "similarity": 14.494987880097257,
+          "text": "eceipts Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts decreased between FY 2006 and FY 2007 by four percent. The increase in\nreceipts from FY 2007 to FY 2010 was 17 percent. Immigration court matters\ncompl"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 22,
+          "score": 13.30272473128102,
+          "similarity": 13.30272473128102,
+          "text": "re 33 - BIA Pending Cases by Year Filed Y2\nFigure 34 - OCAHO Cases Received and Completed Z1\nii\nFY 2010 STATISTICAL YEAR BOOK\nLIST OF FIGURES AND TABLES\nPage\nList of Tables:\nTable 1 - Total Immigration Court Matters Received by Court for\nFY 2009 and FY 201"
+        }
+      ]
+    },
+    {
+      "chunk_index": 106,
+      "question_type": "direct",
+      "question": "What was the total for YORK, PENNSYLVANIA in the table?",
+      "answer": "7,480",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 35,
+          "score": 13.053936742098061,
+          "similarity": 13.053936742098061,
+          "text": "by 56 percent. (Figure 13,\npage I1)\n! In FY 2010, the New York, NY; Los Angeles, CA; San Francisco, CA;\nMiami, FL; and Orlando, FL, immigration courts received 62 percent of the\ntotal asylum applications filed with the courts. (Table 6, page I3)\n! Four nat"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 106,
+          "score": 12.591922490352493,
+          "similarity": 12.591922490352493,
+          "text": " 2,997 2,350 -22%\nYORK, PENNSYLVANIA 7,480 7,853 5%\nTOTAL 354,145 353,247 0%\nExecutive Office for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nB5\nTable 2A - Total Immigration Court Completions b"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 371,
+          "score": 12.24255707880666,
+          "similarity": 12.24255707880666,
+          "text": "6,980\nTACOMA, WASHINGTON 4,676\nTUCSON, ARIZONA 5,152\nULSTER - NEW YORK STATE DOC, NEW YORK 496\nVARICK SPC, NEW YORK 955\nYORK, PENNSYLVANIA 4,450\nTOTAL 125,580\nImmigration Courts in U.S./Mexico Border States\nExecutive Office for Immigration Review Office of"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 192,
+          "score": 12.117655861653981,
+          "similarity": 12.117655861653981,
+          "text": "was more diversity in languages in FY 2010. A total of 283\ndifferent languages were spoken in court proceedings in the immigration courts during FY\n2010. The top five languages accounted for 91 percent of the proceedings completed in FY\n2010.\nFY 2010 highl"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 320,
+          "score": 12.102244744923622,
+          "similarity": 12.102244744923622,
+          "text": "bandoned Total\nWithholding Deferral Total\n395 94 489 9,082 8,501 5,877 805 24,754\nTable 10 on the following page shows a breakdown of CAT completions by\nimmigration courts. The New York City, NY; Los Angeles, CA; Miami, FL; Orlando, FL;\nand San Francisco, "
+        }
+      ]
+    },
+    {
+      "chunk_index": 106,
+      "question_type": "inference",
+      "question": "Did the overall total increase, decrease, or stay about the same compared with the previous figure?",
+      "answer": "It stayed about the same, with a 0% change.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 219,
+          "score": 22.154427687393856,
+          "similarity": 22.154427687393856,
+          "text": "eased on bond or on their own recognizance are\nshown in Figure 12. From FY 2006 to FY 2010 the failure to appear rate has decreased\neach year. This decrease is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 424,
+          "score": 21.510066735430012,
+          "similarity": 21.510066735430012,
+          "text": "by 17 percent from FY 2006\nto FY 2009. During this same period, case completions decreased by 20 percent.\nReceipts increased from FY 2009 to FY 2010 while completions remained about the\nsame.\nFigure 25\nTotal BIA Cases\nReceived and Completed\nTotal BIA Cases"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 477,
+          "score": 20.684669739054495,
+          "similarity": 20.684669739054495,
+          "text": "2006 to FY 2010, however, the total IJ case appeal decisions have decreased\nby 32 percent for the same time period causing the percent detained to increase.\nFigure 30\nIJ Case Appeal Decisions\nDetained and Total\nFY 06\nFY 07\nFY 08\nFY 09\nFY 10\n0 5,000 10,000 "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 65,
+          "score": 17.835544499028142,
+          "similarity": 17.835544499028142,
+          "text": "e are highlighted in red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts at 38 percent. The immigration court in\nGuaynabo (San Juan), Puerto Rico, showed the largest percentage decrease, down 35\npercent. Table "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 272,
+          "score": 17.170812080506632,
+          "similarity": 17.170812080506632,
+          "text": " shown a significant decrease from FY 2006 to\nFY 2010. These decreases are mutually related to the overall decrease in asylum\ncompletions.\nFigure 19\nAsylum Completions\nBy Disposition\n20,000\n15,000\n10,000\n5,000\n0\nFY 06 FY 07 FY 08 FY 09 FY 10\nGrants Denials"
+        }
+      ]
+    },
+    {
+      "chunk_index": 106,
+      "question_type": "paraphrased",
+      "question": "What was the combined count listed for York, Pennsylvania?",
+      "answer": "7,480",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 627,
+          "score": 13.524466187692074,
+          "similarity": 13.524466187692074,
+          "text": " Immigration Review (EOIR) was created on January 9, 1983,\nthrough an internal Department of Justice (DOJ) reorganization which combined the\nBoard of Immigration Appeals with the immigration judge function, which was previously\nperformed by Special Inquiry"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 329,
+          "score": 9.515692568689548,
+          "similarity": 9.515692568689548,
+          "text": " CALIFORNIA 1,613\nSEATTLE, WASHINGTON 694\nSTEWART DETENTION FACILITY, GEORGIA 19\nTACOMA, WASHINGTON 242\nTUCSON, ARIZONA 7\nULSTER - NEW YORK STATE DOC, NEW YORK 50\nVARICK SPC, NEW YORK 197\nYORK, PENNSYLVANIA 270\nTOTAL 24,754\nExecutive Office for Immigration"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 371,
+          "score": 9.195014861947808,
+          "similarity": 9.195014861947808,
+          "text": "6,980\nTACOMA, WASHINGTON 4,676\nTUCSON, ARIZONA 5,152\nULSTER - NEW YORK STATE DOC, NEW YORK 496\nVARICK SPC, NEW YORK 955\nYORK, PENNSYLVANIA 4,450\nTOTAL 125,580\nImmigration Courts in U.S./Mexico Border States\nExecutive Office for Immigration Review Office of"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 298,
+          "score": 8.841544700794536,
+          "similarity": 8.841544700794536,
+          "text": "LITY, GEORGIA 0 20 0%\nTACOMA, WASHINGTON 53 105 34%\nTUCSON, ARIZONA 22 9 71%\nULSTER - NEW YORK STATE DOC, NEW YORK 0 4 0%\nVARICK SPC, NEW YORK 23 51 31%\nYORK, PENNSYLVANIA 3 99 3%\nTOTAL 9,869 9,554 51%\nExecutive Office for Immigration Review Office of Plan"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 241,
+          "score": 8.74634805866104,
+          "similarity": 8.74634805866104,
+          "text": "ISCO, CALIFORNIA 2,295 2,187\nSEATTLE, WASHINGTON 660 756\nSTEWART DETENTION FACILITY, GEORGIA 30 36\nTACOMA, WASHINGTON 261 230\nTUCSON, ARIZONA 36 58\nULSTER - NEW YORK STATE DOC, NEW YORK 7 9\nVARICK SPC, NEW YORK 118 132\nYORK, PENNSYLVANIA 165 205\nTOTAL 32,9"
+        }
+      ]
+    },
+    {
+      "chunk_index": 115,
+      "question_type": "direct",
+      "question": "What is the total shown for New York City, New York?",
+      "answer": "17,717",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 329,
+          "score": 21.128038251157967,
+          "similarity": 21.128038251157967,
+          "text": " CALIFORNIA 1,613\nSEATTLE, WASHINGTON 694\nSTEWART DETENTION FACILITY, GEORGIA 19\nTACOMA, WASHINGTON 242\nTUCSON, ARIZONA 7\nULSTER - NEW YORK STATE DOC, NEW YORK 50\nVARICK SPC, NEW YORK 197\nYORK, PENNSYLVANIA 270\nTOTAL 24,754\nExecutive Office for Immigration"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 371,
+          "score": 20.56245299542575,
+          "similarity": 20.56245299542575,
+          "text": "6,980\nTACOMA, WASHINGTON 4,676\nTUCSON, ARIZONA 5,152\nULSTER - NEW YORK STATE DOC, NEW YORK 496\nVARICK SPC, NEW YORK 955\nYORK, PENNSYLVANIA 4,450\nTOTAL 125,580\nImmigration Courts in U.S./Mexico Border States\nExecutive Office for Immigration Review Office of"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 327,
+          "score": 20.3493536580474,
+          "similarity": 20.3493536580474,
+          "text": "S 83\nMEMPHIS, TENNESSEE 260\nMIAMI, FLORIDA 2,694\nNEW ORLEANS, LOUISIANA 67\nNEW YORK CITY, NEW YORK 4,306\nNEWARK, NEW JERSEY 663\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 72\nOMAHA, NEBRASKA 97\nORLANDO, FLORIDA 1,970\nPHILADELPHIA, PENNSYLVANIA 353\nPHOENIX,"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 241,
+          "score": 20.065794969388882,
+          "similarity": 20.065794969388882,
+          "text": "ISCO, CALIFORNIA 2,295 2,187\nSEATTLE, WASHINGTON 660 756\nSTEWART DETENTION FACILITY, GEORGIA 30 36\nTACOMA, WASHINGTON 261 230\nTUCSON, ARIZONA 36 58\nULSTER - NEW YORK STATE DOC, NEW YORK 7 9\nVARICK SPC, NEW YORK 118 132\nYORK, PENNSYLVANIA 165 205\nTOTAL 32,9"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 298,
+          "score": 19.925946649717524,
+          "similarity": 19.925946649717524,
+          "text": "LITY, GEORGIA 0 20 0%\nTACOMA, WASHINGTON 53 105 34%\nTUCSON, ARIZONA 22 9 71%\nULSTER - NEW YORK STATE DOC, NEW YORK 0 4 0%\nVARICK SPC, NEW YORK 23 51 31%\nYORK, PENNSYLVANIA 3 99 3%\nTOTAL 9,869 9,554 51%\nExecutive Office for Immigration Review Office of Plan"
+        }
+      ]
+    },
+    {
+      "chunk_index": 115,
+      "question_type": "inference",
+      "question": "Which listed place has the largest total in the rows shown?",
+      "answer": "New York City, New York",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 65,
+          "score": 15.263611905105254,
+          "similarity": 15.263611905105254,
+          "text": "e are highlighted in red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts at 38 percent. The immigration court in\nGuaynabo (San Juan), Puerto Rico, showed the largest percentage decrease, down 35\npercent. Table "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 67,
+          "score": 13.836944844690588,
+          "similarity": 13.836944844690588,
+          "text": "reases in completions of 25 percent or more are\nhighlighted in blue, and those with decreases of 25 percent or more are highlighted in\nred. New Orleans, LA, showed the largest percentage increase at 63 percent. East\nMesa, CA, showed the largest percentage "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 438,
+          "score": 13.614043458393025,
+          "similarity": 13.614043458393025,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 560,
+          "score": 12.757119239484812,
+          "similarity": 12.757119239484812,
+          "text": " In addition, the immigration judge\ncan eliminate the bond; or change any of the conditions over which the immigration\ncourt has authority. The bond redetermination hearing is completely separate from the\nremoval or deportation hearing. It is not recorded "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 454,
+          "score": 12.443423626904039,
+          "similarity": 12.443423626904039,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 115,
+      "question_type": "paraphrased",
+      "question": "What final sum is listed for the federal holding facility in Oakdale, Louisiana?",
+      "answer": "12,655",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 327,
+          "score": 14.786350493078444,
+          "similarity": 14.786350493078444,
+          "text": "S 83\nMEMPHIS, TENNESSEE 260\nMIAMI, FLORIDA 2,694\nNEW ORLEANS, LOUISIANA 67\nNEW YORK CITY, NEW YORK 4,306\nNEWARK, NEW JERSEY 663\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 72\nOMAHA, NEBRASKA 97\nORLANDO, FLORIDA 1,970\nPHILADELPHIA, PENNSYLVANIA 353\nPHOENIX,"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 239,
+          "score": 14.405877877472484,
+          "similarity": 14.405877877472484,
+          "text": " ORLEANS, LOUISIANA 102 88\nNEW YORK CITY, NEW YORK 10,355 7,844\nNEWARK, NEW JERSEY 835 929\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 53 67\nOMAHA, NEBRASKA 441 591\nORLANDO, FLORIDA 1,006 2,357\nPHILADELPHIA, PENNSYLVANIA 436 532\nPHOENIX, ARIZONA 398 354\nPO"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 295,
+          "score": 13.928772843500461,
+          "similarity": 13.928772843500461,
+          "text": "ISABEL SPC), TEXAS 5 34 13%\nMEMPHIS, TENNESSEE 119 111 52%\nMIAMI, FLORIDA 353 709 33%\nNEW ORLEANS, LOUISIANA 16 42 28%\nNEW YORK CITY, NEW YORK 4,215 1,313 76%\nNEWARK, NEW JERSEY 264 239 52%\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 1 38 3%\nOMAHA, NEBRASK"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 77,
+          "score": 13.482987296951542,
+          "similarity": 13.482987296951542,
+          "text": " -7%\nNEW ORLEANS, LOUISIANA 1,026 1,412 38%\nNEW YORK CITY, NEW YORK 23,255 23,495 1%\nNEWARK, NEW JERSEY 10,068 9,576 -5%\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 14,622 13,314 -9%\nOMAHA, NEBRASKA 5,948 5,725 -4%\nORLANDO, FLORIDA 4,398 4,473 2%\nPHILADELP"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 348,
+          "score": 13.482987296951542,
+          "similarity": 13.482987296951542,
+          "text": "E 2,933 715 24%\nMIAMI, FLORIDA 13,225 5,688 43%\nNEW ORLEANS, LOUISIANA 947 234 25%\nNEW YORK CITY, NEW YORK 16,000 10,371 65%\nNEWARK, NEW JERSEY 6,133 1,756 29%\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 9,009 279 3%\nOMAHA, NEBRASKA 3,871 824 21%\nORLANDO, "
+        }
+      ]
+    },
+    {
+      "chunk_index": 173,
+      "question_type": "direct",
+      "question": "What is the total shown for FY 07?",
+      "answer": "223,085",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 454,
+          "score": 9.780168874585723,
+          "similarity": 9.780168874585723,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 179,
+          "score": 9.516302394525717,
+          "similarity": 9.516302394525717,
+          "text": "389 1.53%\nJamaica 3,850 1.34%\nAll Others 70,175 24.43%\nTotal 287,207 100.00%\nIn FY 2010, the top 10 nationalities accounted for approximately 76 percent of all\nproceedings completed as shown in Figure 6. A total of 224 nationalities were\nrepresented in the"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 477,
+          "score": 9.279453671566545,
+          "similarity": 9.279453671566545,
+          "text": "2006 to FY 2010, however, the total IJ case appeal decisions have decreased\nby 32 percent for the same time period causing the percent detained to increase.\nFigure 30\nIJ Case Appeal Decisions\nDetained and Total\nFY 06\nFY 07\nFY 08\nFY 09\nFY 10\n0 5,000 10,000 "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 272,
+          "score": 9.021881813053737,
+          "similarity": 9.021881813053737,
+          "text": " shown a significant decrease from FY 2006 to\nFY 2010. These decreases are mutually related to the overall decrease in asylum\ncompletions.\nFigure 19\nAsylum Completions\nBy Disposition\n20,000\n15,000\n10,000\n5,000\n0\nFY 06 FY 07 FY 08 FY 09 FY 10\nGrants Denials"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 219,
+          "score": 8.726949221658032,
+          "similarity": 8.726949221658032,
+          "text": "eased on bond or on their own recognizance are\nshown in Figure 12. From FY 2006 to FY 2010 the failure to appear rate has decreased\neach year. This decrease is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        }
+      ]
+    },
+    {
+      "chunk_index": 173,
+      "question_type": "inference",
+      "question": "In FY 08, which category makes up the largest share of the total?",
+      "answer": "The third category, at 79.6%.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 384,
+          "score": 18.676842259995208,
+          "similarity": 18.676842259995208,
+          "text": "and makes the alien ineligible for voluntary\ndeparture and several forms of relief for a ten-year period.\nPrior to the completion of proceedings, aliens may request voluntary departure\nin lieu of removal. The immigration judge has discretion to grant up to"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 193,
+          "score": 18.456836989206536,
+          "similarity": 18.456836989206536,
+          "text": "he proceedings completed in FY\n2010.\nFY 2010 highlights include:\n• Spanish language cases were 66 percent of the total caseload, a decrease of four\npercent since FY 2006.\n• In the “Other” category, Russian, Portuguese, and Arabic represented the three most"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 67,
+          "score": 15.821375592752476,
+          "similarity": 15.821375592752476,
+          "text": "reases in completions of 25 percent or more are\nhighlighted in blue, and those with decreases of 25 percent or more are highlighted in\nred. New Orleans, LA, showed the largest percentage increase at 63 percent. East\nMesa, CA, showed the largest percentage "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 65,
+          "score": 15.263611905105254,
+          "similarity": 15.263611905105254,
+          "text": "e are highlighted in red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts at 38 percent. The immigration court in\nGuaynabo (San Juan), Puerto Rico, showed the largest percentage decrease, down 35\npercent. Table "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 428,
+          "score": 12.782638057453253,
+          "similarity": 12.782638057453253,
+          "text": "completed by the BIA.\nAppeals of immigration judge decisions make up the bulk of the BIA’s work. Receipts of\nappeals of IJ decisions decreased by 19 percent from FY 2006 to FY 2010 while\ncompletions of appeals from IJ decisions decreased by 25 percent. Rec"
+        }
+      ]
+    },
+    {
+      "chunk_index": 173,
+      "question_type": "paraphrased",
+      "question": "According to FY 06, what is the overall sum listed at the end of the row?",
+      "answer": "273,761",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 494,
+          "score": 17.034714626201538,
+          "similarity": 17.034714626201538,
+          "text": "e a dramatic impact on EOIR’s workload.\nFigure 32 presents information on the pending proceedings at the immigration\ncourts based on the year the proceeding was received at the court. The age of pending\ncases is decreasing. Proceedings received prior to FY"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 4,
+          "score": 16.088679771851993,
+          "similarity": 16.088679771851993,
+          "text": "ns.\nThe Statistical Year Book is updated annually. The legend at the bottom of each page reflects the last revision date for that\npage. Yearly updates are available electronically through the EOIR website at www.justice.gov/eoir.\nFY 2010 STATISTICAL YEAR B"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 518,
+          "score": 15.985993423445692,
+          "similarity": 15.985993423445692,
+          "text": "retion, to that of a lawful permanent resident if a visa petition on behalf of the\nalien has been approved, an immigrant visa is immediately available at the time of the\nalien’s application for adjustment of status, and the alien is not otherwise inadmissi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 438,
+          "score": 14.793885160501228,
+          "similarity": 14.793885160501228,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 559,
+          "score": 14.693122068553354,
+          "similarity": 14.693122068553354,
+          "text": "ation hearing, the judge can raise, lower, or maintain the amount of the\nbond, however, the Immigration and Nationality Act provides that bond of at least\n$1,500 is required before an alien may be released. In addition, the immigration judge\ncan eliminate "
+        }
+      ]
+    },
+    {
+      "chunk_index": 263,
+      "question_type": "direct",
+      "question": "What percentage is shown for FY 10?",
+      "answer": "51%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 469,
+          "score": 11.344445258118938,
+          "similarity": 11.344445258118938,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 339,
+          "score": 10.025322924394954,
+          "similarity": 10.025322924394954,
+          "text": "nal Hearing Program cases involving criminal aliens\nreceive fewer applications for relief. Courts with a low percentage of applications for\nrelief (10 percent or less) are shown in red. Courts where 50 percent or more of the\ncompletions involved applicatio"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 482,
+          "score": 8.32872206510809,
+          "similarity": 8.32872206510809,
+          "text": "r municipal corrections\nfacility. The percentage of IHP completions declined from FY 2006 to FY 2010. This\ndrop in the percentage of IHP completions is caused by a decrease in the number of\nIHP completions and the total detained completions staying fairly "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 219,
+          "score": 8.130568012661024,
+          "similarity": 8.130568012661024,
+          "text": "eased on bond or on their own recognizance are\nshown in Figure 12. From FY 2006 to FY 2010 the failure to appear rate has decreased\neach year. This decrease is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 202,
+          "score": 7.3400472102450625,
+          "similarity": 7.3400472102450625,
+          "text": " FY 2006 – FY 2010 were represented. The percentage of\nrepresented aliens for FY 2006 to FY 2010 ranged from 35 percent to 43 percent.\nFigure 9\nCourt Proceedings Completed\nPercentage of Represented Cases\nRepresentation in Immigration Courts\nRepresented Unr"
+        }
+      ]
+    },
+    {
+      "chunk_index": 263,
+      "question_type": "inference",
+      "question": "Which fiscal year has the highest percentage value shown in the sequence, and what is that value?",
+      "answer": "FY 10, 51%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 642,
+          "score": 18.402510627361014,
+          "similarity": 18.402510627361014,
+          "text": "ion Appeals.\nFiscal Year\nA 12-month period for which an organization plans the use of its funds. In the U.S.\ngovernment, the fiscal year runs from October 1 through September 30.\nG\nGrant of Relief\nWhen an immigration judge or the Board of Immigration Appea"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 550,
+          "score": 18.211567348449666,
+          "similarity": 18.211567348449666,
+          "text": "ls from immigration judge decisions in\nasylum-only cases. See Withholding-only Proceedings.\nB\nBoard of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for\ninterpreting and applying immigration laws. The BIA has"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 469,
+          "score": 17.402418811136428,
+          "similarity": 17.402418811136428,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 603,
+          "score": 16.37748460882686,
+          "similarity": 16.37748460882686,
+          "text": "ture (CAT), the alien’s removal will be deferred. The alien’s\nremoval is deferred only to the country in which it has been determined that the alien is\nlikely to be tortured. However, the alien may be removed at any time to another country\nwhere he or she "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 641,
+          "score": 16.334929346461973,
+          "similarity": 16.334929346461973,
+          "text": "tment of Homeland Security officials. The respondent is notified in\nwriting of the decision and, if adverse, of the reasons for the decision. The respondent\nmay appeal this decision to the Board of Immigration Appeals.\nFiscal Year\nA 12-month period for whi"
+        }
+      ]
+    },
+    {
+      "chunk_index": 263,
+      "question_type": "paraphrased",
+      "question": "For the final year listed, what share is displayed?",
+      "answer": "51%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 581,
+          "score": 9.411278891972042,
+          "similarity": 9.411278891972042,
+          "text": "ative closures, changes of venue, and\ntransfers.\nFor matters before the Board of Immigration Appeals, a case is considered completed\nonce the Board renders a final decision.\nFor matters before the Office of the Chief Administrative Hearing Officer, a case "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 582,
+          "score": 9.300233464919376,
+          "similarity": 9.300233464919376,
+          "text": " the Chief Administrative Hearing Officer, a case is\ncompleted when the Administrative Law Judge issues a final decision disposing of all\nremaining issues and the time for appeal has ended.\nExecutive Office for Immigration Review Office of Planning, Analys"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 731,
+          "score": 8.987854508615575,
+          "similarity": 8.987854508615575,
+          "text": " by an immigration judge\nor the Board of Immigration Appeals without a final order of removal or deportation. A\ncase is terminated when the respondent is found not removable as DHS charged.\nU\nUnrepresented\nAn individual in proceedings may represent himself"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 541,
+          "score": 8.65246588054908,
+          "similarity": 8.65246588054908,
+          "text": " and Technology\nFY 2010 Statistical Year Book Appendix A - Glossary of Terms\nJanuary 2011\n3\nUnited States. In the absence of exceptional circumstances, final administrative\nadjudication of the asylum application, not including administrative appeal, must b"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 520,
+          "score": 8.420355639962086,
+          "similarity": 8.420355639962086,
+          "text": "r or from the Board of Immigration Appeals’ docket.\nAdministrative closure of a case does not result in a final order. It is merely an\nadministrative convenience which allows the removal of cases from the calendar in\nappropriate situations. A case may not "
+        }
+      ]
+    },
+    {
+      "chunk_index": 266,
+      "question_type": "direct",
+      "question": "From FY 2006 to FY 2010, which type of asylum claim had higher grant rates: affirmative or defensive?",
+      "answer": "Affirmative asylum claims.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 266,
+          "score": 42.81064127991378,
+          "similarity": 42.81064127991378,
+          "text": " before an immigration judge.\nFrom FY 2006 to FY 2010, grant rates for affirmative asylum claims were higher than\ngrant rates for defensive claims. The grant rate for affirmative asylum claims has\nsignificantly increased from FY 2006 to FY 2010, where defe"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 267,
+          "score": 32.91688457579824,
+          "similarity": 32.91688457579824,
+          "text": "ntly increased from FY 2006 to FY 2010, where defensive claims have remained\nfairly consistent. Figures 17 and 18 show the grant rates for affirmative and defensive\nasylum claims.\nFigure 17\nImmigration Courts\nAffirmative Grant Rate\nImmigration Court Affirm"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 285,
+          "score": 22.039251939310674,
+          "similarity": 22.039251939310674,
+          "text": "Figure 19-B shows the percentage of cases in which asylum or withholding of\nremoval was granted. The grant rate has increased eight percent from FY 2006 to FY\n2010.\nFigure 19-B\nImmigration Courts\nAsylum or Withholding of Removal Grant Rate\n100%\n90%\n80%\n70%"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 34,
+          "score": 20.2985678313193,
+          "similarity": 20.2985678313193,
+          "text": " (Figure 9, page G1)\n! Asylum applications filed with the immigration courts decreased by 42\npercent from FY 2006 to FY 2010. Affirmative receipts decreased by 35\npercent while defensive receipts decreased by 56 percent. (Figure 13,\npage I1)\n! In FY 2010, "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 15,
+          "score": 20.173239725913824,
+          "similarity": 20.173239725913824,
+          "text": "Never Detained Aliens H2\nFigure 12 - Failure to Appear Rates for Released Aliens H3\nFigure 13 - Immigration Court Asylum Receipts: Affirmative and Defensive I1\nFigure 14 - Asylum Cases: Receipts and Completions I2\nFigure 15 - FY 2010 Asylum Grants by Natio"
+        }
+      ]
+    },
+    {
+      "chunk_index": 266,
+      "question_type": "inference",
+      "question": "What happened to the success rate for the claim type filed outside removal proceedings over this period?",
+      "answer": "It increased significantly.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 420,
+          "score": 16.205588748662322,
+          "similarity": 16.205588748662322,
+          "text": "es in removal, deportation, or exclusion proceedings, and for the\npurposes of this Statistical Year Book are referred to as immigration judge appeals.\nThese appeals are filed directly with the BIA in Falls Church, VA, and must be filed\nwithin 30 days of th"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 590,
+          "score": 15.758397679012266,
+          "similarity": 15.758397679012266,
+          "text": "t (Convention Against Torture or CAT). Under this regulation,\naliens in removal, deportation, or exclusion proceedings may claim that they “more likely\nthan not” will be tortured if removed from the United States and may apply for\nwithholding of removal un"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 209,
+          "score": 15.496288466050139,
+          "similarity": 15.496288466050139,
+          "text": "aliens who failed to appear decreased by 65 percent over the same\nperiod. The failure to appear rate has remained fairly consistent from FY 2007 to FY\n2010.\nFigure 10\nFailure to Appear* Rates\n100%\n80%\n60%\n38%\n40%\n16% 13% 11% 12%\n20%\n0%\nFY 06 FY 07 FY 08 FY"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 127,
+          "score": 14.594466021169627,
+          "similarity": 14.594466021169627,
+          "text": "Courts:\nProceedings Received and Completed by Type\nThis section of the Statistical Year Book provides further details on proceedings\nby type. As noted in Tab B, proceedings, motions, and bond redeterminations make up\nthe various types of matters considered"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 47,
+          "score": 14.382218211277756,
+          "similarity": 14.382218211277756,
+          "text": "ent. The most common charging\ndocuments are the Notice to Appear (NTA) and the Notice of Referral to immigration\njudge. When the charging document is filed by DHS with the immigration court,\njurisdiction over the case transfers from DHS to the Executive Of"
+        }
+      ]
+    },
+    {
+      "chunk_index": 266,
+      "question_type": "paraphrased",
+      "question": "Between FY 2006 and FY 2010, which class of asylum applications was approved more often than the other?",
+      "answer": "Affirmative asylum claims.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 37,
+          "score": 21.437519411557194,
+          "similarity": 21.437519411557194,
+          "text": " 7, page J2)\n! The grant rate for asylum applications was 51 percent in FY 2010. The\ngrant rate was 61 percent for affirmative applications and 35 percent for\ndefensive applications. (Figures 16, 17, and 18, pages K1 and K2)\n! In FY 2010, the percentage of"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 392,
+          "score": 20.44981215525864,
+          "similarity": 20.44981215525864,
+          "text": "e for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statistical Year Book January 2011\nQ1\nImmigration Courts:\nApplications for Relief other than Asylum\nAlthough asylum is the most common form of relief requested before an\nimmigrat"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 38,
+          "score": 19.41902989733969,
+          "similarity": 19.41902989733969,
+          "text": ", pages K1 and K2)\n! In FY 2010, the percentage of asylum cases in which either asylum or\nwithholding of removal was granted was 60 percent. (Figure 19-B, page\nK5)\n! In FY 2010, 25 percent of proceedings completed at the immigration courts\nhad an applicati"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 62,
+          "score": 18.712797329669613,
+          "similarity": 18.712797329669613,
+          "text": "eceipts Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts decreased between FY 2006 and FY 2007 by four percent. The increase in\nreceipts from FY 2007 to FY 2010 was 17 percent. Immigration court matters\ncompl"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 285,
+          "score": 18.537704480436616,
+          "similarity": 18.537704480436616,
+          "text": "Figure 19-B shows the percentage of cases in which asylum or withholding of\nremoval was granted. The grant rate has increased eight percent from FY 2006 to FY\n2010.\nFigure 19-B\nImmigration Courts\nAsylum or Withholding of Removal Grant Rate\n100%\n90%\n80%\n70%"
+        }
+      ]
+    },
+    {
+      "chunk_index": 347,
+      "question_type": "direct",
+      "question": "What percentage is listed for Los Angeles, California?",
+      "answer": "57%",
+      "gold_rank": 5,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 326,
+          "score": 15.786780936505028,
+          "similarity": 15.786780936505028,
+          "text": "TON, TEXAS 182\nIMPERIAL, CALIFORNIA 24\nKANSAS CITY, MISSOURI 97\nKROME NORTH SPC, FLORIDA 433\nLANCASTER, CALIFORNIA 181\nLAS VEGAS, NEVADA 140\nLOS ANGELES, CALIFORNIA 4,023\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 83\nMEMPHIS, TENNESSEE 260\nMIAMI, FLORIDA 2,694\nN"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 294,
+          "score": 15.12572326093907,
+          "similarity": 15.12572326093907,
+          "text": ", CALIFORNIA 2 22 8%\nKANSAS CITY, MISSOURI 43 97 31%\nKROME NORTH SPC, FLORIDA 12 217 5%\nLANCASTER, CALIFORNIA 24 72 25%\nLAS VEGAS, NEVADA 42 43 49%\nLOS ANGELES, CALIFORNIA 1,167 1,426 45%\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 5 34 13%\nMEMPHIS, TENNESSEE 119"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 368,
+          "score": 14.740485215457397,
+          "similarity": 14.740485215457397,
+          "text": "3\nLANCASTER, CALIFORNIA 3,564\nLAS VEGAS, NEVADA 2,006\nLOS ANGELES, CALIFORNIA 1,100\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 1,828\nMEMPHIS, TENNESSEE 45\nMIAMI, FLORIDA 730\nNEW ORLEANS, LOUISIANA 134\nNEW YORK CITY, NEW YORK 119\nNEWARK, NEW JERSEY 2,030\nOAKDALE "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 238,
+          "score": 14.517736904111441,
+          "similarity": 14.517736904111441,
+          "text": "ORIDA 281 348\nLANCASTER, CALIFORNIA 185 192\nLAS VEGAS, NEVADA 352 268\nLOS ANGELES, CALIFORNIA 5,244 7,566\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 55 56\nMEMPHIS, TENNESSEE 357 415\nMIAMI, FLORIDA 1,440 3,560\nNEW ORLEANS, LOUISIANA 102 88\nNEW YORK CITY, NEW YORK"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 347,
+          "score": 13.989953368329413,
+          "similarity": 13.989953368329413,
+          "text": "PC, FLORIDA 8,217 1,187 14%\nLANCASTER, CALIFORNIA 4,820 547 11%\nLAS VEGAS, NEVADA 3,556 650 18%\nLOS ANGELES, CALIFORNIA 18,721 10,613 57%\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 2,275 234 10%\nMEMPHIS, TENNESSEE 2,933 715 24%\nMIAMI, FLORIDA 13,225 5,688 43%\nNE"
+        }
+      ]
+    },
+    {
+      "chunk_index": 347,
+      "question_type": "inference",
+      "question": "Which listed location has the highest third-column percentage, and what is that percentage?",
+      "answer": "Los Angeles, California, 57%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 482,
+          "score": 16.709662487777855,
+          "similarity": 16.709662487777855,
+          "text": "r municipal corrections\nfacility. The percentage of IHP completions declined from FY 2006 to FY 2010. This\ndrop in the percentage of IHP completions is caused by a decrease in the number of\nIHP completions and the total detained completions staying fairly "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 481,
+          "score": 15.646209671302115,
+          "similarity": 15.646209671302115,
+          "text": " number who were serving sentences at an IHP location. In FY\n2010, 11 percent of detained BIA completions involved aliens whose removal orders\nhad been issued prior to their release from a federal, state, or municipal corrections\nfacility. The percentage o"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 469,
+          "score": 15.394028067658647,
+          "similarity": 15.394028067658647,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 285,
+          "score": 15.22742489369137,
+          "similarity": 15.22742489369137,
+          "text": "Figure 19-B shows the percentage of cases in which asylum or withholding of\nremoval was granted. The grant rate has increased eight percent from FY 2006 to FY\n2010.\nFigure 19-B\nImmigration Courts\nAsylum or Withholding of Removal Grant Rate\n100%\n90%\n80%\n70%"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 550,
+          "score": 14.794595151653716,
+          "similarity": 14.794595151653716,
+          "text": "ls from immigration judge decisions in\nasylum-only cases. See Withholding-only Proceedings.\nB\nBoard of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for\ninterpreting and applying immigration laws. The BIA has"
+        }
+      ]
+    },
+    {
+      "chunk_index": 347,
+      "question_type": "paraphrased",
+      "question": "What share is shown for the California city with 18,721 and 10,613 in the first two numeric columns?",
+      "answer": "57%",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 347,
+          "score": 18.75854153531227,
+          "similarity": 18.75854153531227,
+          "text": "PC, FLORIDA 8,217 1,187 14%\nLANCASTER, CALIFORNIA 4,820 547 11%\nLAS VEGAS, NEVADA 3,556 650 18%\nLOS ANGELES, CALIFORNIA 18,721 10,613 57%\nLOS FRESNOS (PORT ISABEL SPC), TEXAS 2,275 234 10%\nMEMPHIS, TENNESSEE 2,933 715 24%\nMIAMI, FLORIDA 13,225 5,688 43%\nNE"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 113,
+          "score": 15.652153129731758,
+          "similarity": 15.652153129731758,
+          "text": "818 11 383 5,212\nIMPERIAL, CALIFORNIA 1,157 3 18 1,178\nKANSAS CITY, MISSOURI 4,574 354 124 5,052\nKROME NORTH SPC, FLORIDA 8,217 3,901 102 12,220\nLANCASTER, CALIFORNIA 4,820 2,861 24 7,705\nLAS VEGAS, NEVADA 3,556 253 135 3,944\nLOS ANGELES, CALIFORNIA 18,721"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 219,
+          "score": 14.713057212787628,
+          "similarity": 14.713057212787628,
+          "text": "eased on bond or on their own recognizance are\nshown in Figure 12. From FY 2006 to FY 2010 the failure to appear rate has decreased\neach year. This decrease is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 406,
+          "score": 14.196582014180638,
+          "similarity": 14.196582014180638,
+          "text": " by IIRIRA.\nThere are two IIRIRA provisions addressing cancellation of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing removal on criminal grounds who has been lawfully\nadmitted for permanent residence for at l"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 454,
+          "score": 13.534172201155323,
+          "similarity": 13.534172201155323,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 348,
+      "question_type": "direct",
+      "question": "According to the list, how many people are shown for Miami, Florida?",
+      "answer": "13,225",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 643,
+          "score": 10.943686574587522,
+          "similarity": 10.943686574587522,
+          "text": "mmigration judge or the Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nare tracked in the Statistical Year Book: moti"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 198,
+          "score": 10.85333468809034,
+          "similarity": 10.85333468809034,
+          "text": "nse to the\ngovernment. Prior to representing an alien before the immigration court, representatives\nmust file a Notice of Appearance with the court.\nMany individuals in removal proceedings are indigent and cannot afford a private\nattorney. Some seek free o"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 468,
+          "score": 9.93752957783214,
+          "similarity": 9.93752957783214,
+          "text": "the BIA,\nrepresentatives must file a Notice of Appearance with the BIA.\nMany individuals who file appeals with the BIA are indigent and cannot afford a\nprivate attorney. Some seek free or pro bono representation, while others proceed\nwithout counsel on the"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 327,
+          "score": 9.343910686390242,
+          "similarity": 9.343910686390242,
+          "text": "S 83\nMEMPHIS, TENNESSEE 260\nMIAMI, FLORIDA 2,694\nNEW ORLEANS, LOUISIANA 67\nNEW YORK CITY, NEW YORK 4,306\nNEWARK, NEW JERSEY 663\nOAKDALE FEDERAL DETENTION CENTER, LOUISIANA 72\nOMAHA, NEBRASKA 97\nORLANDO, FLORIDA 1,970\nPHILADELPHIA, PENNSYLVANIA 353\nPHOENIX,"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 231,
+          "score": 9.341076111146602,
+          "similarity": 9.341076111146602,
+          "text": "32,961 40,545\nTable 6, shown on page I3, provides information on FY 2010 asylum receipts and\ncompletions by immigration court. In FY 2010 the New York, NY; Los Angeles, CA; San\nFrancisco, CA; Miami, FL; and Orlando, FL, immigration courts received 62 perce"
+        }
+      ]
+    },
+    {
+      "chunk_index": 348,
+      "question_type": "inference",
+      "question": "Which listed place has the highest percentage value, and what is that percentage?",
+      "answer": "New York City, New York — 65%",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 482,
+          "score": 16.709662487777855,
+          "similarity": 16.709662487777855,
+          "text": "r municipal corrections\nfacility. The percentage of IHP completions declined from FY 2006 to FY 2010. This\ndrop in the percentage of IHP completions is caused by a decrease in the number of\nIHP completions and the total detained completions staying fairly "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 469,
+          "score": 15.394028067658647,
+          "similarity": 15.394028067658647,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 285,
+          "score": 15.22742489369137,
+          "similarity": 15.22742489369137,
+          "text": "Figure 19-B shows the percentage of cases in which asylum or withholding of\nremoval was granted. The grant rate has increased eight percent from FY 2006 to FY\n2010.\nFigure 19-B\nImmigration Courts\nAsylum or Withholding of Removal Grant Rate\n100%\n90%\n80%\n70%"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 550,
+          "score": 14.794595151653716,
+          "similarity": 14.794595151653716,
+          "text": "ls from immigration judge decisions in\nasylum-only cases. See Withholding-only Proceedings.\nB\nBoard of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for\ninterpreting and applying immigration laws. The BIA has"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 261,
+          "score": 14.413163628837783,
+          "similarity": 14.413163628837783,
+          "text": "es asylum, and this is also recorded\nas an “other” completion.\nFigure 16 provides the asylum grant rate for the past five years. The grant rate is\ncalculated as a percentage of asylum claims decided on the merits, i.e., grants and\ndenials. The grant rate h"
+        }
+      ]
+    },
+    {
+      "chunk_index": 348,
+      "question_type": "paraphrased",
+      "question": "For the city in Florida named here, what is the middle numeric count reported?",
+      "answer": "5,688",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 163,
+          "score": 17.054348670301415,
+          "similarity": 17.054348670301415,
+          "text": "dition to decisions, there are other possible proceeding outcomes which are\nreported here as “other completions.” Some cases are administratively closed and the\nimmigration judge does not render a decision on the merits. Administrative closures\nand cases t"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 677,
+          "score": 13.700482129479617,
+          "similarity": 13.700482129479617,
+          "text": "s to reopen or reconsider are reported in this Statistical\nYear Book.\nN\nNationality\nFor purposes of the EOIR Statistical Yearbook, nationality indicates the country that the\nalien is from.\nNicaraguan Adjustment and Central American Relief Act of 1997 (NACA"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 714,
+          "score": 11.756550941973648,
+          "similarity": 11.756550941973648,
+          "text": "o be\nremovable by the Department of Homeland Security, e.g., in expedited removal or\nadministrative removal proceedings. Only aliens found removable by the Executive\nOffice for Immigration Review are reported in this Year Book.\nRemoval Proceedings\nAn immig"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 552,
+          "score": 9.889717408659457,
+          "similarity": 9.889717408659457,
+          "text": " Citizenship and Immigration Services’\nDistrict Directors in a wide variety of proceedings in which the U.S. government is one\nparty and the other party is either an alien, a citizen, or a business firm. In addition, the\nBIA is responsible for the recognit"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 509,
+          "score": 9.38899054780247,
+          "similarity": 9.38899054780247,
+          "text": "o the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational in nature. These terms may\nhave further meaning in the context of othe"
+        }
+      ]
+    },
+    {
+      "chunk_index": 454,
+      "question_type": "direct",
+      "question": "How many nationalities were represented in the FY 2010 completions?",
+      "answer": "189",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 454,
+          "score": 23.457086796851904,
+          "similarity": 23.457086796851904,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 180,
+          "score": 23.09019687467967,
+          "similarity": 23.09019687467967,
+          "text": "total of 224 nationalities were\nrepresented in the FY 2010 immigration judge completions. Mexico and Central\nAmerican countries are consistently among the predominant nationalities of immigration\ncourt completions. Table 5, on the following page, provides "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 245,
+          "score": 19.101536934027813,
+          "similarity": 19.101536934027813,
+          "text": "llowing page, provides information for\ncomparative purposes on the top nationalities granted asylum for the period FY 2006 to\nFY 2010. Four nationalities were represented among the top 10 nationalities granted\nasylum each year during the five-year period: "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 179,
+          "score": 17.600681240329237,
+          "similarity": 17.600681240329237,
+          "text": "389 1.53%\nJamaica 3,850 1.34%\nAll Others 70,175 24.43%\nTotal 287,207 100.00%\nIn FY 2010, the top 10 nationalities accounted for approximately 76 percent of all\nproceedings completed as shown in Figure 6. A total of 224 nationalities were\nrepresented in the"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 202,
+          "score": 16.108059872217826,
+          "similarity": 16.108059872217826,
+          "text": " FY 2006 – FY 2010 were represented. The percentage of\nrepresented aliens for FY 2006 to FY 2010 ranged from 35 percent to 43 percent.\nFigure 9\nCourt Proceedings Completed\nPercentage of Represented Cases\nRepresentation in Immigration Courts\nRepresented Unr"
+        }
+      ]
+    },
+    {
+      "chunk_index": 454,
+      "question_type": "inference",
+      "question": "What share of all completions was made up by the nationalities mentioned in Figure 28?",
+      "answer": "68 percent",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 454,
+          "score": 24.864323013601712,
+          "similarity": 24.864323013601712,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 243,
+          "score": 18.061289660321833,
+          "similarity": 18.061289660321833,
+          "text": "rts:\nAsylum Grants by Nationality\nThis section provides information on asylum grants by nationality. Figure 15\ndisplays the top 10 nationalities granted asylum in FY 2010. In FY 2010, the top 10\nnationalities accounted for 60 percent of all asylum grants. "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 32,
+          "score": 17.76479677812076,
+          "similarity": 17.76479677812076,
+          "text": "d China were the leading\nnationalities of immigration court completions during FY 2010, representing\n67 percent of the total caseload. (Figure 6, page E1)\n! Spanish was the most frequently spoken language for immigration court\ncase completions during FY 20"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 179,
+          "score": 17.75874345697742,
+          "similarity": 17.75874345697742,
+          "text": "389 1.53%\nJamaica 3,850 1.34%\nAll Others 70,175 24.43%\nTotal 287,207 100.00%\nIn FY 2010, the top 10 nationalities accounted for approximately 76 percent of all\nproceedings completed as shown in Figure 6. A total of 224 nationalities were\nrepresented in the"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 453,
+          "score": 17.669820750117548,
+          "similarity": 17.669820750117548,
+          "text": "provides information on appeal completions by nationality. Only\ncompletions of immigration judge decision appeals are included in these data; appeals\nof DHS decisions are not included. In FY 2010, the top 10 nationalities accounted for\n68 percent of all co"
+        }
+      ]
+    },
+    {
+      "chunk_index": 454,
+      "question_type": "paraphrased",
+      "question": "How many different citizenship groups appeared in the FY 2010 completion records?",
+      "answer": "189",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 164,
+          "score": 13.832525656432459,
+          "similarity": 13.832525656432459,
+          "text": "on the merits. Administrative closures\nand cases transferred to a different hearing location or granted a change of venue are\ncounted as “other completions.”\nFigure 4 provides a breakdown of proceedings from FY 2006 to FY 2010 by type\nof completion – eithe"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 192,
+          "score": 12.901615729537882,
+          "similarity": 12.901615729537882,
+          "text": "was more diversity in languages in FY 2010. A total of 283\ndifferent languages were spoken in court proceedings in the immigration courts during FY\n2010. The top five languages accounted for 91 percent of the proceedings completed in FY\n2010.\nFY 2010 highl"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 194,
+          "score": 10.954714705555848,
+          "similarity": 10.954714705555848,
+          "text": " Portuguese, and Arabic represented the three most\nfrequently spoken languages.\n• The number of different languages used in court proceedings has increased by\n12 percent over FY 2006.\nFigure 7 Figure 8\nFY 2006 Court Proceedings Completed By FY 2010 Court P"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 375,
+          "score": 10.74356494840762,
+          "similarity": 10.74356494840762,
+          "text": "ration.\nIn FY 2010, DHS filed charging documents with the immigration courts for\nincarcerated aliens in 75 different institutions. Immigration judges and court staff\ntraveled to these institutions to conduct IHP hearings.\nFigure 24 provides information on "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 165,
+          "score": 10.007110533780015,
+          "similarity": 10.007110533780015,
+          "text": "m FY 2006 to FY 2010 by type\nof completion – either through an immigration judge decision or through an “other\ncompletion,” such as an administrative closure or change of venue.\nFigure 4\nIJ Proceedings Completed\nBy Completion Type IJ Proceedings Completed\n"
+        }
+      ]
+    },
+    {
+      "chunk_index": 460,
+      "question_type": "direct",
+      "question": "Which country is listed first for FY 2010?",
+      "answer": "Mexico",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 603,
+          "score": 10.290347936088397,
+          "similarity": 10.290347936088397,
+          "text": "ture (CAT), the alien’s removal will be deferred. The alien’s\nremoval is deferred only to the country in which it has been determined that the alien is\nlikely to be tortured. However, the alien may be removed at any time to another country\nwhere he or she "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 538,
+          "score": 9.651902526877436,
+          "similarity": 9.651902526877436,
+          "text": "erson who is\noutside his or her country of nationality or, in the case of a person having no nationality,\nis outside any county in which such person last habitually resided, and who is unable or\nunwilling to return to, and is unable or unwilling to avail h"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 316,
+          "score": 8.664858915240128,
+          "similarity": 8.664858915240128,
+          "text": ".\nThere are two forms of protection under the 1999 regulations:\n• The regulation established a new form of withholding of removal which is\ngranted to an alien who establishes that he or she would be tortured in the\nproposed country of removal.\n• The second"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 733,
+          "score": 8.33937395325865,
+          "similarity": 8.33937395325865,
+          "text": "o Se.\nV\nVisa Petition\nA visa petition is the first step toward obtaining lawful permanent residence for a\nforeign-born individual or family. It is usually filed by a U.S. citizen, lawful permanent\nresident, or employer on behalf of an alien. Visa petitions"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 168,
+          "score": 7.674179331694015,
+          "similarity": 7.674179331694015,
+          "text": ", and Technology\nFY 2010 Statistical Year Book January 2011\nD1\nFigure 5 provides a breakout of decisions by disposition type. Immigration\njudges first decide whether or not the charges against an alien should be sustained. If\nthe charges are not sustained "
+        }
+      ]
+    },
+    {
+      "chunk_index": 460,
+      "question_type": "inference",
+      "question": "Which country appears in the top three positions for every year shown?",
+      "answer": "Mexico and China",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 630,
+          "score": 11.835300104746967,
+          "similarity": 11.835300104746967,
+          "text": "on laws by\nconducting immigration court proceedings, appellate reviews, and administrative\nhearings. EOIR consists of three components: the Office of the Chief Immigration\nJudge, which is responsible for managing the numerous immigration courts located\nthr"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 245,
+          "score": 11.780441695910659,
+          "similarity": 11.780441695910659,
+          "text": "llowing page, provides information for\ncomparative purposes on the top nationalities granted asylum for the period FY 2006 to\nFY 2010. Four nationalities were represented among the top 10 nationalities granted\nasylum each year during the five-year period: "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 181,
+          "score": 11.713538978977944,
+          "similarity": 11.713538978977944,
+          "text": "letions. Table 5, on the following page, provides information on the top 25\nnationalities each year for the period FY 2006 through FY 2010. For the five-year\nperiod, eight of the top 10 nationalities remained the same: Mexico, Guatemala, El\nSalvador, Hondu"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 179,
+          "score": 11.5327326657222,
+          "similarity": 11.5327326657222,
+          "text": "389 1.53%\nJamaica 3,850 1.34%\nAll Others 70,175 24.43%\nTotal 287,207 100.00%\nIn FY 2010, the top 10 nationalities accounted for approximately 76 percent of all\nproceedings completed as shown in Figure 6. A total of 224 nationalities were\nrepresented in the"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 603,
+          "score": 11.397157181079185,
+          "similarity": 11.397157181079185,
+          "text": "ture (CAT), the alien’s removal will be deferred. The alien’s\nremoval is deferred only to the country in which it has been determined that the alien is\nlikely to be tortured. However, the alien may be removed at any time to another country\nwhere he or she "
+        }
+      ]
+    },
+    {
+      "chunk_index": 460,
+      "question_type": "paraphrased",
+      "question": "What nation is shown in the second spot for all the fiscal years listed?",
+      "answer": "China",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 487,
+          "score": 18.728912478492088,
+          "similarity": 18.728912478492088,
+          "text": "on judge decisions are\nappealed to the BIA. Figure 31 below compares immigration judge decisions with the\nnumber of case appeals received (aliens) at the BIA for fiscal years 2006 through 2010.\nAll other figures and tables in Tabs S-W reflect cases (which "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 455,
+          "score": 16.305773715025506,
+          "similarity": 16.305773715025506,
+          "text": " the predominant nationalities for completed immigration judge appeals in\nfiscal years 2006-2010. For the five-year period, seven nationalities ranked among the\ntop 10 each year: Mexico, China, Haiti, El Salvador, Guatemala, Colombia, and\nIndonesia.\nFigure"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 408,
+          "score": 16.216741212477494,
+          "similarity": 16.216741212477494,
+          "text": " has no aggravated\nfelony convictions.\n• Non-Permanent Residents. Under the second provision, applicants\nphysically present in the United States for a continuous period of 10 years\nwho have not been convicted of a criminal offense may seek cancellation\nof "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 633,
+          "score": 15.26759445799637,
+          "similarity": 15.26759445799637,
+          "text": "providing fair, expeditious, and uniform application of the\nnation's immigration laws in all cases.\nExpedited Asylum\nAsylum regulations implemented in 1995 mandated that asylum applications be\nprocessed within 180 days after filing either at a Department o"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 454,
+          "score": 14.515499801734128,
+          "similarity": 14.515499801734128,
+          "text": "0 nationalities accounted for\n68 percent of all completions as shown in Figure 28. A total of 189 nationalities were\nrepresented in the FY 2010 completions. Data in Table 18, on the following page,\ncompares the predominant nationalities for completed immig"
+        }
+      ]
+    },
+    {
+      "chunk_index": 682,
+      "question_type": "direct",
+      "question": "What was the charging document called before the enactment of the Illegal Immigration Reform and Immigrant Responsibility Act of 1996?",
+      "answer": "An Order to Show Cause.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 682,
+          "score": 56.88427722026466,
+          "similarity": 56.88427722026466,
+          "text": " filed with an immigration court by DHS. Prior\nto the enactment of the Illegal Immigration Reform and Immigrant Responsibility Act of\n1996, the charging document was known as an Order to Show Cause.\nNotice of Intent To Rescind\nIn a rescission case, the Dep"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 666,
+          "score": 42.79492669049942,
+          "similarity": 42.79492669049942,
+          "text": "ust establish by clear,\nunequivocal, and convincing evidence that the written notice was provided and that the\nalien is removable. See Failure to Appear.\nInadmissible\nThe Illegal Immigration Reform and Immigrant Responsibility Act of 1996 (IIRIRA)\nreplaced"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 729,
+          "score": 41.67045920245193,
+          "similarity": 41.67045920245193,
+          "text": "elief was adjusted to that of an alien lawfully\nadmitted for permanent residence. In 1997, the Illegal Immigration Reform and\nImmigrant Responsibility Act of 1996 replaced suspension of deportation with\ncancellation of removal. See Cancellation of Removal,"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 711,
+          "score": 41.18831690554647,
+          "similarity": 41.18831690554647,
+          "text": "of removal, or\nadjustment of status. Many forms of relief require the alien to fill out an appropriate\napplication.\nRemovable\nThe Illegal Immigration Reform and Immigrant Responsibility Act of 1996 (IIRIRA)\nreplaced the terms “excludable” and “deportable” "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 394,
+          "score": 39.84296314006152,
+          "similarity": 39.84296314006152,
+          "text": "ed under the\nConvention Against Torture.)\nThis tab describes other forms of relief such as adjustment of status; suspension\nand cancellation; and Section 212(c) relief. The Illegal Immigration Reform and\nImmigrant Responsibility Act of 1996 (IIRIRA) provid"
+        }
+      ]
+    },
+    {
+      "chunk_index": 682,
+      "question_type": "inference",
+      "question": "What event changed the name of the document used to start these proceedings?",
+      "answer": "The enactment of the Illegal Immigration Reform and Immigrant Responsibility Act of 1996.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 681,
+          "score": 17.653971116380916,
+          "similarity": 17.653971116380916,
+          "text": "r (NTA)\nThe document (Form I-862) used by the Department of Homeland Security (DHS) to\ncharge an alien with being removable from the United States. Jurisdiction vests and\nproceedings commence when an NTA is filed with an immigration court by DHS. Prior\nto "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 680,
+          "score": 17.489673029886166,
+          "similarity": 17.489673029886166,
+          "text": "ticular former Soviet bloc nationals.\nNon-detained\nThe status of an alien who is not in the custody of the Department of Homeland Security\nor the Institutional Hearing Program. See Released.\nNotice to Appear (NTA)\nThe document (Form I-862) used by the Depa"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 573,
+          "score": 17.17740131591192,
+          "similarity": 17.17740131591192,
+          "text": "rties, after the charging\ndocument has been filed with the immigration court. The regulation provides that\nvenue may be changed only after one of the parties has filed a motion to change venue\nand the other party has been given notice and an opportunity to"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 613,
+          "score": 16.890135197250316,
+          "similarity": 16.890135197250316,
+          "text": "n INS became aware of a respondent believed to be\ndeportable, they issued a charging document called an Order to Show Cause (OSC).\nAn OSC is the charging document that was used prior to April 1, 1997. A deportation\nproceeding actually began when the OSC wa"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 509,
+          "score": 16.29664651328002,
+          "similarity": 16.29664651328002,
+          "text": "o the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational in nature. These terms may\nhave further meaning in the context of othe"
+        }
+      ]
+    },
+    {
+      "chunk_index": 682,
+      "question_type": "paraphrased",
+      "question": "What was the earlier term for the paper used to bring the case, before the 1996 law took effect?",
+      "answer": "Order to Show Cause.",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 667,
+          "score": 23.147468908902827,
+          "similarity": 23.147468908902827,
+          "text": "grant Responsibility Act of 1996 (IIRIRA)\nreplaced the term “excludable” with the term “inadmissible.” Section 212 of the\nImmigration and Nationality Act defines classes of aliens ineligible to receive visas and\nineligible for admission. Aliens who, at the"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 568,
+          "score": 21.62610488563404,
+          "similarity": 21.62610488563404,
+          "text": "before the Board of Immigration Appeals, a “case” involves one lead alien\nand may also include other family members.\nIn a proceeding before an Administrative Law Judge in the Office of the Chief\nAdministrative Hearing Officer, a “case” involves a complaina"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 682,
+          "score": 21.021360369831644,
+          "similarity": 21.021360369831644,
+          "text": " filed with an immigration court by DHS. Prior\nto the enactment of the Illegal Immigration Reform and Immigrant Responsibility Act of\n1996, the charging document was known as an Order to Show Cause.\nNotice of Intent To Rescind\nIn a rescission case, the Dep"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 649,
+          "score": 20.918813868345676,
+          "similarity": 20.918813868345676,
+          "text": "t.\nImmigration and Nationality Act\nThe Immigration and Nationality Act consolidated previous immigration laws into one\ncoordinated statute. As amended, the Immigration and Nationality Act provides the\nfoundation for immigration law in effect today. The Imm"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 650,
+          "score": 20.872204427394898,
+          "similarity": 20.872204427394898,
+          "text": "ation for immigration law in effect today. The Immigration and Nationality Act\ndeals with the immigration, temporary admission, naturalization, and removal of aliens.\nImmigration and Naturalization Service (INS)\nUntil its transition to the Department of Ho"
+        }
+      ]
+    },
+    {
+      "chunk_index": 687,
+      "question_type": "direct",
+      "question": "What violation of the INA is listed as item (3)?",
+      "answer": "Immigration-related document fraud under section 274C of the INA.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 687,
+          "score": 21.34256841689728,
+          "similarity": 21.34256841689728,
+          "text": "011\n14\nrelated employment practices in violation of section 274B of the INA; (3) immigration-\nrelated document fraud in violation of section 274C of the INA; and (4) IRCA’s\nprohibition of indemnity bonds. OCAHO is headed by a Chief Administrative Hearing\nO"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 524,
+          "score": 20.22978680468977,
+          "similarity": 20.22978680468977,
+          "text": "ted employment practices in violation of\nsection 274B of the INA; (3) immigration-related document fraud in violation of section\n274C of the INA; and (4) IRCA’s prohibition of indemnity bonds. Complaints are\nbrought by the Department of Homeland Security, "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 504,
+          "score": 18.968312991009086,
+          "similarity": 18.968312991009086,
+          "text": "n-related employment practices in violation of section 274B\nof the INA;\n• Immigration-related document fraud in violation of section 274C of the INA;\nand\n• IRCA’s prohibition of indemnity bonds.\nComplaints may be brought by DHS, the Department of Justice O"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 503,
+          "score": 17.46777171614721,
+          "similarity": 17.46777171614721,
+          "text": " the\ncontinued employment of unauthorized aliens and failure to comply with\nemployment eligibility verification requirements in violation of section 274A of\nthe INA (employer sanctions);\n• Unfair immigration-related employment practices in violation of sec"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 523,
+          "score": 16.75613033107132,
+          "similarity": 16.75613033107132,
+          "text": "tinued employment of unauthorized aliens and failure to comply with\nemployment eligibility verification requirements in violation of section 274A of the INA\n(employer sanctions); (2) unfair immigration-related employment practices in violation of\nsection 2"
+        }
+      ]
+    },
+    {
+      "chunk_index": 687,
+      "question_type": "inference",
+      "question": "Which office handles cases involving immigration-related document fraud and the ban on indemnity bonds, as mentioned here?",
+      "answer": "OCAHO.",
+      "gold_rank": 2,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 504,
+          "score": 30.680944872118058,
+          "similarity": 30.680944872118058,
+          "text": "n-related employment practices in violation of section 274B\nof the INA;\n• Immigration-related document fraud in violation of section 274C of the INA;\nand\n• IRCA’s prohibition of indemnity bonds.\nComplaints may be brought by DHS, the Department of Justice O"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 687,
+          "score": 30.09339429792014,
+          "similarity": 30.09339429792014,
+          "text": "011\n14\nrelated employment practices in violation of section 274B of the INA; (3) immigration-\nrelated document fraud in violation of section 274C of the INA; and (4) IRCA’s\nprohibition of indemnity bonds. OCAHO is headed by a Chief Administrative Hearing\nO"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 524,
+          "score": 29.185677159324385,
+          "similarity": 29.185677159324385,
+          "text": "ted employment practices in violation of\nsection 274B of the INA; (3) immigration-related document fraud in violation of section\n274C of the INA; and (4) IRCA’s prohibition of indemnity bonds. Complaints are\nbrought by the Department of Homeland Security, "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 632,
+          "score": 28.55220343921434,
+          "similarity": 28.55220343921434,
+          "text": " of\nimmigration judge decisions; and the Office of the Chief Administrative Hearing Officer,\nwhich adjudicates certain immigration-related civil money penalty and document fraud\ncases. EOIR is committed to providing fair, expeditious, and uniform applicati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 163,
+          "score": 23.973514184414576,
+          "similarity": 23.973514184414576,
+          "text": "dition to decisions, there are other possible proceeding outcomes which are\nreported here as “other completions.” Some cases are administratively closed and the\nimmigration judge does not render a decision on the merits. Administrative closures\nand cases t"
+        }
+      ]
+    },
+    {
+      "chunk_index": 687,
+      "question_type": "paraphrased",
+      "question": "Which agency is said to be led by a Chief Administrative Hearing Officer?",
+      "answer": "OCAHO.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 501,
+          "score": 24.600313029168795,
+          "similarity": 24.600313029168795,
+          "text": "Office of the Chief Administrative Hearing Officer (OCAHO) is headed by the\nChief Administrative Hearing Officer, who is responsible for the general supervision of\nadministrative law judges. OCAHO’s administrative law judges hear cases and\nadjudicate issue"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 688,
+          "score": 21.4899469359034,
+          "similarity": 21.4899469359034,
+          "text": "CAHO is headed by a Chief Administrative Hearing\nOfficer (CAHO) who provides overall program direction, articulates policies and\nprocedures, establishes priorities and administers the hearing process presided over by\nAdministrative Law Judges (ALJs). The C"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 628,
+          "score": 20.9917724026087,
+          "similarity": 20.9917724026087,
+          "text": " which was previously\nperformed by Special Inquiry Officers of the former Immigration and Naturalization\nService (INS) (now Department of Homeland Security). The Office of the Chief\nAdministrative Hearing Officer (OCAHO) was added in 1987. EOIR is responsi"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 632,
+          "score": 20.98201424155821,
+          "similarity": 20.98201424155821,
+          "text": " of\nimmigration judge decisions; and the Office of the Chief Administrative Hearing Officer,\nwhich adjudicates certain immigration-related civil money penalty and document fraud\ncases. EOIR is committed to providing fair, expeditious, and uniform applicati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 521,
+          "score": 20.417009668942416,
+          "similarity": 20.417009668942416,
+          "text": "alendar in\nappropriate situations. A case may not be administratively closed if opposed by either of\nthe parties.\nAdministrative Law Judges\nAdministrative Law Judges (ALJs) in the Office of the Chief Administrative Hearing\nOfficer (OCAHO) hear cases and ad"
+        }
+      ]
+    },
+    {
+      "chunk_index": 689,
+      "question_type": "direct",
+      "question": "What does the CAHO conduct administrative review of ALJs' decisions in the areas of?",
+      "answer": "Employer sanctions and document fraud.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 689,
+          "score": 41.817511683727815,
+          "similarity": 41.817511683727815,
+          "text": "ed over by\nAdministrative Law Judges (ALJs). The CAHO conducts administrative review of ALJs'\ndecisions in the areas of employer sanctions and document fraud, and may modify or\nvacate those ALJ decisions. Complaints are brought by the Department of Homelan"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 688,
+          "score": 24.687910009737372,
+          "similarity": 24.687910009737372,
+          "text": "CAHO is headed by a Chief Administrative Hearing\nOfficer (CAHO) who provides overall program direction, articulates policies and\nprocedures, establishes priorities and administers the hearing process presided over by\nAdministrative Law Judges (ALJs). The C"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 521,
+          "score": 21.794383131024723,
+          "similarity": 21.794383131024723,
+          "text": "alendar in\nappropriate situations. A case may not be administratively closed if opposed by either of\nthe parties.\nAdministrative Law Judges\nAdministrative Law Judges (ALJs) in the Office of the Chief Administrative Hearing\nOfficer (OCAHO) hear cases and ad"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 520,
+          "score": 19.91887393255026,
+          "similarity": 19.91887393255026,
+          "text": "r or from the Board of Immigration Appeals’ docket.\nAdministrative closure of a case does not result in a final order. It is merely an\nadministrative convenience which allows the removal of cases from the calendar in\nappropriate situations. A case may not "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 704,
+          "score": 15.968686537342242,
+          "similarity": 15.968686537342242,
+          "text": "hearings,\nproceedings, and motions. For the Board of Immigration Appeals, receipts include\ncase, bond, motion, and interlocutory appeals, as well as certain appeals of Department\nof Homeland Security decisions. For the Office of the Chief Administrative He"
+        }
+      ]
+    },
+    {
+      "chunk_index": 689,
+      "question_type": "inference",
+      "question": "What can the CAHO do to an ALJ decision after reviewing it?",
+      "answer": "It can modify or vacate the decision.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 689,
+          "score": 15.652430100637055,
+          "similarity": 15.652430100637055,
+          "text": "ed over by\nAdministrative Law Judges (ALJs). The CAHO conducts administrative review of ALJs'\ndecisions in the areas of employer sanctions and document fraud, and may modify or\nvacate those ALJ decisions. Complaints are brought by the Department of Homelan"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 161,
+          "score": 13.118590642688112,
+          "similarity": 13.118590642688112,
+          "text": "ry 2011\nC4\nImmigration Courts:\nProceedings Completed by Disposition\nAfter a hearing, the immigration judge either renders an oral decision or reserves\nthe decision and issues a decision at a later date. In rendering a decision, the\nimmigration judge may or"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 601,
+          "score": 12.248240950923979,
+          "similarity": 12.248240950923979,
+          "text": "plication initially filed with the immigration court after the alien has been\nput into proceedings to remove him or her from the United States. Contrast Affirmative\nAsylum Application.\nDeferral of Removal\nIf an immigration judge concludes that it is more l"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 543,
+          "score": 11.727430855345062,
+          "similarity": 11.727430855345062,
+          "text": "des certain\nbenefits and derivative asylum status for any spouse or child. An asylee can apply to\nthe Department of Homeland Security for lawful permanent resident status under\nImmigration and Nationality Act section 209(b) after he or she has been physica"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 560,
+          "score": 11.631042244619122,
+          "similarity": 11.631042244619122,
+          "text": " In addition, the immigration judge\ncan eliminate the bond; or change any of the conditions over which the immigration\ncourt has authority. The bond redetermination hearing is completely separate from the\nremoval or deportation hearing. It is not recorded "
+        }
+      ]
+    },
+    {
+      "chunk_index": 689,
+      "question_type": "paraphrased",
+      "question": "In which two subject areas does the office review rulings made by administrative judges?",
+      "answer": "Employer sanctions and document fraud.",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 689,
+          "score": 21.72818345662799,
+          "similarity": 21.72818345662799,
+          "text": "ed over by\nAdministrative Law Judges (ALJs). The CAHO conducts administrative review of ALJs'\ndecisions in the areas of employer sanctions and document fraud, and may modify or\nvacate those ALJ decisions. Complaints are brought by the Department of Homelan"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 521,
+          "score": 16.98634401407426,
+          "similarity": 16.98634401407426,
+          "text": "alendar in\nappropriate situations. A case may not be administratively closed if opposed by either of\nthe parties.\nAdministrative Law Judges\nAdministrative Law Judges (ALJs) in the Office of the Chief Administrative Hearing\nOfficer (OCAHO) hear cases and ad"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 520,
+          "score": 16.530100853038142,
+          "similarity": 16.530100853038142,
+          "text": "r or from the Board of Immigration Appeals’ docket.\nAdministrative closure of a case does not result in a final order. It is merely an\nadministrative convenience which allows the removal of cases from the calendar in\nappropriate situations. A case may not "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 501,
+          "score": 16.184421997110935,
+          "similarity": 16.184421997110935,
+          "text": "Office of the Chief Administrative Hearing Officer (OCAHO) is headed by the\nChief Administrative Hearing Officer, who is responsible for the general supervision of\nadministrative law judges. OCAHO’s administrative law judges hear cases and\nadjudicate issue"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 163,
+          "score": 14.122628103132264,
+          "similarity": 14.122628103132264,
+          "text": "dition to decisions, there are other possible proceeding outcomes which are\nreported here as “other completions.” Some cases are administratively closed and the\nimmigration judge does not render a decision on the merits. Administrative closures\nand cases t"
+        }
+      ]
+    },
+    {
+      "chunk_index": 759,
+      "question_type": "direct",
+      "question": "How many entries are listed for Colombia in the table?",
+      "answer": "563",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 643,
+          "score": 12.358235499522106,
+          "similarity": 12.358235499522106,
+          "text": "mmigration judge or the Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nare tracked in the Statistical Year Book: moti"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 438,
+          "score": 11.315288158452331,
+          "similarity": 11.315288158452331,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 198,
+          "score": 10.952242835135515,
+          "similarity": 10.952242835135515,
+          "text": "nse to the\ngovernment. Prior to representing an alien before the immigration court, representatives\nmust file a Notice of Appearance with the court.\nMany individuals in removal proceedings are indigent and cannot afford a private\nattorney. Some seek free o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 36,
+          "score": 10.381197329205396,
+          "similarity": 10.381197329205396,
+          "text": "led with the courts. (Table 6, page I3)\n! Four nationalities were among the top 10 nationalities granted asylum each\nyear during the five-year period FY 2006-10: China, Colombia, India, and\nEthiopia. (Table 7, page J2)\n! The grant rate for asylum applicati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 259,
+          "score": 10.220208680572703,
+          "similarity": 10.220208680572703,
+          "text": " possible\noutcomes as completed cases: grants, denials, withdrawals, and abandoned applications\nfor asylum.\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and are counted as “other” asylum completions, e.g., "
+        }
+      ]
+    },
+    {
+      "chunk_index": 759,
+      "question_type": "inference",
+      "question": "Which listed place has the largest first numeric value after its name?",
+      "answer": "Colombia",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 665,
+          "score": 11.829769049282756,
+          "similarity": 11.829769049282756,
+          "text": "hall order removed in absentia any alien who, after written notice of\nthe time and place of proceedings and the consequences of failing to appear, fails to\nappear at his or her removal proceeding. The DHS must establish by clear,\nunequivocal, and convincin"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 573,
+          "score": 11.674463210634162,
+          "similarity": 11.674463210634162,
+          "text": "rties, after the charging\ndocument has been filed with the immigration court. The regulation provides that\nvenue may be changed only after one of the parties has filed a motion to change venue\nand the other party has been given notice and an opportunity to"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 724,
+          "score": 10.939885888350544,
+          "similarity": 10.939885888350544,
+          "text": "r she then is usually subject to removal proceedings. Although rescission\nproceedings still exist after April 1, 1997, DHS may also place an LPR into removal\nproceedings. An order of removal is sufficient to rescind the alien's status. See Notice\nof Intent"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 65,
+          "score": 10.93329517017228,
+          "similarity": 10.93329517017228,
+          "text": "e are highlighted in red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts at 38 percent. The immigration court in\nGuaynabo (San Juan), Puerto Rico, showed the largest percentage decrease, down 35\npercent. Table "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 642,
+          "score": 10.670064381071002,
+          "similarity": 10.670064381071002,
+          "text": "ion Appeals.\nFiscal Year\nA 12-month period for which an organization plans the use of its funds. In the U.S.\ngovernment, the fiscal year runs from October 1 through September 30.\nG\nGrant of Relief\nWhen an immigration judge or the Board of Immigration Appea"
+        }
+      ]
+    },
+    {
+      "chunk_index": 759,
+      "question_type": "paraphrased",
+      "question": "What is the count shown for the Caribbean nation Cuba?",
+      "answer": "167",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 469,
+          "score": 10.85026958509655,
+          "similarity": 10.85026958509655,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 572,
+          "score": 10.781926297268992,
+          "similarity": 10.781926297268992,
+          "text": "dent is an employer, as\nprescribed by statute.\nChange of Venue\nImmigration judges, for good cause shown, may change venue (move the proceeding to\nanother immigration court) only upon motion by one of the parties, after the charging\ndocument has been filed "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 633,
+          "score": 10.040658747734936,
+          "similarity": 10.040658747734936,
+          "text": "providing fair, expeditious, and uniform application of the\nnation's immigration laws in all cases.\nExpedited Asylum\nAsylum regulations implemented in 1995 mandated that asylum applications be\nprocessed within 180 days after filing either at a Department o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 219,
+          "score": 9.649776479999948,
+          "similarity": 9.649776479999948,
+          "text": "eased on bond or on their own recognizance are\nshown in Figure 12. From FY 2006 to FY 2010 the failure to appear rate has decreased\neach year. This decrease is consistent with the overall rate depicted in Figure 10.\nFigure 12\nFailure to Appear Rates for\nRe"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 318,
+          "score": 9.50587911680835,
+          "similarity": 9.50587911680835,
+          "text": "erral of removal, a form of protection that is more easily\nand quickly terminated if it becomes possible to remove the alien.\nAs shown in Table 9 below, the immigration courts adjudicated 24,754 CAT\napplications during FY 2010. Of those, 489 CAT cases were"
+        }
+      ]
+    },
+    {
+      "chunk_index": 762,
+      "question_type": "direct",
+      "question": "For Ethiopia, how many asylum applications were received in FY 2010?",
+      "answer": "614",
+      "gold_rank": 3,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 33,
+          "score": 13.775822577105949,
+          "similarity": 13.775822577105949,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 37,
+          "score": 12.041989458523148,
+          "similarity": 12.041989458523148,
+          "text": " 7, page J2)\n! The grant rate for asylum applications was 51 percent in FY 2010. The\ngrant rate was 61 percent for affirmative applications and 35 percent for\ndefensive applications. (Figures 16, 17, and 18, pages K1 and K2)\n! In FY 2010, the percentage of"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 762,
+          "score": 10.783116467631878,
+          "similarity": 10.783116467631878,
+          "text": "11 (SYB)\nU.S. Department of Justice\nExecutive Office for Immigration Review\nOffice of Planning, Analysis, and Technology\nImmigration Courts\nFY 2010 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nETHIOPIA 614 407 106 5 27 12"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 36,
+          "score": 10.767903469171545,
+          "similarity": 10.767903469171545,
+          "text": "led with the courts. (Table 6, page I3)\n! Four nationalities were among the top 10 nationalities granted asylum each\nyear during the five-year period FY 2006-10: China, Colombia, India, and\nEthiopia. (Table 7, page J2)\n! The grant rate for asylum applicati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 250,
+          "score": 10.341323103057578,
+          "similarity": 10.341323103057578,
+          "text": "able 7 - Asylum Grants by Nationality\nTop 25 Nationalities: FY 2006 - FY 2010\nRank FY 2006 FY 2007 FY 2008 FY 2009 FY 2010\n1 China China China China China\n2 Colombia Colombia Colombia Haiti Ethiopia\n3 Haiti Haiti Haiti Ethiopia India\n4 Albania Albania Iraq"
+        }
+      ]
+    },
+    {
+      "chunk_index": 762,
+      "question_type": "inference",
+      "question": "For Ethiopia in FY 2010, were more asylum cases approved or denied?",
+      "answer": "Approved.",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 319,
+          "score": 13.826215020721799,
+          "similarity": 13.826215020721799,
+          "text": "tions during FY 2010. Of those, 489 CAT cases were granted, the majority of\nwhich were granted withholding.\nTable 9 - FY 2010 Convention Against Torture Cases by Disposition\nGranted\nDenied Other Withdrawn Abandoned Total\nWithholding Deferral Total\n395 94 4"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 33,
+          "score": 13.56709440084602,
+          "similarity": 13.56709440084602,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 191,
+          "score": 13.230917185201042,
+          "similarity": 13.230917185201042,
+          "text": "cent were in the following five languages: Spanish, English, Portuguese, Mandarin,\nand Creole.\nFigure 8 below shows comparable data for FY 2010. Although four of the top five\nlanguages were the same, there was more diversity in languages in FY 2010. A tota"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 246,
+          "score": 13.02533358588343,
+          "similarity": 13.02533358588343,
+          "text": "ted\nasylum each year during the five-year period: China, Colombia, India, and Ethiopia. For\nmore complete information on asylum data by nationality see:\nhttp://www.justice.gov/eoir/efoia/FY10AsyStats.pdf.\nFigure 15\nFY 2010 Asylum Grants\nBy Nationality\nAll "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 192,
+          "score": 12.722232871762769,
+          "similarity": 12.722232871762769,
+          "text": "was more diversity in languages in FY 2010. A total of 283\ndifferent languages were spoken in court proceedings in the immigration courts during FY\n2010. The top five languages accounted for 91 percent of the proceedings completed in FY\n2010.\nFY 2010 highl"
+        }
+      ]
+    },
+    {
+      "chunk_index": 762,
+      "question_type": "paraphrased",
+      "question": "According to the FY 2010 asylum figures, how many Ethiopian cases were turned down?",
+      "answer": "106",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 319,
+          "score": 12.054177065968815,
+          "similarity": 12.054177065968815,
+          "text": "tions during FY 2010. Of those, 489 CAT cases were granted, the majority of\nwhich were granted withholding.\nTable 9 - FY 2010 Convention Against Torture Cases by Disposition\nGranted\nDenied Other Withdrawn Abandoned Total\nWithholding Deferral Total\n395 94 4"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 476,
+          "score": 12.006161731673734,
+          "similarity": 12.006161731673734,
+          "text": " of immigration judge case appeal\ndecisions that involved detainees. The figures for detained appeal decisions also\ninclude IHP cases. Detained case appeal decisions have remained fairly consistent\nfrom FY 2006 to FY 2010, however, the total IJ case appeal"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 244,
+          "score": 11.407053809469176,
+          "similarity": 11.407053809469176,
+          "text": "es accounted for 60 percent of all asylum grants. China accounted for 38\npercent of all asylum grants. A total of 148 nationalities were represented among cases\ngranted asylum in FY 2010. Table 7, on the following page, provides information for\ncomparative"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 33,
+          "score": 11.250030829925237,
+          "similarity": 11.250030829925237,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 245,
+          "score": 11.241588052669776,
+          "similarity": 11.241588052669776,
+          "text": "llowing page, provides information for\ncomparative purposes on the top nationalities granted asylum for the period FY 2006 to\nFY 2010. Four nationalities were represented among the top 10 nationalities granted\nasylum each year during the five-year period: "
+        }
+      ]
+    },
+    {
+      "chunk_index": 852,
+      "question_type": "direct",
+      "question": "How many entries are listed for Ukraine in the table?",
+      "answer": "191",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 643,
+          "score": 12.358235499522106,
+          "similarity": 12.358235499522106,
+          "text": "mmigration judge or the Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nare tracked in the Statistical Year Book: moti"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 438,
+          "score": 11.315288158452331,
+          "similarity": 11.315288158452331,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 198,
+          "score": 10.952242835135515,
+          "similarity": 10.952242835135515,
+          "text": "nse to the\ngovernment. Prior to representing an alien before the immigration court, representatives\nmust file a Notice of Appearance with the court.\nMany individuals in removal proceedings are indigent and cannot afford a private\nattorney. Some seek free o"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 259,
+          "score": 10.220208680572703,
+          "similarity": 10.220208680572703,
+          "text": " possible\noutcomes as completed cases: grants, denials, withdrawals, and abandoned applications\nfor asylum.\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and are counted as “other” asylum completions, e.g., "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 468,
+          "score": 9.93752957783214,
+          "similarity": 9.93752957783214,
+          "text": "the BIA,\nrepresentatives must file a Notice of Appearance with the BIA.\nMany individuals who file appeals with the BIA are indigent and cannot afford a\nprivate attorney. Some seek free or pro bono representation, while others proceed\nwithout counsel on the"
+        }
+      ]
+    },
+    {
+      "chunk_index": 852,
+      "question_type": "inference",
+      "question": "Which listed country has the highest first numeric value among the visible rows?",
+      "answer": "Ukraine",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 603,
+          "score": 15.32184343890826,
+          "similarity": 15.32184343890826,
+          "text": "ture (CAT), the alien’s removal will be deferred. The alien’s\nremoval is deferred only to the country in which it has been determined that the alien is\nlikely to be tortured. However, the alien may be removed at any time to another country\nwhere he or she "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 550,
+          "score": 13.797724737502458,
+          "similarity": 13.797724737502458,
+          "text": "ls from immigration judge decisions in\nasylum-only cases. See Withholding-only Proceedings.\nB\nBoard of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for\ninterpreting and applying immigration laws. The BIA has"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 606,
+          "score": 13.32857647534604,
+          "similarity": 13.32857647534604,
+          "text": "meland Security (DHS)\nOn March 1, 2003, DHS absorbed the functions of the former Immigration and\nNaturalization Service (INS), among other agencies. Three major components of DHS\nhave functions which relate closely to the Executive Office for Immigration R"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 438,
+          "score": 12.579757235045282,
+          "similarity": 12.579757235045282,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 48,
+          "score": 12.275550071844439,
+          "similarity": 12.275550071844439,
+          "text": "er the case transfers from DHS to the Executive Office for Immigration\nReview (EOIR), which has oversight over the immigration courts located throughout the\nUnited States. Once an alien has been ordered removed by EOIR, DHS carries out the\nremoval. EOIR do"
+        }
+      ]
+    },
+    {
+      "chunk_index": 852,
+      "question_type": "paraphrased",
+      "question": "What is the count shown for the United Arab Emirates?",
+      "answer": "2",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 783,
+          "score": 11.154584469598278,
+          "similarity": 11.154584469598278,
+          "text": "TIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nTUNISIA 4 0 5 0 3 4\nTURKEY 63 12 30 3 5 21\nTURKMENISTAN 24 7 5 3 0 0\nTURKS AND CAICOS ISLANDS 1 0 1 0 0 0\nUGANDA 55 26 22 0 4 14\nUKRAINE 201 62 64 9 33 74\nUNITED ARAB EMIRATES 4 0 0 0 0 0\nUNITED K"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 922,
+          "score": 10.905148452512591,
+          "similarity": 10.905148452512591,
+          "text": "29 35 72\nUNITED ARAB EMIRATES 3 6 0 1 1 0\nUNITED KINGDOM 21 2 8 0 7 17\nUNKNOWN NATIONALITY 12 1 1 0 0 0\nURUGUAY 16 0 15 2 1 10\nUZEBEKISTAN 240 95 62 17 28 50\nVENEZUELA 1,039 279 585 68 158 219\nVIETNAM 106 10 45 3 28 28\nYEMEN 61 10 29 3 23 27\nYUGOSLAVIA 198"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 469,
+          "score": 10.85026958509655,
+          "similarity": 10.85026958509655,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 784,
+          "score": 10.824500898199755,
+          "similarity": 10.824500898199755,
+          "text": " 9 33 74\nUNITED ARAB EMIRATES 4 0 0 0 0 0\nUNITED KINGDOM 30 2 3 0 6 14\nUNKNOWN NATIONALITY 59 7 34 0 9 19\nURUGUAY 19 0 2 6 7 2\nUZEBEKISTAN 152 54 54 14 30 57\nVENEZUELA 398 181 207 26 108 156\nVIETNAM 62 9 28 1 22 39\nYEMEN 38 7 11 1 6 20\nYUGOSLAVIA 107 85 23"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 572,
+          "score": 10.781926297268992,
+          "similarity": 10.781926297268992,
+          "text": "dent is an employer, as\nprescribed by statute.\nChange of Venue\nImmigration judges, for good cause shown, may change venue (move the proceeding to\nanother immigration court) only upon motion by one of the parties, after the charging\ndocument has been filed "
+        }
+      ]
+    },
+    {
+      "chunk_index": 866,
+      "question_type": "direct",
+      "question": "According to the FY 2007 Asylum Statistics table, how many asylum applications were received for Fiji?",
+      "answer": "96",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 866,
+          "score": 17.615459973687948,
+          "similarity": 17.615459973687948,
+          "text": "ion Review\nOffice of Planning, Analysis, and Technology\nImmigration Courts\nFY 2007 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nFEDERATED STATES OF MICRONESA 1 0 0 0 0 0\nFIJI 96 24 23 3 33 33\nFINLAND 16 2 0 2 3 1\nFRANCE 2"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 36,
+          "score": 15.065045919372773,
+          "similarity": 15.065045919372773,
+          "text": "led with the courts. (Table 6, page I3)\n! Four nationalities were among the top 10 nationalities granted asylum each\nyear during the five-year period FY 2006-10: China, Colombia, India, and\nEthiopia. (Table 7, page J2)\n! The grant rate for asylum applicati"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 35,
+          "score": 14.325112261265627,
+          "similarity": 14.325112261265627,
+          "text": "by 56 percent. (Figure 13,\npage I1)\n! In FY 2010, the New York, NY; Los Angeles, CA; San Francisco, CA;\nMiami, FL; and Orlando, FL, immigration courts received 62 percent of the\ntotal asylum applications filed with the courts. (Table 6, page I3)\n! Four nat"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 244,
+          "score": 13.94224662709095,
+          "similarity": 13.94224662709095,
+          "text": "es accounted for 60 percent of all asylum grants. China accounted for 38\npercent of all asylum grants. A total of 148 nationalities were represented among cases\ngranted asylum in FY 2010. Table 7, on the following page, provides information for\ncomparative"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 855,
+          "score": 13.892405671404271,
+          "similarity": 13.892405671404271,
+          "text": " 7,676 11,008\nPage 7 of 7 January 2011 (SYB)\nU.S. Department of Justice\nExecutive Office for Immigration Review\nOffice of Planning, Analysis, and Technology\nImmigration Courts\nFY 2007 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAW"
+        }
+      ]
+    },
+    {
+      "chunk_index": 866,
+      "question_type": "inference",
+      "question": "Which nationality in the table had more cases granted than denied only if the granted count exceeded zero while denied remained lower than granted?",
+      "answer": "Fiji",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 319,
+          "score": 31.13126241946262,
+          "similarity": 31.13126241946262,
+          "text": "tions during FY 2010. Of those, 489 CAT cases were granted, the majority of\nwhich were granted withholding.\nTable 9 - FY 2010 Convention Against Torture Cases by Disposition\nGranted\nDenied Other Withdrawn Abandoned Total\nWithholding Deferral Total\n395 94 4"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 584,
+          "score": 25.285276512840298,
+          "similarity": 25.285276512840298,
+          "text": "n and Nationality Act, as amended by the Illegal\nImmigration Reform and Immigrant Responsibility Act of 1996, provided that for any\nfiscal year no more than 1,000 aliens could be admitted as refugees or granted asylum\npursuant to a determination that the a"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 469,
+          "score": 22.636754142507463,
+          "similarity": 22.636754142507463,
+          "text": "ation, while others proceed\nwithout counsel on their own, or pro se. The percentage of represented appellate cases\ncompleted is higher than the percentage of represented cases at the immigration court\nlevel.\nAs shown in Figure 29, the representation rate i"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 38,
+          "score": 22.48540496131784,
+          "similarity": 22.48540496131784,
+          "text": ", pages K1 and K2)\n! In FY 2010, the percentage of asylum cases in which either asylum or\nwithholding of removal was granted was 60 percent. (Figure 19-B, page\nK5)\n! In FY 2010, 25 percent of proceedings completed at the immigration courts\nhad an applicati"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 232,
+          "score": 21.906994616009996,
+          "similarity": 21.906994616009996,
+          "text": " Orlando, FL, immigration courts received 62 percent of\nasylum filings. In FY 2010, only six immigration courts had more asylum receipts than\ncompletions.\nExecutive Office for Immigration Review Office of Planning, Analysis, and Technology\nFY 2010 Statisti"
+        }
+      ]
+    },
+    {
+      "chunk_index": 866,
+      "question_type": "paraphrased",
+      "question": "In the nationality statistics, how many requests were recorded for Finland?",
+      "answer": "16",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 866,
+          "score": 9.758497824065394,
+          "similarity": 9.758497824065394,
+          "text": "ion Review\nOffice of Planning, Analysis, and Technology\nImmigration Courts\nFY 2007 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nFEDERATED STATES OF MICRONESA 1 0 0 0 0 0\nFIJI 96 24 23 3 33 33\nFINLAND 16 2 0 2 3 1\nFRANCE 2"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 560,
+          "score": 9.61327759941499,
+          "similarity": 9.61327759941499,
+          "text": " In addition, the immigration judge\ncan eliminate the bond; or change any of the conditions over which the immigration\ncourt has authority. The bond redetermination hearing is completely separate from the\nremoval or deportation hearing. It is not recorded "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 831,
+          "score": 9.488644709246575,
+          "similarity": 9.488644709246575,
+          "text": " of Planning, Analysis, and Technology\nImmigration Courts\nFY 2008 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nFEDERATED STATES OF MICRONESA 1 0 2 0 0 0\nFIJI 82 24 19 5 20 28\nFINLAND 1 0 1 0 0 3\nFRANCE 13 0 5 0 8 5\nGABON "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 643,
+          "score": 9.299148144171506,
+          "similarity": 9.299148144171506,
+          "text": "mmigration judge or the Board of Immigration Appeals awards a form of relief\nfor which the alien has applied.\nGrant of Motion\nThere are many types of motions in immigration proceedings. However, only two types\nare tracked in the Statistical Year Book: moti"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 546,
+          "score": 9.025694451325904,
+          "similarity": 9.025694451325904,
+          "text": "ring under section 240\nof the Immigration and Nationality Act requests asylum (and has not been granted\nasylum by the Department of Homeland Security (DHS), if eligible), DHS will file a Form\nI-863, Notice of Referral to an Immigration Judge, with the immi"
+        }
+      ]
+    },
+    {
+      "chunk_index": 886,
+      "question_type": "direct",
+      "question": "How many asylum applications were received from Turkmenistan in FY 2007?",
+      "answer": "23",
+      "gold_rank": 1,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 886,
+          "score": 13.826887749188552,
+          "similarity": 13.826887749188552,
+          "text": "ecutive Office for Immigration Review\nOffice of Planning, Analysis, and Technology\nImmigration Courts\nFY 2007 Asylum Statistics\nNATIONALITY RECEIVED GRANTED DENIED ABANDONED WITHDRAWN OTHER\nTURKMENISTAN 23 12 16 1 5 4\nUGANDA 65 50 23 7 8 20\nUKRAINE 241 40 "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 33,
+          "score": 12.036337992703656,
+          "similarity": 12.036337992703656,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 62,
+          "score": 11.977747267604846,
+          "similarity": 11.977747267604846,
+          "text": "eceipts Completions\nAs shown in Figure 1 above, the number of matters received by the immigration\ncourts decreased between FY 2006 and FY 2007 by four percent. The increase in\nreceipts from FY 2007 to FY 2010 was 17 percent. Immigration court matters\ncompl"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 31,
+          "score": 11.245865048947774,
+          "similarity": 11.245865048947774,
+          "text": "d by four percent between FY 2006\n(366,080) and FY 2010 (353,247). However, completions in FY 2010\nincreased by seven percent from FY 2007. (Figure 1, Page B2)\n! Mexico, Guatemala, El Salvador, Honduras, and China were the leading\nnationalities of immigrat"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 63,
+          "score": 10.168038679034456,
+          "similarity": 10.168038679034456,
+          "text": "10 was 17 percent. Immigration court matters\ncompleted decreased by 10 percent from FY 2006 to FY 2007 followed by an increase\nof seven percent from FY 2007 to FY 2010.\nWhile some courts showed increases in receipts over FY 2009 levels, others\nshowed decre"
+        }
+      ]
+    },
+    {
+      "chunk_index": 886,
+      "question_type": "inference",
+      "question": "Which of the listed nationalities had the highest number of grants, and what was that number?",
+      "answer": "Uganda, 50",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 259,
+          "score": 25.088344659686665,
+          "similarity": 25.088344659686665,
+          "text": " possible\noutcomes as completed cases: grants, denials, withdrawals, and abandoned applications\nfor asylum.\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and are counted as “other” asylum completions, e.g., "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 586,
+          "score": 24.12456307238289,
+          "similarity": 24.12456307238289,
+          "text": "ulation control methods received a grant conditioned on an\nadministrative determination by the Department of Homeland Security that a number\nwas available. Effective May 11, 2005, under the REAL ID Act, the annual cap was\nlifted on asylum grants based on c"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 579,
+          "score": 23.771559375600305,
+          "similarity": 23.771559375600305,
+          "text": "al grant of asylum when a number\nbecame available. Effective May 11, 2005, under the REAL ID Act, the annual cap was\nlifted on asylum grants based on CPC. See Conditional Asylum Grants.\nCompletions\nWithin the context of the Office of the Chief Immigration "
+        },
+        {
+          "rank": 4,
+          "chunk_index": 492,
+          "score": 22.530517309233943,
+          "similarity": 22.530517309233943,
+          "text": "depends on the number of matters filed\nbefore it. DHS determines EOIR’s initial caseload by filing charging documents alleging\naliens’ illegal presence in the United States. The nature and number of the proceedings\nand the number of appeals from immigratio"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 38,
+          "score": 21.890236208765355,
+          "similarity": 21.890236208765355,
+          "text": ", pages K1 and K2)\n! In FY 2010, the percentage of asylum cases in which either asylum or\nwithholding of removal was granted was 60 percent. (Figure 19-B, page\nK5)\n! In FY 2010, 25 percent of proceedings completed at the immigration courts\nhad an applicati"
+        }
+      ]
+    },
+    {
+      "chunk_index": 886,
+      "question_type": "paraphrased",
+      "question": "For applicants from Ukraine, how many cases were filed and how many were approved?",
+      "answer": "241 received and 40 granted",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 578,
+          "score": 20.21920889110867,
+          "similarity": 20.21920889110867,
+          "text": " and asylum grants were made each fiscal year to applicants who raised\nclaims based on CPC. If applicants for asylum met the criteria for a CPC grant, they\nwere given conditional asylum and were given a final grant of asylum when a number\nbecame available."
+        },
+        {
+          "rank": 2,
+          "chunk_index": 33,
+          "score": 15.06558275352554,
+          "similarity": 15.06558275352554,
+          "text": "or immigration court\ncase completions during FY 2010 at over 66 percent. (Figure 8, page F1)\n! Forty-three percent of aliens whose cases were completed in immigration\ncourts during FY 2010 were represented. (Figure 9, page G1)\n! Asylum applications filed w"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 653,
+          "score": 14.327732773542527,
+          "similarity": 14.327732773542527,
+          "text": "guarded against illegal entry\ninto the United States, removed aliens in this country who were in violation of the law,\nexamined alien applicants seeking to become citizens, and enforced immigration-related\nemployment verification and document fraud laws. S"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 711,
+          "score": 13.09800123069832,
+          "similarity": 13.09800123069832,
+          "text": "of removal, or\nadjustment of status. Many forms of relief require the alien to fill out an appropriate\napplication.\nRemovable\nThe Illegal Immigration Reform and Immigrant Responsibility Act of 1996 (IIRIRA)\nreplaced the terms “excludable” and “deportable” "
+        },
+        {
+          "rank": 5,
+          "chunk_index": 710,
+          "score": 12.690726898979277,
+          "similarity": 12.690726898979277,
+          "text": "ation judge, an alien may be able to seek relief from\nremoval. Various types of relief may be sought, including asylum, withholding of\nremoval, protection under the Convention Against Torture, cancellation of removal, or\nadjustment of status. Many forms of"
+        }
+      ]
+    },
+    {
+      "chunk_index": 907,
+      "question_type": "direct",
+      "question": "What are the six numbers listed for LIBERIA?",
+      "answer": "216 59 65 14 33 97",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 438,
+          "score": 10.281001935104587,
+          "similarity": 10.281001935104587,
+          "text": "aws or recurring problems in the\nhandling of cases by immigration judges.\nThe BIA also has jurisdiction to review appeals arising from certain decisions\nrendered by DHS officials. These types of appeals are listed below.\n• Family-based visa petitions adjud"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 259,
+          "score": 10.220208680572702,
+          "similarity": 10.220208680572702,
+          "text": " possible\noutcomes as completed cases: grants, denials, withdrawals, and abandoned applications\nfor asylum.\nA substantial number of closed cases do not fall into one of the four categories\nlisted above, and are counted as “other” asylum completions, e.g., "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 120,
+          "score": 8.403549678477876,
+          "similarity": 8.403549678477876,
+          "text": " January 2011\nB6\nFigures 2 and 3 below provide information on the types of matters received and completed\nby the immigration courts. Proceedings make up the bulk of the courts’ work, but the courts also\nprocess significant numbers of bonds and motions to r"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 156,
+          "score": 8.376486850618626,
+          "similarity": 8.376486850618626,
+          "text": "ws all types of proceedings completed by the immigration courts for\nthe period FY 2006 to FY 2010. Note that proceedings completed do not reflect only\nimmigration judge decisions. These numbers include other completions such as\ntransfers and changes of ven"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 439,
+          "score": 8.127264857591545,
+          "similarity": 8.127264857591545,
+          "text": " listed below.\n• Family-based visa petitions adjudicated by DHS district directors or regional\nservice center directors;\n• Waivers of inadmissibility for non-immigrants under §212(d)(3) of the\nImmigration and Nationality Act; and\n• Fines and penalties impo"
+        }
+      ]
+    },
+    {
+      "chunk_index": 907,
+      "question_type": "inference",
+      "question": "Which listed country has the largest first numeric value, indicating the highest count in that column among the entries shown?",
+      "answer": "Liberia",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 603,
+          "score": 21.103032037741485,
+          "similarity": 21.103032037741485,
+          "text": "ture (CAT), the alien’s removal will be deferred. The alien’s\nremoval is deferred only to the country in which it has been determined that the alien is\nlikely to be tortured. However, the alien may be removed at any time to another country\nwhere he or she "
+        },
+        {
+          "rank": 2,
+          "chunk_index": 65,
+          "score": 17.791786388147205,
+          "similarity": 17.791786388147205,
+          "text": "e are highlighted in red. The immigration court in New Orleans, LA, showed the\nlargest percentage increase in receipts at 38 percent. The immigration court in\nGuaynabo (San Juan), Puerto Rico, showed the largest percentage decrease, down 35\npercent. Table "
+        },
+        {
+          "rank": 3,
+          "chunk_index": 316,
+          "score": 17.76270146798774,
+          "similarity": 17.76270146798774,
+          "text": ".\nThere are two forms of protection under the 1999 regulations:\n• The regulation established a new form of withholding of removal which is\ngranted to an alien who establishes that he or she would be tortured in the\nproposed country of removal.\n• The second"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 149,
+          "score": 17.441615811584917,
+          "similarity": 17.441615811584917,
+          "text": "ased upon a conviction for an aggravated\nfelony) and the alien expresses a fear of persecution or torture if returned\nto the country of removal and that claim is reviewed by an asylum officer.\nThe asylum officer has concluded that the alien has a reasonabl"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 550,
+          "score": 17.21469693429841,
+          "similarity": 17.21469693429841,
+          "text": "ls from immigration judge decisions in\nasylum-only cases. See Withholding-only Proceedings.\nB\nBoard of Immigration Appeals\nThe Board of Immigration Appeals (BIA) is the highest administrative body for\ninterpreting and applying immigration laws. The BIA has"
+        }
+      ]
+    },
+    {
+      "chunk_index": 907,
+      "question_type": "paraphrased",
+      "question": "What figures are shown next to the country in West Asia that starts with \"L\" and has 107 as its first value?",
+      "answer": "107 26 48 4 49 58",
+      "gold_rank": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "chunk_index": 406,
+          "score": 17.404216465009906,
+          "similarity": 17.404216465009906,
+          "text": " by IIRIRA.\nThere are two IIRIRA provisions addressing cancellation of removal:\n• Permanent Residents. Under the first provision, a lawful permanent\nresident facing removal on criminal grounds who has been lawfully\nadmitted for permanent residence for at l"
+        },
+        {
+          "rank": 2,
+          "chunk_index": 509,
+          "score": 15.347493820655453,
+          "similarity": 15.347493820655453,
+          "text": "o the FY 2010 Statistical Year Book\nof the Executive Office for Immigration Review (EOIR). Its intent is to define terms as\nthey are used in the Year Book, and is strictly informational in nature. These terms may\nhave further meaning in the context of othe"
+        },
+        {
+          "rank": 3,
+          "chunk_index": 601,
+          "score": 15.3357327829774,
+          "similarity": 15.3357327829774,
+          "text": "plication initially filed with the immigration court after the alien has been\nput into proceedings to remove him or her from the United States. Contrast Affirmative\nAsylum Application.\nDeferral of Removal\nIf an immigration judge concludes that it is more l"
+        },
+        {
+          "rank": 4,
+          "chunk_index": 470,
+          "score": 15.276050395748433,
+          "similarity": 15.276050395748433,
+          "text": ".\nAs shown in Figure 29, the representation rate increased each year from FY\n2006 with a 65 percent representation rate to FY 2010 with a 79 percent representation\nrate. Only appeals of immigration judge decisions are included in these data.\nFigure 29\nIJ A"
+        },
+        {
+          "rank": 5,
+          "chunk_index": 149,
+          "score": 15.089243148371628,
+          "similarity": 15.089243148371628,
+          "text": "ased upon a conviction for an aggravated\nfelony) and the alien expresses a fear of persecution or torture if returned\nto the country of removal and that claim is reviewed by an asylum officer.\nThe asylum officer has concluded that the alien has a reasonabl"
+        }
+      ]
+    }
+  ]
+}

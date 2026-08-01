@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "datetime": "2026-07-16T00:16:57",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_001655_chunk_plumber-struct_5_0",
+    "chunk_metadata": {
+      "datetime": "2026-07-16T00:16:55",
+      "dataset": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis",
+      "extractor": "pdfplumber",
+      "chunk_method": "plumber-struct",
+      "num_pages": 29,
+      "total_chars": 54155,
+      "num_chunks": 134,
+      "sentences_per_text_chunk": 5,
+      "char_cap": 1260,
+      "char_floor": 450,
+      "chunks_by_source": {
+        "table": 6,
+        "image": 1,
+        "text": 127
+      }
+    },
+    "model": "gpt-4.1-mini",
+    "temperature": 0.7,
+    "parallel": 20,
+    "seed": 7,
+    "num_chunks_requested": 4,
+    "num_chunks_sampled": 4,
+    "num_chunks_answered": 4,
+    "questions_per_chunk": 3,
+    "question_types": {
+      "direct": "Straightforward question answerable from the chunk, may use the chunk's wording.",
+      "inference": "Requires inference from the chunk's information; avoids the chunk's exact words so retrieval must match meaning, not keywords.",
+      "paraphrased": "Same style as the direct question, but the chunk's keywords are replaced with paraphrases or synonyms."
+    },
+    "prompt_version": "v3",
+    "system_prompt": "You write question/answer pairs to evaluate a retrieval system over a chunked document.\nYou are given one text chunk. Every question you write must be answerable using ONLY the\ninformation in that chunk - no outside knowledge, and nothing that depends on other parts\nof the document. Questions must be specific enough that this chunk is clearly the best\nsource for the answer (avoid generic questions many chunks could answer).\n\nProduce exactly three question/answer pairs of this type:\n1. direct: a straightforward factual question about the substantive content of the chunk;\n   it may reuse the chunk's own wording.\n2. inference: a question whose answer must be inferred or synthesized from information in\n   the chunk. Reword the reasoning and avoid copying whole phrases, but the question must\n   still NAME the specific subject it is about so this chunk remains the obvious source.\n3. paraphrased: ask about the same kind of fact as a direct question would, using synonyms\n   for the general wording, but KEEP at least one distinctive anchor from the chunk (a named\n   entity, a specific figure/percentage, or the actual subject) so retrieval can find it.\n\nAnswers must be short, correct, and grounded in the chunk text and be substantive, not about\npage numbers or chapter numbers unless it is obviously a part of the index or table of\ncontents only.\n\nDIRECT QUESTIONS - anchor to the chunk's own content, never to metadata:\nA direct question must ask about the SUBSTANTIVE information stated in this chunk - a concrete\nfact, figure, finding, statement, or relationship that actually appears in the text - and must\nbe phrased using the chunk's own distinctive subject matter so that this chunk is the obvious\nsource. It must NOT ask about, and must NOT lean on, document metadata: metadata is the\nscaffolding that recurs across many chunks and does not identify this one.\n\nTreat all of the following as metadata and do NOT build a direct question around them:\n- chapter / section titles or headings as such (e.g. \"What is the chapter title?\")\n- table, figure, or exhibit numbers or their titles used only as a label\n- page numbers, running headers, and footers\n- the data source, survey provider, or publisher (e.g. \"Ipsos MORI\")\n- base sizes / sample sizes / \"unweighted base\" figures\n- reference-list or bibliography entries and their numbering\n- captions, source notes, and other boilerplate\n\nNever phrase a direct question around bare pointers like \"the chunk\", \"the text\", \"the data\",\n\"the table\", \"the chart\", \"the source note\", or \"the passage\". If you name a table or figure,\nname it by its actual title AND still make the question about the substantive data it reports.\nDo not use the word \"chunk\" in any question unless the text is literally about chunking.\n\n- Example of BAD direct question: \"What is the chapter title shown in the chunk?\" - chapter\n  title is metadata and appears on many chunks.\n- Example of BAD direct question: \"What is the base sample size reported?\" - base size is\n  metadata; almost every table chunk has one.\n- Example of BAD direct question: \"What source is given for the data?\" - the source note\n  (\"Ipsos MORI\") recurs across the whole document.\n- Example of BAD direct question: \"What is the base size reported for this table?\" - 'this\n  table' is a generic pointer and base size is metadata.\n- Example of GOOD direct question: \"What percentage of people had ever lived in social rented\n  housing?\" - a substantive figure phrased from the chunk's own content.\n- Example of GOOD direct question: \"For the North region, what percentage disagreed that\n  living in social housing gave them a lower rent?\" - names the specific subject in the data.\n- Example of GOOD direct question: \"In Table 7.15 on regularly reviewing the needs of social\n  tenants, what is the Agree value for people currently in the social rented (SR) sector?\" -\n  the table is named by its real title and the question targets its substantive data.\n\nINFERENCE and PARAPHRASED questions - stay retrievable, keep an anchor:\nThese two types rewrite the wording, but rewording must not erase every trace of what the\nchunk is about - if it does, the question could match dozens of chunks and retrieval fails.\n\n- Every question MUST retain at least one distinctive anchor from the chunk: a named entity\n  (a place, organisation, table title, tenure group, survey year), a specific figure or\n  percentage, or the concrete subject being discussed. Paraphrase the framing around that\n  anchor; do not paraphrase the anchor itself into something generic.\n- NEVER refer to the subject with a bare pointer such as \"this activity\", \"this practice\",\n  \"this type\", \"this group\", \"the text\", \"the passage\", \"the survey\", or \"the data\". Name it.\n  Bad: \"Which group was more likely to report this practice?\" (which practice?)\n  Good: \"Which firms more often reported new business-organising practices - large firms or\n  SMEs?\" (the practice is named, so this chunk is the clear source)\n- Do not refer to un-named tables, charts, or anything generic that could be part of any\n  other chunk; keep both questions about the chunk's substantive content.\n- If the only fact in the chunk is generic boilerplate (a response rate, a weighting note,\n  a heading) that appears near-identically elsewhere in the document, prefer to reject the\n  chunk rather than write an inference/paraphrased question that cannot be uniquely located.\n\nIf the chunk does not contain enough substantive information to support such questions -\nfor example it is only a page header/footer, a bare table-of-contents fragment, a list of\nreferences, or boilerplate with no concrete facts, middle table data with no title or header\nsufficient to determine the meaning of data - reject it as containing insufficient information\n(with a brief reason) instead of forcing questions. Only reject when no substantive\nquestion is possible; a borderline chunk with at least one concrete fact should still get\nits three questions.\n",
+    "user_prompt_template": "Generate the three question/answer pairs for this chunk:\n\n<chunk>\n{chunk_text}\n</chunk>\n",
+    "rejected": [],
+    "failures": []
+  },
+  "items": [
+    {
+      "chunk_index": 12,
+      "chunk_text": "discuss the key innovation statistics. After examining in which markets and regions\ninnovative UK businesses are operating, the report then discusses collaborations and\nsources of information, factors driving innovation and barriers to innovation.\nThis report also includes highlights from analysis of the panel data (overlap) between the\n2011 survey and its predecessors from 2009 and 2007. It concludes with a comparison of\nthis survey with the last three surveys from 2011, 2009 and 2007. ",
+      "start_page": 5,
+      "end_page": 5,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What topics does the report discuss after examining markets and regions where innovative UK businesses operate?",
+          "answer": "The report discusses collaborations and sources of information, factors driving innovation, and barriers to innovation."
+        },
+        {
+          "question_type": "inference",
+          "question": "What can be inferred about the report's approach to studying innovation trends over time in UK businesses?",
+          "answer": "The report analyzes panel data overlap between surveys from 2007, 2009, and 2011 and compares survey results from these years to study innovation trends over time."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "Which aspects does the report cover regarding innovation in UK businesses after looking at the markets and areas they operate in?",
+          "answer": "It covers partnerships and information sources, elements that encourage innovation, and obstacles to innovation."
+        }
+      ]
+    },
+    {
+      "chunk_index": 38,
+      "chunk_text": "There was a decline in the\nshare of large firms from 44 per cent in the 2011 survey.\nThere was also an increase on the wider innovator indicator (firms engaging in wider/non-\ntechnical innovations, described in point 3 above) from 31 per cent in the 2011 survey to\n37 per cent given above in Table 1. The difference in proportions of SMEs and large\nbusiness was smaller in this survey period than the previous one; 37 per cent of SMEs\nreported in engaging in wider innovations, compared to 39 per cent of large firms. ",
+      "start_page": 9,
+      "end_page": 9,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What was the share of large firms in the 2011 survey compared to the current survey?",
+          "answer": "The share of large firms declined from 44 per cent in the 2011 survey."
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the data, how did the gap between SMEs and large firms in engaging in wider innovations change compared to the previous survey?",
+          "answer": "The gap narrowed, with 37 per cent of SMEs and 39 per cent of large firms engaging in wider innovations, a smaller difference than before."
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What percentage of firms classified as large reported involvement in wider innovations in this survey period?",
+          "answer": "39 per cent of large firms reported engaging in wider innovations."
+        }
+      ]
+    },
+    {
+      "chunk_index": 82,
+      "chunk_text": "A new question was added which asked firms whether they had any procurement\ncontracts to provide goods or services for ‘domestic public sector organisations’ or\n‘overseas/non-domestic public sector organisations’. Around 15 per cent of respondents\nreported having procurement contracts to provide good or services for domestic public\nsector organisations. This compared to four per cent having similar contracts to supply\noverseas/non-domestic public sector organisations.\n",
+      "start_page": 17,
+      "end_page": 17,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of firms reported having procurement contracts to provide goods or services for domestic public sector organisations?",
+          "answer": "Around 15 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the reported percentages, how much more common are procurement contracts with domestic public sector organisations compared to overseas/non-domestic ones?",
+          "answer": "Procurement contracts with domestic public sector organisations are about 3.75 times more common than with overseas/non-domestic public sector organisations"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What proportion of firms indicated they had contracts to supply goods or services to domestic public sector entities?",
+          "answer": "Around 15 per cent"
+        }
+      ]
+    },
+    {
+      "chunk_index": 101,
+      "chunk_text": "asked to indicate why it had not been necessary or possible to innovate. They were\noffered the response categories presented in Figure 810, alongside a response category\nsaying ‘none of those apply’.\nOver two thirds (68 per cent) said none applied in their case. Over a tenth (11 per cent)\nsaid ‘no need due to market conditions’ which was the most frequently cited reason.\nAround five per cent mentioned ‘no need due to previous innovations’ and a few (three per\n",
+      "start_page": 21,
+      "end_page": 21,
+      "qa_pairs": [
+        {
+          "question_type": "direct",
+          "question": "What percentage of respondents said none of the provided reasons for not innovating applied to them?",
+          "answer": "68 per cent"
+        },
+        {
+          "question_type": "inference",
+          "question": "Based on the reasons given, what was the most common explanation for why innovation was not necessary?",
+          "answer": "No need due to market conditions was the most common explanation"
+        },
+        {
+          "question_type": "paraphrased",
+          "question": "What portion of participants indicated that none of the given reasons for the lack of innovation were relevant to their situation?",
+          "answer": "68 per cent"
+        }
+      ]
+    }
+  ]
+}

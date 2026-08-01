@@ -1,0 +1,274 @@
+Pipeline grid: 1 chunk config(s) -> 3 experiment(s)
+  word_fixed_size_256_50_bm25
+  text-embedding-3-small_fixed_size_256_50_vector
+  text-embedding-3-small+word_a0.7_fixed_size_256_50_hybrid
+Dataset: data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
+
+=== Chunk config: fixed_size:256:50 ===
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/chunk_text.py --type fixed_size:256:50 --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
+
+Available datasets:
+  [1] data/pdf2image/20260712_01/fy10syb  (119 pages)
+  [2] data/pdfplumber/20260712_01/fy10syb  (119 pages)
+  [3] data/pdfplumber/20260713_02/attitudes_to_housing  (180 pages)
+  [4] data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis  (29 pages)
+  [5] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis  (29 pages)  (latest)
+
+Dataset (from --dataset): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
+Validated 29 pages: all have string 'full_text'
+Wrote 263 chunks (54136 chars from 29 pages)
+Output: data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/chunked_text.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/generate_qa.py --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50 --num-chunks 5 --types direct,inference,paraphrased --model gpt-4.1-mini --seed 42
+
+Available datasets:
+  [1] data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20
+  [2] data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10
+  [3] data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50
+  [4] data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50
+  [5] data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50
+  [6] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50
+  [7] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50  (latest)
+
+Chunk run (from --dataset): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+Loaded 263 chunks from data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+Sampled 5 of 263 chunks (seed 42)
+Generating for 5 chunk(s) with up to 5 parallel worker(s)...
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 57 ... rejected: The chunk is incomplete and contains only partial sentences without substantive information to form specific questions and answers.
+           resampled chunk 73 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 114 ... rejected: The chunk contains incomplete sentences and references without substantive content to form specific, answerable questions.
+           resampled chunk 53 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 12 ... rejected: The chunk contains only partial headings and no substantive information to generate grounded questions and answers.
+           resampled chunk 45 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 125 ... rejected: The chunk is incomplete and contains only partial sentences and headings without substantive content to form specific question/answer pairs.
+           resampled chunk 159 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 140 ... rejected: The chunk contains only a partial list of entities and percentages without context or substantive facts to form specific, answerable questions.
+           resampled chunk 113 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 113 ... rejected: The chunk contains only an incomplete fragment and does not provide enough substantive content to generate specific, answerable questions.
+           resampled chunk 8 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 159 ... rejected: The chunk contains an incomplete sentence and lacks enough substantive information to generate specific, answerable questions.
+           resampled chunk 7 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 8 ... rejected: The chunk contains only partial section titles without substantive content or facts to form specific questions and answers.
+           resampled chunk 26 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 7 ... rejected: The chunk contains only partial text with no substantive information to generate specific questions and answers.
+           resampled chunk 62 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/5] chunk 73 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [2/5] chunk 45 ... rejected: The chunk provides only partial information about the survey questionnaire and does not contain substantive facts or data suitable for specific question/answer pairs.
+           resampled chunk 67 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [2/5] chunk 53 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [3/5] chunk 67 ... rejected: The chunk contains only partial information about routing applied for surveys before UKIS 2011 and mentions the 'old definition' without substantive facts or figures.
+           resampled chunk 143 as replacement
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [3/5] chunk 26 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [4/5] chunk 62 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [5/5] chunk 143 ... ok
+
+Wrote 15 questions from 5 chunks (11 chunk(s) rejected)
+Output: data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/index_bm25.py --tokenizer word --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+
+Available datasets:
+data/pdf2image/20260712_01/fy10syb
+  [1] 20260712_202026_chunk_fixed_size_200_20
+data/pdfplumber/20260712_01/fy10syb
+  [2] 20260712_202050_chunk_fixed_size_100_10
+  [3] 20260713_075540_chunk_fixed_size_256_50
+data/pdfplumber/20260713_02/attitudes_to_housing
+  [4] 20260713_080748_chunk_fixed_size_256_50
+data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis
+  [5] 20260713_234250_chunk_fixed_size_256_50
+data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis
+  [6] 20260715_220953_chunk_fixed_size_256_50
+  [7] 20260716_000504_chunk_fixed_size_256_50
+
+Chunk run (from --dataset): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+Loaded 263 chunks from data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+
+  bm25 (word): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl (+ sidecar bm25_20260716_000514_word.json)
+
+Done: 1 BM25 index(es) in data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/embed_chunks.py --embedding text-embedding-3-small --db milvus --dataset data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+
+Available datasets:
+  [1] data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20
+  [2] data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10
+  [3] data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50
+  [4] data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50
+  [5] data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50
+  [6] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50
+  [7] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50  (latest)
+
+Chunk run (from --dataset): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+Loaded 263 chunks from data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50
+
+Embedding 263 chunks with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 128/263 chunks
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 256/263 chunks
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 263/263 chunks
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db on port 56531
+Exception calling application: Method not implemented!
+Traceback (most recent call last):
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/grpc/_server.py", line 608, in _call_behavior
+    response_or_iterator = behavior(argument, context)
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/pymilvus/grpc_gen/milvus_pb2_grpc.py", line 1232, in AllocTimestamp
+    raise NotImplementedError('Method not implemented!')
+NotImplementedError: Method not implemented!
+  milvus:   data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db (+ sidecar milvus_20260716_000515_text-embedding-3-small.json)
+
+Done: 1 embedding model(s) x 1 db(s) -> 1 output(s) in data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db (port 56531)
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/eval_retrieval.py --qa data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json --topk 10 --ks 1,3,5,10 --db data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl,data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db --hybrid data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db+data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl --alpha 0.7
+
+Available QA files:
+  [1] data/pdf2image/20260712_01/fy10syb/20260712_202026_chunk_fixed_size_200_20/qa_20260712_202623_gpt-5.4-mini.json  (60 QA pairs)
+  [2] data/pdfplumber/20260712_01/fy10syb/20260712_202050_chunk_fixed_size_100_10/qa_20260712_202503_gpt-5.4-mini.json  (76 QA pairs)
+  [3] data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_075804_gpt-5.4-mini.json  (60 QA pairs)
+  [4] data/pdfplumber/20260712_01/fy10syb/20260713_075540_chunk_fixed_size_256_50/qa_20260713_132639_gpt-5.4-mini.json  (60 QA pairs)
+  [5] data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_080942_gpt-5.4-mini.json  (60 QA pairs)
+  [6] data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_124958_gpt-5.4-mini.json  (60 QA pairs)
+  [7] data/pdfplumber/20260713_02/attitudes_to_housing/20260713_080748_chunk_fixed_size_256_50/qa_20260713_130754_gpt-5.4-mini.json  (42 QA pairs)
+  [8] data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/20260713_234250_chunk_fixed_size_256_50/qa_20260713_234713_gpt-5.4-mini.json  (60 QA pairs)
+  [9] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50/qa_20260715_221046_gpt-4.1-mini.json  (60 QA pairs)
+  [10] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260715_220953_chunk_fixed_size_256_50/qa_20260715_222823_gpt-4.1-mini.json  (57 QA pairs)
+  [11] data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json  (15 QA pairs)  (latest)
+
+QA file (from --qa): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json
+Loaded 15 questions over 5 chunks from data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json
+
+Available indexes ([x] = built from this QA file's chunk run):
+  [1] [ ] ChromaDB data/pdf2image/20260712_01/fy10syb/embedding_databases/chromadb_20260712_202256_text-embedding-3-large.chroma
+  [2] [ ] ChromaDB data/pdf2image/20260712_01/fy10syb/embedding_databases/chromadb_20260712_202256_text-embedding-3-small.chroma
+  [3] [ ] Milvus   data/pdf2image/20260712_01/fy10syb/embedding_databases/milvus_20260712_202256_text-embedding-3-large.db
+  [4] [ ] Milvus   data/pdf2image/20260712_01/fy10syb/embedding_databases/milvus_20260712_202256_text-embedding-3-small.db
+  [5] [ ] BM-25    data/pdf2image/20260712_01/fy10syb/bm25/bm25_20260712_202232_simple.pkl
+  [6] [ ] ChromaDB data/pdfplumber/20260712_01/fy10syb/embedding_databases/chromadb_20260712_202326_text-embedding-3-large.chroma
+  [7] [ ] ChromaDB data/pdfplumber/20260712_01/fy10syb/embedding_databases/chromadb_20260712_202326_text-embedding-3-small.chroma
+  [8] [ ] ChromaDB data/pdfplumber/20260712_01/fy10syb/embedding_databases/chromadb_20260713_075640_text-embedding-3-large.chroma
+  [9] [ ] ChromaDB data/pdfplumber/20260712_01/fy10syb/embedding_databases/chromadb_20260713_075640_text-embedding-3-small.chroma
+  [10] [ ] Milvus   data/pdfplumber/20260712_01/fy10syb/embedding_databases/milvus_20260712_202326_text-embedding-3-large.db
+  [11] [ ] Milvus   data/pdfplumber/20260712_01/fy10syb/embedding_databases/milvus_20260712_202326_text-embedding-3-small.db
+  [12] [ ] Milvus   data/pdfplumber/20260712_01/fy10syb/embedding_databases/milvus_20260713_075640_text-embedding-3-large.db
+  [13] [ ] Milvus   data/pdfplumber/20260712_01/fy10syb/embedding_databases/milvus_20260713_075640_text-embedding-3-small.db
+  [14] [ ] ChromaDB data/pdfplumber/20260713_02/attitudes_to_housing/embedding_databases/chromadb_20260713_080825_text-embedding-3-large.chroma
+  [15] [ ] ChromaDB data/pdfplumber/20260713_02/attitudes_to_housing/embedding_databases/chromadb_20260713_080825_text-embedding-3-small.chroma
+  [16] [ ] Milvus   data/pdfplumber/20260713_02/attitudes_to_housing/embedding_databases/milvus_20260713_080825_text-embedding-3-large.db
+  [17] [ ] Milvus   data/pdfplumber/20260713_02/attitudes_to_housing/embedding_databases/milvus_20260713_080825_text-embedding-3-small.db
+  [18] [ ] ChromaDB data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260713_234332_text-embedding-3-large.chroma
+  [19] [ ] ChromaDB data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260713_234332_text-embedding-3-small.chroma
+  [20] [ ] Milvus   data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260713_234332_text-embedding-3-large.db
+  [21] [ ] Milvus   data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260713_234332_text-embedding-3-small.db
+  [22] [ ] ChromaDB data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-large.chroma
+  [23] [ ] ChromaDB data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/chromadb_20260715_221017_text-embedding-3-small.chroma
+  [24] [ ] Milvus   data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-large.db
+  [25] [ ] Milvus   data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260715_221017_text-embedding-3-small.db
+  [26] [x] Milvus   data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db
+  [27] [ ] BM-25    data/pdfplumber/20260712_01/fy10syb/bm25/bm25_20260712_202237_simple.pkl
+  [28] [ ] BM-25    data/pdfplumber/20260712_01/fy10syb/bm25/bm25_20260713_075603_word.pkl
+  [29] [ ] BM-25    data/pdfplumber/20260713_02/attitudes_to_housing/bm25/bm25_20260713_080809_word.pkl
+  [30] [ ] BM-25    data/pdfplumber/20260713_03/uk_knowledge_and_innovation_analysis/bm25/bm25_20260713_234321_word.pkl
+  [31] [ ] BM-25    data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260715_221010_word.pkl
+  [32] [x] BM-25    data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl
+
+Index(es) (from --db): data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl,data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db
+
+Embedding 15 questions with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+
+Evaluating data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl ...
+  [1/15] querying ...
+  [2/15] querying ...
+  [3/15] querying ...
+  [4/15] querying ...
+  [5/15] querying ...
+  [6/15] querying ...
+  [7/15] querying ...
+  [8/15] querying ...
+  [9/15] querying ...
+  [10/15] querying ...
+  [11/15] querying ...
+  [12/15] querying ...
+  [13/15] querying ...
+  [14/15] querying ...
+  [15/15] querying ...
+    overall      MRR=0.555  R@1=0.400  R@3=0.667  R@5=0.733  R@10=0.867  NDCG@10=0.629  t=0.8ms
+    direct       MRR=0.700  R@1=0.600  R@3=0.800  R@5=0.800  R@10=0.800  NDCG@10=0.726  t=0.8ms
+    inference    MRR=0.525  R@1=0.400  R@3=0.600  R@5=0.600  R@10=0.800  NDCG@10=0.589  t=0.9ms
+    paraphrased  MRR=0.439  R@1=0.200  R@3=0.600  R@5=0.800  R@10=1.000  NDCG@10=0.573  t=0.7ms
+    -> data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_bm25_20260716_000514_word.json
+
+Evaluating data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db ...
+  [1/15] querying ...
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db on port 56539
+  [2/15] querying ...
+  [3/15] querying ...
+  [4/15] querying ...
+  [5/15] querying ...
+  [6/15] querying ...
+  [7/15] querying ...
+  [8/15] querying ...
+  [9/15] querying ...
+  [10/15] querying ...
+  [11/15] querying ...
+  [12/15] querying ...
+  [13/15] querying ...
+  [14/15] querying ...
+  [15/15] querying ...
+    overall      MRR=0.776  R@1=0.733  R@3=0.800  R@5=0.800  R@10=0.867  NDCG@10=0.798  t=14.4ms
+    direct       MRR=0.600  R@1=0.600  R@3=0.600  R@5=0.600  R@10=0.600  NDCG@10=0.600  t=37.6ms
+    inference    MRR=0.729  R@1=0.600  R@3=0.800  R@5=0.800  R@10=1.000  NDCG@10=0.793  t=2.8ms
+    paraphrased  MRR=1.000  R@1=1.000  R@3=1.000  R@5=1.000  R@10=1.000  NDCG@10=1.000  t=2.7ms
+    -> data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_milvus_20260716_000515_text-embedding-3-small.json
+
+Evaluating hybrid(alpha=0.7) data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db + data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl ...
+  [1/15] querying ...
+  [2/15] querying ...
+  [3/15] querying ...
+  [4/15] querying ...
+  [5/15] querying ...
+  [6/15] querying ...
+  [7/15] querying ...
+  [8/15] querying ...
+  [9/15] querying ...
+  [10/15] querying ...
+  [11/15] querying ...
+  [12/15] querying ...
+  [13/15] querying ...
+  [14/15] querying ...
+  [15/15] querying ...
+    overall      MRR=0.743  R@1=0.667  R@3=0.800  R@5=0.800  R@10=0.867  NDCG@10=0.773  t=10.9ms
+    direct       MRR=0.600  R@1=0.600  R@3=0.600  R@5=0.600  R@10=0.600  NDCG@10=0.600  t=10.9ms
+    inference    MRR=0.729  R@1=0.600  R@3=0.800  R@5=0.800  R@10=1.000  NDCG@10=0.793  t=10.8ms
+    paraphrased  MRR=0.900  R@1=0.800  R@3=1.000  R@5=1.000  R@10=1.000  NDCG@10=0.926  t=11.0ms
+    -> data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_hybrid_milvus_20260716_000515_text-embedding-3-small__bm25_20260716_000514_word.json
+
+Summary: data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_summary_20260716_000520.json
+
+Done: 3 index(es) evaluated on 15 questions
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db (port 56539)
+
+
+Best configuration by MRR: text-embedding-3-small_fixed_size_256_50_vector  (MRR=0.776)
+Total experiments: 3
+
+Results: data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/pipeline_runs/pipeline_20260716_000504.json

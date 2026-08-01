@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "datetime": "2026-07-16T00:05:04",
+    "dataset": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis",
+    "chunk_types": [
+      "fixed_size:256:50"
+    ],
+    "embeddings": [
+      "text-embedding-3-small"
+    ],
+    "vector_db": "milvus",
+    "tokenizers": [
+      "word"
+    ],
+    "retrievals": [
+      "bm25",
+      "vector",
+      "hybrid"
+    ],
+    "alpha": 0.7,
+    "qa_num": 5,
+    "qa_types": [
+      "direct",
+      "inference",
+      "paraphrased"
+    ],
+    "qa_model": "gpt-4.1-mini",
+    "seed": 42,
+    "topk": 10,
+    "ks": "1,3,5,10",
+    "num_experiments": 3
+  },
+  "chunk_configs": [
+    {
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+      "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json",
+      "bm25_indexes": [
+        "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/bm25/bm25_20260716_000514_word.pkl"
+      ],
+      "vector_indexes": [
+        "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/embedding_databases/milvus_20260716_000515_text-embedding-3-small.db"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "experiment_id": "text-embedding-3-small_fixed_size_256_50_vector",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+      "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json",
+      "eval_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_milvus_20260716_000515_text-embedding-3-small.json",
+      "retrieval": "vector",
+      "embedding_model": "text-embedding-3-small",
+      "tokenizer": null,
+      "alpha": null,
+      "metrics": {
+        "num_questions": 15,
+        "mrr": 0.7761904761904762,
+        "map": 0.7761904761904762,
+        "avg_retrieval_time": 0.014381322093928854,
+        "recall@1": 0.7333333333333333,
+        "precision@1": 0.7333333333333333,
+        "ndcg@1": 0.7333333333333333,
+        "recall@3": 0.8,
+        "precision@3": 0.26666666666666666,
+        "ndcg@3": 0.7753953169047638,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.7753953169047638,
+        "recall@10": 0.8666666666666667,
+        "precision@10": 0.08666666666666667,
+        "ndcg@10": 0.7976175391269861
+      }
+    },
+    {
+      "experiment_id": "text-embedding-3-small+word_a0.7_fixed_size_256_50_hybrid",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+      "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json",
+      "eval_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_hybrid_milvus_20260716_000515_text-embedding-3-small__bm25_20260716_000514_word.json",
+      "retrieval": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "tokenizer": "word",
+      "alpha": 0.7,
+      "metrics": {
+        "num_questions": 15,
+        "mrr": 0.7428571428571428,
+        "map": 0.7428571428571428,
+        "avg_retrieval_time": 0.010915591660887004,
+        "recall@1": 0.6666666666666666,
+        "precision@1": 0.6666666666666666,
+        "ndcg@1": 0.6666666666666666,
+        "recall@3": 0.8,
+        "precision@3": 0.26666666666666666,
+        "ndcg@3": 0.7507906338095277,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.7507906338095277,
+        "recall@10": 0.8666666666666667,
+        "precision@10": 0.08666666666666667,
+        "ndcg@10": 0.7730128560317499
+      }
+    },
+    {
+      "experiment_id": "word_fixed_size_256_50_bm25",
+      "chunk_type": "fixed_size:256:50",
+      "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+      "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json",
+      "eval_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_bm25_20260716_000514_word.json",
+      "retrieval": "bm25",
+      "embedding_model": null,
+      "tokenizer": "word",
+      "alpha": null,
+      "metrics": {
+        "num_questions": 15,
+        "mrr": 0.5546296296296297,
+        "map": 0.5546296296296297,
+        "avg_retrieval_time": 0.0008283001060287158,
+        "recall@1": 0.4,
+        "precision@1": 0.4,
+        "ndcg@1": 0.4,
+        "recall@3": 0.6666666666666666,
+        "precision@3": 0.2222222222222222,
+        "ndcg@3": 0.5595192840476249,
+        "recall@5": 0.7333333333333333,
+        "precision@5": 0.14666666666666667,
+        "ndcg@5": 0.588231054585851,
+        "recall@10": 0.8666666666666667,
+        "precision@10": 0.08666666666666667,
+        "ndcg@10": 0.6293307127491651
+      }
+    }
+  ],
+  "best_by_mrr": {
+    "experiment_id": "text-embedding-3-small_fixed_size_256_50_vector",
+    "chunk_type": "fixed_size:256:50",
+    "chunk_run": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50",
+    "qa_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/20260716_000504_chunk_fixed_size_256_50/qa_20260716_000514_gpt-4.1-mini.json",
+    "eval_file": "data/pdfplumber/20260715_01/uk_knowledge_and_innovation_analysis/evaluations/eval_20260716_000520_milvus_20260716_000515_text-embedding-3-small.json",
+    "retrieval": "vector",
+    "embedding_model": "text-embedding-3-small",
+    "tokenizer": null,
+    "alpha": null,
+    "metrics": {
+      "num_questions": 15,
+      "mrr": 0.7761904761904762,
+      "map": 0.7761904761904762,
+      "avg_retrieval_time": 0.014381322093928854,
+      "recall@1": 0.7333333333333333,
+      "precision@1": 0.7333333333333333,
+      "ndcg@1": 0.7333333333333333,
+      "recall@3": 0.8,
+      "precision@3": 0.26666666666666666,
+      "ndcg@3": 0.7753953169047638,
+      "recall@5": 0.8,
+      "precision@5": 0.16,
+      "ndcg@5": 0.7753953169047638,
+      "recall@10": 0.8666666666666667,
+      "precision@10": 0.08666666666666667,
+      "ndcg@10": 0.7976175391269861
+    }
+  }
+}

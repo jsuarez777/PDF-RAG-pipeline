@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "datetime": "2026-07-22T19:13:28",
+    "qa_file": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json",
+    "chunk_run": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50",
+    "top_k": 5,
+    "ks": [
+      5
+    ],
+    "num_questions": 20,
+    "relevance": "single gold chunk per question: recall@k is 0/1 per question, precision@k = recall@k / k, map == mrr, idcg == 1"
+  },
+  "indexes": [
+    {
+      "db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl",
+      "db_type": "bm25",
+      "tokenizer": "word",
+      "eval_file": "eval_20260722_191328_bm25_20260722_191321_word.json",
+      "overall": {
+        "num_questions": 20,
+        "mrr": 0.6375,
+        "map": 0.6375,
+        "avg_retrieval_time": 0.0020121290988754483,
+        "recall@5": 0.8,
+        "precision@5": 0.16,
+        "ndcg@5": 0.6792662662965341
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.6375,
+          "map": 0.6375,
+          "avg_retrieval_time": 0.0020121290988754483,
+          "recall@5": 0.8,
+          "precision@5": 0.16,
+          "ndcg@5": 0.6792662662965341
+        }
+      }
+    },
+    {
+      "db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db",
+      "db_type": "milvus",
+      "embedding_model": "text-embedding-3-small",
+      "eval_file": "eval_20260722_191328_milvus_20260722_191322_text-embedding-3-small.json",
+      "overall": {
+        "num_questions": 20,
+        "mrr": 0.6641666666666667,
+        "map": 0.6641666666666667,
+        "avg_retrieval_time": 0.012128677299187984,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.7105159313011153
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.6641666666666667,
+          "map": 0.6641666666666667,
+          "avg_retrieval_time": 0.012128677299187984,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.7105159313011153
+        }
+      }
+    },
+    {
+      "db": "hybrid(alpha=0.7) data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db + data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl",
+      "db_type": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "tokenizer": "word",
+      "alpha": 0.7,
+      "vector_db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db",
+      "bm25_db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl",
+      "eval_file": "eval_20260722_191328_hybrid_a0.7_milvus_20260722_191322_text-embedding-3-small__bm25_20260722_191321_word.json",
+      "overall": {
+        "num_questions": 20,
+        "mrr": 0.8,
+        "map": 0.8,
+        "avg_retrieval_time": 0.013985627099464182,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.8130929753571458
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.8,
+          "map": 0.8,
+          "avg_retrieval_time": 0.013985627099464182,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.8130929753571458
+        }
+      }
+    },
+    {
+      "db": "hybrid(alpha=0.7) data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db + data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl",
+      "db_type": "hybrid",
+      "embedding_model": "text-embedding-3-small",
+      "tokenizer": "word",
+      "alpha": 0.7,
+      "vector_db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db",
+      "bm25_db": "data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl",
+      "rerank": "cohere",
+      "rerank_model": "rerank-v3.5",
+      "eval_file": "eval_20260722_191328_hybrid_a0.7_milvus_20260722_191322_text-embedding-3-small__bm25_20260722_191321_word_rerank_cohere.json",
+      "overall": {
+        "num_questions": 20,
+        "mrr": 0.775,
+        "map": 0.775,
+        "avg_retrieval_time": 0.1862213478962076,
+        "recall@5": 0.85,
+        "precision@5": 0.17,
+        "ndcg@5": 0.7946394630357186
+      },
+      "by_question_type": {
+        "direct": {
+          "num_questions": 20,
+          "mrr": 0.775,
+          "map": 0.775,
+          "avg_retrieval_time": 0.1862213478962076,
+          "recall@5": 0.85,
+          "precision@5": 0.17,
+          "ndcg@5": 0.7946394630357186
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1047 @@
+Pipeline grid: 3 chunk config(s) -> 9 experiment(s)
+  word_fixed_size_256_50_bm25
+  text-embedding-3-small_milvus_fixed_size_256_50_vector
+  text-embedding-3-small+milvus+word_a0.7_fixed_size_256_50_hybrid
+  word_fixed_size_512_100_bm25
+  text-embedding-3-small_milvus_fixed_size_512_100_vector
+  text-embedding-3-small+milvus+word_a0.7_fixed_size_512_100_hybrid
+  word_fixed_size_1024_100_bm25
+  text-embedding-3-small_milvus_fixed_size_1024_100_vector
+  text-embedding-3-small+milvus+word_a0.7_fixed_size_1024_100_hybrid
+Dataset: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+
+=== Chunk config: fixed_size:256:50 ===
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/chunk_text.py --type fixed_size:256:50 --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+
+Available datasets:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing  (180 pages)
+  [2] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [3] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [4] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning  (297 pages)
+  [5] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning  (297 pages)
+  [6] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning  (297 pages)  (latest)
+
+Dataset (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+Validated 297 pages: all have string 'full_text'
+Wrote 725 chunks (599356 chars from 297 pages)
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/chunked_text.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/generate_qa.py --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50 --num-chunks 20 --types direct --model gpt-4.1-mini
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+Loaded 725 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+Sampled 20 of 725 chunks
+Generating for 20 chunk(s) with up to 20 parallel worker(s)...
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/20] chunk 61 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [2/20] chunk 381 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [3/20] chunk 573 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [4/20] chunk 606 ... ok
+  [5/20] chunk 83 ... ok
+  [6/20] chunk 9 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [7/20] chunk 354 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [8/20] chunk 414 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [9/20] chunk 232 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [10/20] chunk 457 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [11/20] chunk 36 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [12/20] chunk 35 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [13/20] chunk 608 ... ok
+  [14/20] chunk 213 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [15/20] chunk 628 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [16/20] chunk 494 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [17/20] chunk 49 ... ok
+  [18/20] chunk 584 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [19/20] chunk 126 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [20/20] chunk 624 ... ok
+
+Wrote 20 questions from 20 chunks
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/index_bm25.py --tokenizer word --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+
+Available datasets:
+data/users/2/pdfplumber/20260718_01/attitudes_to_housing
+  [1] 20260718_195203_chunk_fixed_size_256_50
+  [2] 20260718_195232_chunk_fixed_size_512_100
+  [3] 20260718_195253_chunk_sentence_5_1
+  [4] 20260718_233622_chunk_fixed_size_256_50
+  [5] 20260718_233642_chunk_fixed_size_512_100
+  [6] 20260718_233658_chunk_fixed_size_800_140
+  [7] 20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] 20260718_233727_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning
+  [9] 20260719_215331_chunk_fixed_size_256_50
+  [10] 20260719_215417_chunk_fixed_size_512_100
+  [11] 20260719_220235_chunk_fixed_size_256_50
+  [12] 20260719_220320_chunk_fixed_size_512_100
+  [13] 20260719_220406_chunk_sentence_6_1
+  [14] 20260719_223949_chunk_plumber-struct_6_0
+  [15] 20260720_084121_chunk_plumber-struct_5_0
+  [16] 20260720_084210_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning
+  [17] 20260720_084321_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+  [18] 20260722_191316_chunk_fixed_size_256_50
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+Loaded 725 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+
+  bm25 (word): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl (+ sidecar bm25_20260722_191321_word.json)
+
+Done: 1 BM25 index(es) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/embed_chunks.py --embedding text-embedding-3-small --db milvus --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+Loaded 725 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+
+Embedding 725 chunks with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 85/725 chunks
+  embedded 213/725 chunks
+  embedded 341/725 chunks
+  embedded 469/725 chunks
+  embedded 597/725 chunks
+  embedded 725/725 chunks
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db on port 60474
+Exception calling application: Method not implemented!
+Traceback (most recent call last):
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/grpc/_server.py", line 608, in _call_behavior
+    response_or_iterator = behavior(argument, context)
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/pymilvus/grpc_gen/milvus_pb2_grpc.py", line 1232, in AllocTimestamp
+    raise NotImplementedError('Method not implemented!')
+NotImplementedError: Method not implemented!
+  milvus:   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db (+ sidecar milvus_20260722_191322_text-embedding-3-small.json)
+
+Done: 1 embedding model(s) x 1 db(s) -> 1 output(s) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db (port 60474)
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/eval_retrieval.py --qa data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json --topk 5 --ks 5 --db data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db --hybrid data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl --alpha 0.7
+
+Available QA files:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50/qa_20260718_195209_gpt-4.1-mini.json  (60 QA pairs)
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100/qa_20260718_195236_gpt-4.1-mini.json  (60 QA pairs)
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1/qa_20260718_195301_gpt-4.1-mini.json  (60 QA pairs)
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json  (20 QA pairs)
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json  (20 QA pairs)
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json  (20 QA pairs)
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json  (20 QA pairs)
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json  (20 QA pairs)
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50/qa_20260719_215338_gpt-4.1-mini.json  (60 QA pairs)
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100/qa_20260719_215421_gpt-4.1-mini.json  (60 QA pairs)
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50/qa_20260719_220239_gpt-4.1-mini.json  (60 QA pairs)
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100/qa_20260719_220324_gpt-4.1-mini.json  (60 QA pairs)
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1/qa_20260719_220412_gpt-4.1-mini.json  (60 QA pairs)
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0/qa_20260719_224205_gpt-4.1-mini.json  (60 QA pairs)
+  [15] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0/qa_20260720_084356_gpt-4.1-mini.json  (20 QA pairs)
+  [16] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json  (20 QA pairs)  (latest)
+
+QA file (from --qa): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json
+Loaded 20 questions over 20 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json
+
+Available indexes ([x] = built from this QA file's chunk run):
+  [1] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-large.chroma
+  [2] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-small.chroma
+  [3] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-large.chroma
+  [4] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-small.chroma
+  [5] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-large.chroma
+  [6] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-small.chroma
+  [7] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-large.chroma
+  [8] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-small.chroma
+  [9] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-large.chroma
+  [10] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-small.chroma
+  [11] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-large.db
+  [12] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-small.db
+  [13] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-large.db
+  [14] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-small.db
+  [15] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-large.db
+  [16] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-small.db
+  [17] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-large.db
+  [18] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-small.db
+  [19] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-large.db
+  [20] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-small.db
+  [21] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-large.db
+  [22] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-small.db
+  [23] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-large.db
+  [24] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-small.db
+  [25] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-large.db
+  [26] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-small.db
+  [27] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_bge-base-en-v1.5.db
+  [28] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_text-embedding-3-small.db
+  [29] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_bge-base-en-v1.5.db
+  [30] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_text-embedding-3-small.db
+  [31] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_bge-base-en-v1.5.db
+  [32] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_text-embedding-3-small.db
+  [33] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_bge-base-en-v1.5.db
+  [34] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_text-embedding-3-small.db
+  [35] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_bge-base-en-v1.5.db
+  [36] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_text-embedding-3-small.db
+  [37] [x] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db
+  [38] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195209_word.pkl
+  [39] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195236_word.pkl
+  [40] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195301_word.pkl
+  [41] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233627_word.pkl
+  [42] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233647_word.pkl
+  [43] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233701_word.pkl
+  [44] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233716_word.pkl
+  [45] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233733_word.pkl
+  [46] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215338_word.pkl
+  [47] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215422_word.pkl
+  [48] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215508_word.pkl
+  [49] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220240_word.pkl
+  [50] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220325_word.pkl
+  [51] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220412_word.pkl
+  [52] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_224024_word.pkl
+  [53] [x] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl
+
+Index(es) (from --db): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db
+
+Embedding 20 questions with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.637  R@5=0.800  NDCG@5=0.679  t=2.0ms
+    direct       MRR=0.637  R@5=0.800  NDCG@5=0.679  t=2.0ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191328_bm25_20260722_191321_word.json
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db ...
+  [1/20] querying ...
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db on port 60481
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.664  R@5=0.850  NDCG@5=0.711  t=12.1ms
+    direct       MRR=0.664  R@5=0.850  NDCG@5=0.711  t=12.1ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191328_milvus_20260722_191322_text-embedding-3-small.json
+
+Evaluating hybrid(alpha=0.7) data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db + data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.800  R@5=0.850  NDCG@5=0.813  t=14.0ms
+    direct       MRR=0.800  R@5=0.850  NDCG@5=0.813  t=14.0ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191328_hybrid_a0.7_milvus_20260722_191322_text-embedding-3-small__bm25_20260722_191321_word.json
+
+Summary: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_summary_20260722_191328.json
+
+Done: 3 index(es) evaluated on 20 questions
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db (port 60481)
+
+=== Chunk config: fixed_size:512:100 ===
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/chunk_text.py --type fixed_size:512:100 --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+
+Available datasets:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing  (180 pages)
+  [2] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [3] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [4] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning  (297 pages)
+  [5] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning  (297 pages)
+  [6] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning  (297 pages)  (latest)
+
+Dataset (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+Validated 297 pages: all have string 'full_text'
+Wrote 363 chunks (599356 chars from 297 pages)
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/chunked_text.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/generate_qa.py --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100 --num-chunks 20 --types direct --model gpt-4.1-mini
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+  [19] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+Loaded 363 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+Sampled 20 of 363 chunks
+Generating for 20 chunk(s) with up to 20 parallel worker(s)...
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/20] chunk 148 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [2/20] chunk 95 ... ok
+  [3/20] chunk 360 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [4/20] chunk 127 ... ok
+  [5/20] chunk 97 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [6/20] chunk 162 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [7/20] chunk 288 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [8/20] chunk 231 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [9/20] chunk 300 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [10/20] chunk 71 ... ok
+  [11/20] chunk 130 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [12/20] chunk 64 ... ok
+  [13/20] chunk 211 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [14/20] chunk 37 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [15/20] chunk 24 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [16/20] chunk 259 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [17/20] chunk 319 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [18/20] chunk 117 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [19/20] chunk 203 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [20/20] chunk 42 ... ok
+
+Wrote 20 questions from 20 chunks
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/index_bm25.py --tokenizer word --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+
+Available datasets:
+data/users/2/pdfplumber/20260718_01/attitudes_to_housing
+  [1] 20260718_195203_chunk_fixed_size_256_50
+  [2] 20260718_195232_chunk_fixed_size_512_100
+  [3] 20260718_195253_chunk_sentence_5_1
+  [4] 20260718_233622_chunk_fixed_size_256_50
+  [5] 20260718_233642_chunk_fixed_size_512_100
+  [6] 20260718_233658_chunk_fixed_size_800_140
+  [7] 20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] 20260718_233727_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning
+  [9] 20260719_215331_chunk_fixed_size_256_50
+  [10] 20260719_215417_chunk_fixed_size_512_100
+  [11] 20260719_220235_chunk_fixed_size_256_50
+  [12] 20260719_220320_chunk_fixed_size_512_100
+  [13] 20260719_220406_chunk_sentence_6_1
+  [14] 20260719_223949_chunk_plumber-struct_6_0
+  [15] 20260720_084121_chunk_plumber-struct_5_0
+  [16] 20260720_084210_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning
+  [17] 20260720_084321_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+  [18] 20260722_191316_chunk_fixed_size_256_50
+  [19] 20260722_191329_chunk_fixed_size_512_100
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+Loaded 363 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+
+  bm25 (word): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl (+ sidecar bm25_20260722_191332_word.json)
+
+Done: 1 BM25 index(es) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/embed_chunks.py --embedding text-embedding-3-small --db milvus --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+  [19] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+Loaded 363 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+
+Embedding 363 chunks with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 107/363 chunks
+  embedded 235/363 chunks
+  embedded 363/363 chunks
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db on port 60513
+Exception calling application: Method not implemented!
+Traceback (most recent call last):
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/grpc/_server.py", line 608, in _call_behavior
+    response_or_iterator = behavior(argument, context)
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/pymilvus/grpc_gen/milvus_pb2_grpc.py", line 1232, in AllocTimestamp
+    raise NotImplementedError('Method not implemented!')
+NotImplementedError: Method not implemented!
+  milvus:   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db (+ sidecar milvus_20260722_191333_text-embedding-3-small.json)
+
+Done: 1 embedding model(s) x 1 db(s) -> 1 output(s) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db (port 60513)
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/eval_retrieval.py --qa data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json --topk 5 --ks 5 --db data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db --hybrid data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl --alpha 0.7
+
+Available QA files:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50/qa_20260718_195209_gpt-4.1-mini.json  (60 QA pairs)
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100/qa_20260718_195236_gpt-4.1-mini.json  (60 QA pairs)
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1/qa_20260718_195301_gpt-4.1-mini.json  (60 QA pairs)
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json  (20 QA pairs)
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json  (20 QA pairs)
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json  (20 QA pairs)
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json  (20 QA pairs)
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json  (20 QA pairs)
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50/qa_20260719_215338_gpt-4.1-mini.json  (60 QA pairs)
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100/qa_20260719_215421_gpt-4.1-mini.json  (60 QA pairs)
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50/qa_20260719_220239_gpt-4.1-mini.json  (60 QA pairs)
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100/qa_20260719_220324_gpt-4.1-mini.json  (60 QA pairs)
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1/qa_20260719_220412_gpt-4.1-mini.json  (60 QA pairs)
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0/qa_20260719_224205_gpt-4.1-mini.json  (60 QA pairs)
+  [15] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0/qa_20260720_084356_gpt-4.1-mini.json  (20 QA pairs)
+  [16] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json  (20 QA pairs)
+  [17] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json  (20 QA pairs)  (latest)
+
+QA file (from --qa): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json
+Loaded 20 questions over 20 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json
+
+Available indexes ([x] = built from this QA file's chunk run):
+  [1] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-large.chroma
+  [2] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-small.chroma
+  [3] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-large.chroma
+  [4] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-small.chroma
+  [5] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-large.chroma
+  [6] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-small.chroma
+  [7] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-large.chroma
+  [8] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-small.chroma
+  [9] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-large.chroma
+  [10] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-small.chroma
+  [11] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-large.db
+  [12] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-small.db
+  [13] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-large.db
+  [14] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-small.db
+  [15] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-large.db
+  [16] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-small.db
+  [17] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-large.db
+  [18] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-small.db
+  [19] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-large.db
+  [20] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-small.db
+  [21] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-large.db
+  [22] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-small.db
+  [23] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-large.db
+  [24] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-small.db
+  [25] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-large.db
+  [26] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-small.db
+  [27] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_bge-base-en-v1.5.db
+  [28] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_text-embedding-3-small.db
+  [29] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_bge-base-en-v1.5.db
+  [30] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_text-embedding-3-small.db
+  [31] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_bge-base-en-v1.5.db
+  [32] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_text-embedding-3-small.db
+  [33] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_bge-base-en-v1.5.db
+  [34] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_text-embedding-3-small.db
+  [35] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_bge-base-en-v1.5.db
+  [36] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_text-embedding-3-small.db
+  [37] [ ] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db
+  [38] [x] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db
+  [39] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195209_word.pkl
+  [40] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195236_word.pkl
+  [41] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195301_word.pkl
+  [42] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233627_word.pkl
+  [43] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233647_word.pkl
+  [44] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233701_word.pkl
+  [45] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233716_word.pkl
+  [46] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233733_word.pkl
+  [47] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215338_word.pkl
+  [48] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215422_word.pkl
+  [49] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215508_word.pkl
+  [50] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220240_word.pkl
+  [51] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220325_word.pkl
+  [52] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220412_word.pkl
+  [53] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_224024_word.pkl
+  [54] [ ] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl
+  [55] [x] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl
+
+Index(es) (from --db): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db
+
+Embedding 20 questions with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.775  R@5=0.900  NDCG@5=0.808  t=1.5ms
+    direct       MRR=0.775  R@5=0.900  NDCG@5=0.808  t=1.5ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191336_bm25_20260722_191332_word.json
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db ...
+  [1/20] querying ...
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db on port 60520
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.729  R@5=0.850  NDCG@5=0.760  t=11.3ms
+    direct       MRR=0.729  R@5=0.850  NDCG@5=0.760  t=11.3ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191336_milvus_20260722_191333_text-embedding-3-small.json
+
+Evaluating hybrid(alpha=0.7) data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db + data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.838  R@5=0.900  NDCG@5=0.853  t=13.7ms
+    direct       MRR=0.838  R@5=0.900  NDCG@5=0.853  t=13.7ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191336_hybrid_a0.7_milvus_20260722_191333_text-embedding-3-small__bm25_20260722_191332_word.json
+
+Summary: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_summary_20260722_191336.json
+
+Done: 3 index(es) evaluated on 20 questions
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db (port 60520)
+
+=== Chunk config: fixed_size:1024:100 ===
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/chunk_text.py --type fixed_size:1024:100 --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+
+Available datasets:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing  (180 pages)
+  [2] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [3] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (ERROR: 1 pages missing json)
+  [4] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning  (297 pages)
+  [5] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning  (297 pages)
+  [6] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning  (297 pages)  (latest)
+
+Dataset (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+Validated 297 pages: all have string 'full_text'
+Wrote 162 chunks (599356 chars from 297 pages)
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/chunked_text.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/generate_qa.py --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100 --num-chunks 20 --types direct --model gpt-4.1-mini
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+  [19] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+  [20] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+Loaded 162 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+Sampled 20 of 162 chunks
+Generating for 20 chunk(s) with up to 20 parallel worker(s)...
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [1/20] chunk 3 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [2/20] chunk 21 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [3/20] chunk 114 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [4/20] chunk 4 ... ok
+  [5/20] chunk 157 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [6/20] chunk 92 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [7/20] chunk 76 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [8/20] chunk 13 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [9/20] chunk 115 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [10/20] chunk 28 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [11/20] chunk 93 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [12/20] chunk 99 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [13/20] chunk 118 ... ok
+  [14/20] chunk 7 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [15/20] chunk 121 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [16/20] chunk 149 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [17/20] chunk 75 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [18/20] chunk 25 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [19/20] chunk 41 ... ok
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+  [20/20] chunk 95 ... ok
+
+Wrote 20 questions from 20 chunks
+Output: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/qa_20260722_191342_gpt-4.1-mini.json
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/index_bm25.py --tokenizer word --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+
+Available datasets:
+data/users/2/pdfplumber/20260718_01/attitudes_to_housing
+  [1] 20260718_195203_chunk_fixed_size_256_50
+  [2] 20260718_195232_chunk_fixed_size_512_100
+  [3] 20260718_195253_chunk_sentence_5_1
+  [4] 20260718_233622_chunk_fixed_size_256_50
+  [5] 20260718_233642_chunk_fixed_size_512_100
+  [6] 20260718_233658_chunk_fixed_size_800_140
+  [7] 20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] 20260718_233727_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning
+      No chunks available
+data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning
+  [9] 20260719_215331_chunk_fixed_size_256_50
+  [10] 20260719_215417_chunk_fixed_size_512_100
+  [11] 20260719_220235_chunk_fixed_size_256_50
+  [12] 20260719_220320_chunk_fixed_size_512_100
+  [13] 20260719_220406_chunk_sentence_6_1
+  [14] 20260719_223949_chunk_plumber-struct_6_0
+  [15] 20260720_084121_chunk_plumber-struct_5_0
+  [16] 20260720_084210_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning
+  [17] 20260720_084321_chunk_plumber-struct_5_0
+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning
+  [18] 20260722_191316_chunk_fixed_size_256_50
+  [19] 20260722_191329_chunk_fixed_size_512_100
+  [20] 20260722_191337_chunk_fixed_size_1024_100
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+Loaded 162 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+
+  bm25 (word): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl (+ sidecar bm25_20260722_191342_word.json)
+
+Done: 1 BM25 index(es) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/embed_chunks.py --embedding text-embedding-3-small --db milvus --dataset data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+
+Available datasets:
+  [-] data/users/2/pdfplumber/20260719_01/Probabilistic_Deep_Learning  (No chunks)
+  [-] data/users/2/pdfplumber/20260719_02/Probabilistic_Deep_Learning  (No chunks)
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0
+  [15] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084121_chunk_plumber-struct_5_0
+  [16] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260720_084210_chunk_plumber-struct_5_0
+  [17] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50
+  [19] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100
+  [20] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100  (latest)
+
+Chunk run (from --dataset): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+Loaded 162 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100
+
+Embedding 162 chunks with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+  embedded 34/162 chunks
+  embedded 162/162 chunks
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db on port 60553
+Exception calling application: Method not implemented!
+Traceback (most recent call last):
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/grpc/_server.py", line 608, in _call_behavior
+    response_or_iterator = behavior(argument, context)
+  File "/Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/lib/python3.13/site-packages/pymilvus/grpc_gen/milvus_pb2_grpc.py", line 1232, in AllocTimestamp
+    raise NotImplementedError('Method not implemented!')
+NotImplementedError: Method not implemented!
+  milvus:   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db (+ sidecar milvus_20260722_191342_text-embedding-3-small.json)
+
+Done: 1 embedding model(s) x 1 db(s) -> 1 output(s) in data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db (port 60553)
+$ /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/.venv/bin/python3 /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/app/eval_retrieval.py --qa data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/qa_20260722_191342_gpt-4.1-mini.json --topk 5 --ks 5 --db data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db --hybrid data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db+data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl --alpha 0.7
+
+Available QA files:
+  [1] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195203_chunk_fixed_size_256_50/qa_20260718_195209_gpt-4.1-mini.json  (60 QA pairs)
+  [2] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195232_chunk_fixed_size_512_100/qa_20260718_195236_gpt-4.1-mini.json  (60 QA pairs)
+  [3] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_195253_chunk_sentence_5_1/qa_20260718_195301_gpt-4.1-mini.json  (60 QA pairs)
+  [4] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233622_chunk_fixed_size_256_50/qa_20260718_233627_gpt-4.1-mini.json  (20 QA pairs)
+  [5] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233642_chunk_fixed_size_512_100/qa_20260718_233646_gpt-4.1-mini.json  (20 QA pairs)
+  [6] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233658_chunk_fixed_size_800_140/qa_20260718_233701_gpt-4.1-mini.json  (20 QA pairs)
+  [7] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233713_chunk_sentence-dynamic-min_5_1/qa_20260718_233716_gpt-4.1-mini.json  (20 QA pairs)
+  [8] data/users/2/pdfplumber/20260718_01/attitudes_to_housing/20260718_233727_chunk_plumber-struct_5_0/qa_20260718_233733_gpt-4.1-mini.json  (20 QA pairs)
+  [9] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215331_chunk_fixed_size_256_50/qa_20260719_215338_gpt-4.1-mini.json  (60 QA pairs)
+  [10] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_215417_chunk_fixed_size_512_100/qa_20260719_215421_gpt-4.1-mini.json  (60 QA pairs)
+  [11] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220235_chunk_fixed_size_256_50/qa_20260719_220239_gpt-4.1-mini.json  (60 QA pairs)
+  [12] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220320_chunk_fixed_size_512_100/qa_20260719_220324_gpt-4.1-mini.json  (60 QA pairs)
+  [13] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_220406_chunk_sentence_6_1/qa_20260719_220412_gpt-4.1-mini.json  (60 QA pairs)
+  [14] data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/20260719_223949_chunk_plumber-struct_6_0/qa_20260719_224205_gpt-4.1-mini.json  (60 QA pairs)
+  [15] data/users/2/pdfplumber/20260720_01/Probabilistic_Deep_Learning/20260720_084321_chunk_plumber-struct_5_0/qa_20260720_084356_gpt-4.1-mini.json  (20 QA pairs)
+  [16] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191316_chunk_fixed_size_256_50/qa_20260722_191321_gpt-4.1-mini.json  (20 QA pairs)
+  [17] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191329_chunk_fixed_size_512_100/qa_20260722_191332_gpt-4.1-mini.json  (20 QA pairs)
+  [18] data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/qa_20260722_191342_gpt-4.1-mini.json  (20 QA pairs)  (latest)
+
+QA file (from --qa): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/qa_20260722_191342_gpt-4.1-mini.json
+Loaded 20 questions over 20 chunks from data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/20260722_191337_chunk_fixed_size_1024_100/qa_20260722_191342_gpt-4.1-mini.json
+
+Available indexes ([x] = built from this QA file's chunk run):
+  [1] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-large.chroma
+  [2] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233634_text-embedding-3-small.chroma
+  [3] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-large.chroma
+  [4] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233652_text-embedding-3-small.chroma
+  [5] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-large.chroma
+  [6] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233706_text-embedding-3-small.chroma
+  [7] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-large.chroma
+  [8] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233721_text-embedding-3-small.chroma
+  [9] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-large.chroma
+  [10] [ ] ChromaDB data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/chromadb_20260718_233740_text-embedding-3-small.chroma
+  [11] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-large.db
+  [12] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195209_text-embedding-3-small.db
+  [13] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-large.db
+  [14] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195236_text-embedding-3-small.db
+  [15] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-large.db
+  [16] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_195301_text-embedding-3-small.db
+  [17] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-large.db
+  [18] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233628_text-embedding-3-small.db
+  [19] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-large.db
+  [20] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233647_text-embedding-3-small.db
+  [21] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-large.db
+  [22] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233702_text-embedding-3-small.db
+  [23] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-large.db
+  [24] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233717_text-embedding-3-small.db
+  [25] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-large.db
+  [26] [ ] Milvus   data/users/2/pdfplumber/20260718_01/attitudes_to_housing/embedding_databases/milvus_20260718_233734_text-embedding-3-small.db
+  [27] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_bge-base-en-v1.5.db
+  [28] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215338_text-embedding-3-small.db
+  [29] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_bge-base-en-v1.5.db
+  [30] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_215422_text-embedding-3-small.db
+  [31] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_bge-base-en-v1.5.db
+  [32] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220240_text-embedding-3-small.db
+  [33] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_bge-base-en-v1.5.db
+  [34] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220325_text-embedding-3-small.db
+  [35] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_bge-base-en-v1.5.db
+  [36] [ ] Milvus   data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/embedding_databases/milvus_20260719_220413_text-embedding-3-small.db
+  [37] [ ] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191322_text-embedding-3-small.db
+  [38] [ ] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191333_text-embedding-3-small.db
+  [39] [x] Milvus   data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db
+  [40] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195209_word.pkl
+  [41] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195236_word.pkl
+  [42] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_195301_word.pkl
+  [43] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233627_word.pkl
+  [44] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233647_word.pkl
+  [45] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233701_word.pkl
+  [46] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233716_word.pkl
+  [47] [ ] BM-25    data/users/2/pdfplumber/20260718_01/attitudes_to_housing/bm25/bm25_20260718_233733_word.pkl
+  [48] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215338_word.pkl
+  [49] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215422_word.pkl
+  [50] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_215508_word.pkl
+  [51] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220240_word.pkl
+  [52] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220325_word.pkl
+  [53] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_220412_word.pkl
+  [54] [ ] BM-25    data/users/2/pdfplumber/20260719_03/Probabilistic_Deep_Learning/bm25/bm25_20260719_224024_word.pkl
+  [55] [ ] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191321_word.pkl
+  [56] [ ] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191332_word.pkl
+  [57] [x] BM-25    data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl
+
+Index(es) (from --db): data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl,data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db
+
+Embedding 20 questions with text-embedding-3-small ...
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.654  R@5=0.800  NDCG@5=0.691  t=0.8ms
+    direct       MRR=0.654  R@5=0.800  NDCG@5=0.691  t=0.8ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191346_bm25_20260722_191342_word.json
+
+Evaluating data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db ...
+  [1/20] querying ...
+Loading faiss.
+Successfully loaded faiss.
+MilvusLite server started for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db on port 60559
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.425  R@5=0.650  NDCG@5=0.483  t=9.9ms
+    direct       MRR=0.425  R@5=0.650  NDCG@5=0.483  t=9.9ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191346_milvus_20260722_191342_text-embedding-3-small.json
+
+Evaluating hybrid(alpha=0.7) data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db + data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/bm25/bm25_20260722_191342_word.pkl ...
+  [1/20] querying ...
+  [2/20] querying ...
+  [3/20] querying ...
+  [4/20] querying ...
+  [5/20] querying ...
+  [6/20] querying ...
+  [7/20] querying ...
+  [8/20] querying ...
+  [9/20] querying ...
+  [10/20] querying ...
+  [11/20] querying ...
+  [12/20] querying ...
+  [13/20] querying ...
+  [14/20] querying ...
+  [15/20] querying ...
+  [16/20] querying ...
+  [17/20] querying ...
+  [18/20] querying ...
+  [19/20] querying ...
+  [20/20] querying ...
+    overall      MRR=0.552  R@5=0.750  NDCG@5=0.602  t=14.3ms
+    direct       MRR=0.552  R@5=0.750  NDCG@5=0.602  t=14.3ms
+    -> data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_20260722_191346_hybrid_a0.7_milvus_20260722_191342_text-embedding-3-small__bm25_20260722_191342_word.json
+
+Summary: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/evaluations/eval_summary_20260722_191346.json
+
+Done: 3 index(es) evaluated on 20 questions
+MilvusLite server stopped for /Volumes/main/Users/wampa007/dev/ai_bootcamp/miniproject3/data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/embedding_databases/milvus_20260722_191342_text-embedding-3-small.db (port 60559)
+
+
+Best configuration by MRR: text-embedding-3-small+milvus+word_a0.7_fixed_size_512_100_hybrid  (MRR=0.838)
+Total experiments: 9
+
+Results: data/users/2/pdfplumber/20260722_01/Probabilistic_Deep_Learning/pipeline_runs/pipeline_20260722_191315.json
